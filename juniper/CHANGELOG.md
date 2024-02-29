@@ -6,9 +6,10 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 
 
 
-## master
+## [0.16.0] · 2024-02-29
+[0.16.0]: /../../tree/coasys_juniper-v0.16.0/coasys_juniper
 
-[Diff](/../../compare/juniper-v0.15.9...master)
+[Diff](/../../compare/juniper-v0.15.9...coasys_juniper-v0.16.0)
 
 ### BC Breaks
 

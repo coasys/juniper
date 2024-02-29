@@ -20,13 +20,13 @@ exclude = ["/examples/", "/release.toml"]
 [dependencies]
 futures = "0.3.22"
 iron = ">= 0.5, < 0.7"
-coasys_juniper = { version = "0.16.0-dev", path = "../juniper", default-features = false }
+coasys_juniper = { version = "0.16.0", path = "../juniper", default-features = false }
 serde_json = "1.0.18"
 urlencoded = ">= 0.5, < 0.7"
 
 [dev-dependencies]
 iron-test = "0.6"
-coasys_juniper = { version = "0.16.0-dev", path = "../juniper", features = ["expose-test-schema"] }
+coasys_juniper = { version = "0.16.0", path = "../juniper", features = ["expose-test-schema"] }
 logger = "0.4"
 mount = "0.4"
 percent-encoding = "2.0"
