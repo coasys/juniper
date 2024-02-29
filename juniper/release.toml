@@ -1,40 +1,4 @@
 [[pre-release-replacements]]
-file = "../book/src/advanced/dataloaders.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/advanced/subscriptions.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/quickstart.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/servers/hyper.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/servers/iron.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/servers/rocket.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-[[pre-release-replacements]]
-file = "../book/src/servers/warp.md"
-exactly = 1
-search = "coasys_juniper = \"[^\"]+\""
-replace = "coasys_juniper = \"{{version}}\""
-
-[[pre-release-replacements]]
 file = "../juniper_actix/Cargo.toml"
 exactly = 2
 search = "coasys_juniper = \\{ version = \"[^\"]+\""
