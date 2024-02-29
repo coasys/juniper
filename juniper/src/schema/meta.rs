@@ -1,6 +1,6 @@
 //! Types used to describe a `GraphQL` schema
 
-use juniper::IntoFieldError;
+use coasys_juniper::IntoFieldError;
 use std::{
     borrow::{Cow, ToOwned},
     fmt,

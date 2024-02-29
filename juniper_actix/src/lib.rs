@@ -7,7 +7,7 @@ use actix_web::{
     error::JsonPayloadError, http::Method, web, Error, FromRequest, HttpMessage, HttpRequest,
     HttpResponse,
 };
-use juniper::{
+use coasys_juniper::{
     http::{
         graphiql::graphiql_source, playground::playground_source, GraphQLBatchRequest,
         GraphQLRequest,
@@ -42,17 +42,17 @@ where
 
 /// Actix Web GraphQL Handler for GET and POST requests
 pub async fn graphql_handler<Query, Mutation, Subscription, CtxT, S>(
-    schema: &juniper::RootNode<'static, Query, Mutation, Subscription, S>,
+    schema: &coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>,
     context: &CtxT,
     req: HttpRequest,
     payload: actix_web::web::Payload,
 ) -> Result<HttpResponse, Error>
 where
-    Query: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Query: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Query::TypeInfo: Sync,
-    Mutation: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Mutation: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Mutation::TypeInfo: Sync,
-    Subscription: juniper::GraphQLSubscriptionType<S, Context = CtxT>,
+    Subscription: coasys_juniper::GraphQLSubscriptionType<S, Context = CtxT>,
     Subscription::TypeInfo: Sync,
     CtxT: Sync,
     S: ScalarValue + Send + Sync,
@@ -65,16 +65,16 @@ where
 }
 /// Actix GraphQL Handler for GET requests
 pub async fn get_graphql_handler<Query, Mutation, Subscription, CtxT, S>(
-    schema: &juniper::RootNode<'static, Query, Mutation, Subscription, S>,
+    schema: &coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>,
     context: &CtxT,
     req: HttpRequest,
 ) -> Result<HttpResponse, Error>
 where
-    Query: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Query: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Query::TypeInfo: Sync,
-    Mutation: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Mutation: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Mutation::TypeInfo: Sync,
-    Subscription: juniper::GraphQLSubscriptionType<S, Context = CtxT>,
+    Subscription: coasys_juniper::GraphQLSubscriptionType<S, Context = CtxT>,
     Subscription::TypeInfo: Sync,
     CtxT: Sync,
     S: ScalarValue + Send + Sync,
@@ -94,17 +94,17 @@ where
 
 /// Actix GraphQL Handler for POST requests
 pub async fn post_graphql_handler<Query, Mutation, Subscription, CtxT, S>(
-    schema: &juniper::RootNode<'static, Query, Mutation, Subscription, S>,
+    schema: &coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>,
     context: &CtxT,
     req: HttpRequest,
     payload: actix_web::web::Payload,
 ) -> Result<HttpResponse, Error>
 where
-    Query: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Query: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Query::TypeInfo: Sync,
-    Mutation: juniper::GraphQLTypeAsync<S, Context = CtxT>,
+    Mutation: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT>,
     Mutation::TypeInfo: Sync,
-    Subscription: juniper::GraphQLSubscriptionType<S, Context = CtxT>,
+    Subscription: coasys_juniper::GraphQLSubscriptionType<S, Context = CtxT>,
     Subscription::TypeInfo: Sync,
     CtxT: Sync,
     S: ScalarValue + Send + Sync,
@@ -182,7 +182,7 @@ pub mod subscriptions {
         stream::{SplitSink, SplitStream},
         SinkExt as _, Stream, StreamExt as _,
     };
-    use juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
+    use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
     use juniper_graphql_transport_ws::{ArcSchema, Init};
     use tokio::sync::Mutex;
 
@@ -193,7 +193,7 @@ pub mod subscriptions {
     ///
     /// The `schema` argument is your [`juniper`] schema.
     ///
-    /// The `init` argument is used to provide the custom [`juniper::Context`] and additional
+    /// The `init` argument is used to provide the custom [`coasys_juniper::Context`] and additional
     /// configuration for connections. This can be a
     /// [`juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
     /// already known, or it can be a closure that gets executed asynchronously whenever a client
@@ -522,7 +522,7 @@ mod tests {
         App,
     };
     use futures::future;
-    use juniper::{
+    use coasys_juniper::{
         http::tests::{run_http_test_suite, HttpIntegration, TestResponse},
         tests::fixtures::starwars::schema::{Database, Query},
         EmptyMutation, EmptySubscription, RootNode,
@@ -532,7 +532,7 @@ mod tests {
     use actix_web::http::header::ACCEPT;
 
     type Schema =
-        juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
+        coasys_juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
 
     async fn take_response_body_string(resp: ServiceResponse) -> String {
         let mut body = resp.into_body();
@@ -710,7 +710,7 @@ mod tests {
 
     #[actix_web::rt::test]
     async fn batch_request_works() {
-        use juniper::{
+        use coasys_juniper::{
             tests::fixtures::starwars::schema::{Database, Query},
             EmptyMutation, EmptySubscription, RootNode,
         };
@@ -842,7 +842,7 @@ mod subscription_tests {
         App, Error, HttpRequest, HttpResponse,
     };
     use actix_web_actors::ws;
-    use juniper::{
+    use coasys_juniper::{
         futures::{SinkExt, StreamExt},
         http::tests::{run_ws_test_suite, WsIntegration, WsIntegrationMessage},
         tests::fixtures::starwars::schema::{Database, Query, Subscription},
@@ -922,7 +922,7 @@ mod subscription_tests {
         }
     }
 
-    type Schema = juniper::RootNode<'static, Query, EmptyMutation<Database>, Subscription>;
+    type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation<Database>, Subscription>;
 
     async fn subscriptions(
         req: HttpRequest,

@@ -316,7 +316,7 @@ impl GenericsExt for syn::Generics {
 
 /// Replaces [`Generics`] with default values:
 /// - `'static` for [`Lifetime`]s;
-/// - `::juniper::DefaultScalarValue` for [`Type`]s.
+/// - `::coasys_juniper::DefaultScalarValue` for [`Type`]s.
 ///
 /// [`Generics`]: syn::Generics
 /// [`Lifetime`]: syn::Lifetime
@@ -347,7 +347,7 @@ impl<'a> VisitMut for ReplaceWithDefaults<'a> {
                 if is_generic {
                     // Replace with `DefaultScalarValue` instead of `()`
                     // because generic parameter may be scalar.
-                    *ty = parse_quote!(::juniper::DefaultScalarValue);
+                    *ty = parse_quote!(::coasys_juniper::DefaultScalarValue);
                 }
             }
             _ => {}

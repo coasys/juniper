@@ -56,7 +56,7 @@ struct Attr {
     ///
     /// If [`None`], then unit type `()` is assumed as a type of [`Context`].
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     context: Option<SpanContainer<syn::Type>>,
 
@@ -69,8 +69,8 @@ struct Attr {
     /// should be specified only if one of the variants implements
     /// [`GraphQLType`] in a non-generic way over [`ScalarValue`] type.
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     scalar: Option<SpanContainer<scalar::AttrValue>>,
 
@@ -282,8 +282,8 @@ struct Definition {
     /// Rust type of [`Context`] to generate [`GraphQLType`] implementation with
     /// for this [GraphQL union][1].
     ///
-    /// [`Context`]: juniper::Context
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`Context`]: coasys_juniper::Context
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     context: syn::Type,
 
@@ -296,8 +296,8 @@ struct Definition {
     /// specified only if one of the variants implements [`GraphQLType`] in a
     /// non-generic way over [`ScalarValue`] type.
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     scalar: scalar::Type,
 
@@ -325,8 +325,8 @@ impl Definition {
     /// If `for_async` is `true`, then additional predicates are added to suit
     /// the [`GraphQLAsyncValue`] trait (and similar) requirements.
     ///
-    /// [`GraphQLAsyncValue`]: juniper::GraphQLAsyncValue
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLAsyncValue`]: coasys_juniper::GraphQLAsyncValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_generics(
@@ -356,7 +356,7 @@ impl Definition {
             generics
                 .make_where_clause()
                 .predicates
-                .push(parse_quote! { #scalar: ::juniper::ScalarValue });
+                .push(parse_quote! { #scalar: ::coasys_juniper::ScalarValue });
         }
         if let Some(bound) = scalar.bounds() {
             generics.make_where_clause().predicates.push(bound);
@@ -404,7 +404,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLUnion`] trait for this
     /// [GraphQL union][1].
     ///
-    /// [`GraphQLUnion`]: juniper::GraphQLUnion
+    /// [`GraphQLUnion`]: coasys_juniper::GraphQLUnion
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_graphql_union_tokens(&self) -> TokenStream {
@@ -414,16 +414,16 @@ impl Definition {
 
         let variant_tys: Vec<_> = self.variants.iter().map(|var| &var.ty).collect();
         let all_variants_unique = (variant_tys.len() > 1).then(|| {
-            quote! { ::juniper::sa::assert_type_ne_all!(#( #variant_tys ),*); }
+            quote! { ::coasys_juniper::sa::assert_type_ne_all!(#( #variant_tys ),*); }
         });
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::GraphQLUnion<#scalar> for #ty_full #where_clause
+            impl #impl_generics ::coasys_juniper::marker::GraphQLUnion<#scalar> for #ty_full #where_clause
             {
                 fn mark() {
                     #all_variants_unique
-                    #( <#variant_tys as ::juniper::marker::GraphQLObject<#scalar>>::mark(); )*
+                    #( <#variant_tys as ::coasys_juniper::marker::GraphQLObject<#scalar>>::mark(); )*
                 }
             }
         }
@@ -432,7 +432,7 @@ impl Definition {
     /// Returns generated code implementing [`marker::IsOutputType`] trait for
     /// this [GraphQL union][1].
     ///
-    /// [`marker::IsOutputType`]: juniper::marker::IsOutputType
+    /// [`marker::IsOutputType`]: coasys_juniper::marker::IsOutputType
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_output_type_tokens(&self) -> TokenStream {
@@ -444,10 +444,10 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::IsOutputType<#scalar> for #ty_full #where_clause
+            impl #impl_generics ::coasys_juniper::marker::IsOutputType<#scalar> for #ty_full #where_clause
             {
                 fn mark() {
-                    #( <#variant_tys as ::juniper::marker::IsOutputType<#scalar>>::mark(); )*
+                    #( <#variant_tys as ::coasys_juniper::marker::IsOutputType<#scalar>>::mark(); )*
                 }
             }
         }
@@ -456,7 +456,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLType`] trait for this
     /// [GraphQL union][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_graphql_type_tokens(&self) -> TokenStream {
@@ -471,7 +471,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLType<#scalar> for #ty_full #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLType<#scalar> for #ty_full #where_clause
             {
                 fn name(
                     _ : &Self::TypeInfo,
@@ -481,8 +481,8 @@ impl Definition {
 
                 fn meta<'r>(
                     info: &Self::TypeInfo,
-                    registry: &mut ::juniper::Registry<'r, #scalar>
-                ) -> ::juniper::meta::MetaType<'r, #scalar>
+                    registry: &mut ::coasys_juniper::Registry<'r, #scalar>
+                ) -> ::coasys_juniper::meta::MetaType<'r, #scalar>
                 where #scalar: 'r,
                 {
                     let types = [
@@ -499,7 +499,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValue`] trait for this
     /// [GraphQL union][1].
     ///
-    /// [`GraphQLValue`]: juniper::GraphQLValue
+    /// [`GraphQLValue`]: coasys_juniper::GraphQLValue
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_graphql_value_tokens(&self) -> TokenStream {
@@ -522,7 +522,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLValue<#scalar> for #ty_full #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLValue<#scalar> for #ty_full #where_clause
             {
                 type Context = #context;
                 type TypeInfo = ();
@@ -531,7 +531,7 @@ impl Definition {
                     &self,
                     info: &'__i Self::TypeInfo,
                 ) -> ::core::option::Option<&'__i ::core::primitive::str> {
-                    <Self as ::juniper::GraphQLType<#scalar>>::name(info)
+                    <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                 }
 
                 fn concrete_type_name(
@@ -551,12 +551,12 @@ impl Definition {
                     &self,
                     info: &Self::TypeInfo,
                     type_name: &::core::primitive::str,
-                    _: ::core::option::Option<&[::juniper::Selection<'_, #scalar>]>,
-                    executor: &::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::ExecutionResult<#scalar> {
+                    _: ::core::option::Option<&[::coasys_juniper::Selection<'_, #scalar>]>,
+                    executor: &::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::ExecutionResult<#scalar> {
                     let context = executor.context();
                     #( #variant_resolvers )*
-                    return ::core::result::Result::Err(::juniper::FieldError::from(::std::format!(
+                    return ::core::result::Result::Err(::coasys_juniper::FieldError::from(::std::format!(
                         "Concrete type `{}` is not handled by instance \
                          resolvers on GraphQL union `{}`",
                         type_name, #name,
@@ -569,7 +569,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValueAsync`] trait for this
     /// [GraphQL union][1].
     ///
-    /// [`GraphQLValueAsync`]: juniper::GraphQLValueAsync
+    /// [`GraphQLValueAsync`]: coasys_juniper::GraphQLValueAsync
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     fn impl_graphql_value_async_tokens(&self) -> TokenStream {
@@ -587,18 +587,18 @@ impl Definition {
         quote! {
             #[allow(non_snake_case)]
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLValueAsync<#scalar> for #ty_full #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLValueAsync<#scalar> for #ty_full #where_clause
             {
                 fn resolve_into_type_async<'b>(
                     &'b self,
                     info: &'b Self::TypeInfo,
                     type_name: &::core::primitive::str,
-                    _: ::core::option::Option<&'b [::juniper::Selection<'b, #scalar>]>,
-                    executor: &'b ::juniper::Executor<'b, 'b, Self::Context, #scalar>
-                ) -> ::juniper::BoxFuture<'b, ::juniper::ExecutionResult<#scalar>> {
+                    _: ::core::option::Option<&'b [::coasys_juniper::Selection<'b, #scalar>]>,
+                    executor: &'b ::coasys_juniper::Executor<'b, 'b, Self::Context, #scalar>
+                ) -> ::coasys_juniper::BoxFuture<'b, ::coasys_juniper::ExecutionResult<#scalar>> {
                     let context = executor.context();
                     #( #variant_async_resolvers )*
-                    return ::juniper::macros::helper::err_fut(::std::format!(
+                    return ::coasys_juniper::macros::helper::err_fut(::std::format!(
                         "Concrete type `{}` is not handled by instance \
                          resolvers on GraphQL union `{}`",
                         type_name, #name,
@@ -611,9 +611,9 @@ impl Definition {
     /// Returns generated code implementing [`BaseType`], [`BaseSubTypes`] and
     /// [`WrappedType`] traits for this [GraphQL union][1].
     ///
-    /// [`BaseSubTypes`]: juniper::macros::reflect::BaseSubTypes
-    /// [`BaseType`]: juniper::macros::reflect::BaseType
-    /// [`WrappedType`]: juniper::macros::reflect::WrappedType
+    /// [`BaseSubTypes`]: coasys_juniper::macros::reflect::BaseSubTypes
+    /// [`BaseType`]: coasys_juniper::macros::reflect::BaseType
+    /// [`WrappedType`]: coasys_juniper::macros::reflect::WrappedType
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     #[must_use]
     pub(crate) fn impl_reflection_traits_tokens(&self) -> TokenStream {
@@ -624,30 +624,30 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::BaseType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseType<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAME: ::juniper::macros::reflect::Type = #name;
+                const NAME: ::coasys_juniper::macros::reflect::Type = #name;
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::BaseSubTypes<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseSubTypes<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Types = &[
-                    <Self as ::juniper::macros::reflect::BaseType<#scalar>>::NAME,
-                    #(<#variants as ::juniper::macros::reflect::BaseType<#scalar>>::NAME),*
+                const NAMES: ::coasys_juniper::macros::reflect::Types = &[
+                    <Self as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME,
+                    #(<#variants as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME),*
                 ];
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::WrappedType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::WrappedType<#scalar>
                 for #ty
                 #where_clause
             {
-                const VALUE: ::juniper::macros::reflect::WrappedValue = 1;
+                const VALUE: ::coasys_juniper::macros::reflect::WrappedValue = 1;
             }
         }
     }
@@ -679,7 +679,7 @@ struct VariantDefinition {
     /// It's available only when code generation happens for Rust traits and a
     /// trait method contains context argument.
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [1]: https://spec.graphql.org/October2021#sec-Unions
     context: Option<syn::Type>,
 }
@@ -689,7 +689,7 @@ impl VariantDefinition {
     /// method, which returns name of the underlying GraphQL type contained in
     /// this [`VariantDefinition`].
     ///
-    /// [0]: juniper::GraphQLValue::concrete_type_name
+    /// [0]: coasys_juniper::GraphQLValue::concrete_type_name
     #[must_use]
     fn method_concrete_type_name_tokens(&self, scalar: &scalar::Type) -> TokenStream {
         let ty = &self.ty;
@@ -697,7 +697,7 @@ impl VariantDefinition {
 
         quote! {
             if #check {
-                return <#ty as ::juniper::GraphQLType<#scalar>>::name(info)
+                return <#ty as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                     .unwrap()
                     .to_string();
             }
@@ -708,7 +708,7 @@ impl VariantDefinition {
     /// method, which resolves the underlying GraphQL type contained in this
     /// [`VariantDefinition`] synchronously.
     ///
-    /// [0]: juniper::GraphQLValue::resolve_into_type
+    /// [0]: coasys_juniper::GraphQLValue::resolve_into_type
     #[must_use]
     fn method_resolve_into_type_tokens(&self, scalar: &scalar::Type) -> TokenStream {
         let ty = &self.ty;
@@ -717,8 +717,8 @@ impl VariantDefinition {
         let resolving_code = gen::sync_resolving_code();
 
         quote! {
-            if type_name == <#ty as ::juniper::GraphQLType<#scalar>>::name(info)
-                .ok_or_else(|| ::juniper::macros::helper::err_unnamed_type(#ty_name))?
+            if type_name == <#ty as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
+                .ok_or_else(|| ::coasys_juniper::macros::helper::err_unnamed_type(#ty_name))?
             {
                 let res = { #expr };
                 return #resolving_code;
@@ -731,7 +731,7 @@ impl VariantDefinition {
     /// resolves the underlying GraphQL type contained in this
     /// [`VariantDefinition`] asynchronously.
     ///
-    /// [0]: juniper::GraphQLValueAsync::resolve_into_type_async
+    /// [0]: coasys_juniper::GraphQLValueAsync::resolve_into_type_async
     #[must_use]
     fn method_resolve_into_type_async_tokens(&self, scalar: &scalar::Type) -> TokenStream {
         let ty = &self.ty;
@@ -740,15 +740,15 @@ impl VariantDefinition {
         let resolving_code = gen::async_resolving_code(None);
 
         quote! {
-            match <#ty as ::juniper::GraphQLType<#scalar>>::name(info) {
+            match <#ty as ::coasys_juniper::GraphQLType<#scalar>>::name(info) {
                 ::core::option::Option::Some(name) => {
                     if type_name == name {
-                        let fut = ::juniper::futures::future::ready({ #expr });
+                        let fut = ::coasys_juniper::futures::future::ready({ #expr });
                         return #resolving_code;
                     }
                 }
                 ::core::option::Option::None => {
-                    return ::juniper::macros::helper::err_unnamed_type_fut(#ty_name);
+                    return ::coasys_juniper::macros::helper::err_unnamed_type_fut(#ty_name);
                 }
             }
         }
@@ -773,11 +773,11 @@ fn emerge_union_variants_from_attr(
     for (ty, rslvr) in external_resolvers {
         let resolver_fn = rslvr.into_inner();
         let resolver_code = parse_quote! {
-            #resolver_fn(self, ::juniper::FromContext::from(context))
+            #resolver_fn(self, ::coasys_juniper::FromContext::from(context))
         };
         // Doing this may be quite an expensive, because resolving may contain
         // some heavy computation, so we're preforming it twice. Unfortunately,
-        // we have no other options here, until the `juniper::GraphQLType`
+        // we have no other options here, until the `coasys_juniper::GraphQLType`
         // itself will allow to do it in some cleverer way.
         let resolver_check = parse_quote! {
             ({ #resolver_code } as ::core::option::Option<&#ty>).is_some()
@@ -809,7 +809,7 @@ fn emerge_union_variants_from_attr(
 /// bad error message this implementation should stay and provide guidance.
 ///
 /// [1]: https://spec.graphql.org/October2021#sec-Unions
-/// [2]: juniper::sa::assert_type_ne_all
+/// [2]: coasys_juniper::sa::assert_type_ne_all
 fn all_variants_different(variants: &[VariantDefinition]) -> bool {
     let mut types: Vec<_> = variants.iter().map(|var| &var.ty).collect();
     types.dedup();

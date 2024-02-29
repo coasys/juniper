@@ -59,7 +59,7 @@ pub(crate) struct Attr {
     /// If absent, then the method argument still is considered as [`Context`]
     /// if it's named `context` or `ctx`.
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Arguments
     /// [2]: https://spec.graphql.org/October2021#sec-Language.Fields
     pub(crate) context: Option<SpanContainer<syn::Ident>>,
@@ -71,7 +71,7 @@ pub(crate) struct Attr {
     /// If absent, then the method argument still is considered as [`Executor`]
     /// if it's named `executor`.
     ///
-    /// [`Executor`]: juniper::Executor
+    /// [`Executor`]: coasys_juniper::Executor
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Arguments
     /// [2]: https://spec.graphql.org/October2021#sec-Language.Fields
     pub(crate) executor: Option<SpanContainer<syn::Ident>>,
@@ -241,13 +241,13 @@ pub(crate) enum OnMethod {
 
     /// [`Context`] passed into a [GraphQL field][2] resolving method.
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [2]: https://spec.graphql.org/October2021#sec-Language.Fields
     Context(Box<syn::Type>),
 
     /// [`Executor`] passed into a [GraphQL field][2] resolving method.
     ///
-    /// [`Executor`]: juniper::Executor
+    /// [`Executor`]: coasys_juniper::Executor
     /// [2]: https://spec.graphql.org/October2021#sec-Language.Fields
     Executor,
 }
@@ -278,12 +278,12 @@ impl OnMethod {
     /// which performs static checks for this argument, if it represents an
     /// [`OnField`] one.
     ///
-    /// [`marker::IsOutputType::mark`]: juniper::marker::IsOutputType::mark
+    /// [`marker::IsOutputType::mark`]: coasys_juniper::marker::IsOutputType::mark
     #[must_use]
     pub(crate) fn method_mark_tokens(&self, scalar: &scalar::Type) -> Option<TokenStream> {
         let ty = &self.as_regular()?.ty;
         Some(quote_spanned! { ty.span() =>
-            <#ty as ::juniper::marker::IsInputType<#scalar>>::mark();
+            <#ty as ::coasys_juniper::marker::IsInputType<#scalar>>::mark();
         })
     }
 
@@ -291,8 +291,8 @@ impl OnMethod {
     /// registers this argument in [`Registry`], if it represents an [`OnField`]
     /// argument.
     ///
-    /// [`GraphQLType::meta`]: juniper::GraphQLType::meta
-    /// [`Registry`]: juniper::Registry
+    /// [`GraphQLType::meta`]: coasys_juniper::GraphQLType::meta
+    /// [`Registry`]: coasys_juniper::Registry
     #[must_use]
     pub(crate) fn method_meta_tokens(&self) -> Option<TokenStream> {
         let arg = self.as_regular()?;
@@ -316,7 +316,7 @@ impl OnMethod {
     /// which provides the value of this [`OnMethod`] argument to be passed into
     /// a trait method call.
     ///
-    /// [`GraphQLValue::resolve_field`]: juniper::GraphQLValue::resolve_field
+    /// [`GraphQLValue::resolve_field`]: coasys_juniper::GraphQLValue::resolve_field
     #[must_use]
     pub(crate) fn method_resolve_field_tokens(
         &self,
@@ -330,9 +330,9 @@ impl OnMethod {
 
                 let arg = quote! {
                     args.get::<#ty>(#name).and_then(|opt| opt.map_or_else(|| {
-                        <#ty as ::juniper::FromInputValue<#scalar>>::from_implicit_null()
+                        <#ty as ::coasys_juniper::FromInputValue<#scalar>>::from_implicit_null()
                             .map_err(|e| {
-                                ::juniper::IntoFieldError::<#scalar>::into_field_error(e)
+                                ::coasys_juniper::IntoFieldError::<#scalar>::into_field_error(e)
                                     .map_message(|m| format!(#err_text, m))
                             })
                     }, ::core::result::Result::Ok))
@@ -352,7 +352,7 @@ impl OnMethod {
             }
 
             Self::Context(_) => quote! {
-                ::juniper::FromContext::from(executor.context())
+                ::coasys_juniper::FromContext::from(executor.context())
             },
 
             Self::Executor => quote! { &executor },

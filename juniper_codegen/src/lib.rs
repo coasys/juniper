@@ -120,7 +120,7 @@ use proc_macro_error::{proc_macro_error, ResultExt as _};
 /// definition is totally okay. They all will be treated as a single attribute.
 ///
 /// ```rust
-/// use juniper::GraphQLInputObject;
+/// use coasys_juniper::GraphQLInputObject;
 ///
 /// #[derive(GraphQLInputObject)]
 /// struct Point2D {
@@ -140,7 +140,7 @@ use proc_macro_error::{proc_macro_error, ResultExt as _};
 /// a regular Rust doc comment.
 ///
 /// ```rust
-/// # use juniper::GraphQLInputObject;
+/// # use coasys_juniper::GraphQLInputObject;
 /// #
 /// #[derive(GraphQLInputObject)]
 /// #[graphql(
@@ -172,7 +172,7 @@ use proc_macro_error::{proc_macro_error, ResultExt as _};
 /// `camelCase`, `none` (disables any renaming).
 ///
 /// ```rust
-/// # use juniper::GraphQLInputObject;
+/// # use coasys_juniper::GraphQLInputObject;
 /// #
 /// #[derive(GraphQLInputObject)]
 /// #[graphql(rename_all = "none")] // disables renaming
@@ -189,7 +189,7 @@ use proc_macro_error::{proc_macro_error, ResultExt as _};
 /// [`Default`] or have the `default = <expression>` attribute's argument.
 ///
 /// ```rust
-/// # use juniper::GraphQLInputObject;
+/// # use coasys_juniper::GraphQLInputObject;
 /// #
 /// enum System {
 ///     Cartesian,
@@ -209,7 +209,7 @@ use proc_macro_error::{proc_macro_error, ResultExt as _};
 /// }
 /// ```
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [0]: https://spec.graphql.org/October2021#sec-Input-Objects
 /// [1]: https://spec.graphql.org/October2021#InputFieldsDefinition
 /// [2]: https://spec.graphql.org/October2021#sec-Scalars
@@ -229,7 +229,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// definition is totally okay. They all will be treated as a single attribute.
 ///
 /// ```rust
-/// use juniper::GraphQLEnum;
+/// use coasys_juniper::GraphQLEnum;
 ///
 /// #[derive(GraphQLEnum)]
 /// enum Episode {
@@ -255,7 +255,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// ```rust
 /// # #![allow(deprecated)]
 /// #
-/// # use juniper::GraphQLEnum;
+/// # use coasys_juniper::GraphQLEnum;
 /// #
 /// #[derive(GraphQLEnum)]
 /// #[graphql(
@@ -291,7 +291,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// `camelCase`, `none` (disables any renaming).
 ///
 /// ```rust
-/// # use juniper::GraphQLEnum;
+/// # use coasys_juniper::GraphQLEnum;
 /// #
 /// #[derive(GraphQLEnum)]
 /// #[graphql(rename_all = "none")] // disables renaming
@@ -309,7 +309,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// variants are allowed to contain fields.
 ///
 /// ```rust
-/// # use juniper::GraphQLEnum;
+/// # use coasys_juniper::GraphQLEnum;
 /// #
 /// #[derive(GraphQLEnum)]
 /// enum Episode<T> {
@@ -328,7 +328,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// attribute's argument.
 ///
 /// ```rust
-/// # use juniper::{DefaultScalarValue, GraphQLEnum};
+/// # use coasys_juniper::{DefaultScalarValue, GraphQLEnum};
 /// #
 /// #[derive(GraphQLEnum)]
 /// #[graphql(scalar = DefaultScalarValue)]
@@ -339,7 +339,7 @@ pub fn derive_input_object(input: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [0]: https://spec.graphql.org/October2021#sec-Enums
 /// [1]: https://spec.graphql.org/October2021#sec-Enum-Value
 #[proc_macro_error]
@@ -360,7 +360,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 /// often called as ["`Newtype` pattern"][1]. This may be achieved by providing
 /// a `#[graphql(transparent)]` attribute to the definition:
 /// ```rust
-/// # use juniper::{GraphQLObject, GraphQLScalar};
+/// # use coasys_juniper::{GraphQLObject, GraphQLScalar};
 /// #
 /// #[derive(GraphQLScalar)]
 /// #[graphql(transparent)]
@@ -381,7 +381,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 ///
 /// The inherited behaviour may also be customized:
 /// ```rust
-/// # use juniper::GraphQLScalar;
+/// # use coasys_juniper::GraphQLScalar;
 /// #
 /// /// Doc comments are used for the GraphQL type description.
 /// #[derive(GraphQLScalar)]
@@ -394,7 +394,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 ///     // Optional specification URL.
 ///     specified_by_url = "https://tools.ietf.org/html/rfc4122",
 ///     // Explicit generic scalar.
-///     scalar = S: juniper::ScalarValue,
+///     scalar = S: coasys_juniper::ScalarValue,
 ///     transparent,
 /// )]
 /// struct UserId(String);
@@ -408,7 +408,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 /// Customization of a [GraphQL scalar][0] type resolving is possible via
 /// `#[graphql(to_output_with = <fn path>)]` attribute:
 /// ```rust
-/// # use juniper::{GraphQLScalar, ScalarValue, Value};
+/// # use coasys_juniper::{GraphQLScalar, ScalarValue, Value};
 /// #
 /// #[derive(GraphQLScalar)]
 /// #[graphql(to_output_with = to_output, transparent)]
@@ -426,7 +426,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 /// Customization of a [GraphQL scalar][0] type parsing is possible via
 /// `#[graphql(from_input_with = <fn path>)]` attribute:
 /// ```rust
-/// # use juniper::{DefaultScalarValue, GraphQLScalar, InputValue, ScalarValue};
+/// # use coasys_juniper::{DefaultScalarValue, GraphQLScalar, InputValue, ScalarValue};
 /// #
 /// #[derive(GraphQLScalar)]
 /// #[graphql(from_input_with = Self::from_input, transparent)]
@@ -461,7 +461,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 /// possible via `#[graphql(parse_token_with = <fn path>)]` or
 /// `#[graphql(parse_token(<types>)]` attributes:
 /// ```rust
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 /// #     ScalarValue, ScalarToken, Value,
 /// # };
@@ -508,7 +508,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 /// provide a module holding the appropriate `to_output()`, `from_input()` and
 /// `parse_token()` functions:
 /// ```rust
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 /// #     ScalarValue, ScalarToken, Value,
 /// # };
@@ -548,7 +548,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 ///
 /// A regular `impl` block is also suitable for that:
 /// ```rust
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 /// #     ScalarValue, ScalarToken, Value,
 /// # };
@@ -592,7 +592,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 ///
 /// At the same time, any custom function still may be specified separately:
 /// ```rust
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     GraphQLScalar, InputValue, ParseScalarResult, ScalarValue,
 /// #     ScalarToken, Value
 /// # };
@@ -653,7 +653,7 @@ pub fn derive_enum(input: TokenStream) -> TokenStream {
 ///
 /// [0]: https://spec.graphql.org/October2021#sec-Scalars
 /// [1]: https://rust-unofficial.github.io/patterns/patterns/behavioural/newtype.html
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 #[proc_macro_error]
 #[proc_macro_derive(GraphQLScalar, attributes(graphql))]
 pub fn derive_scalar(input: TokenStream) -> TokenStream {
@@ -667,7 +667,7 @@ pub fn derive_scalar(input: TokenStream) -> TokenStream {
 /// [GraphQL scalar][0] implementation.
 ///
 /// ```rust
-/// # use juniper::graphql_scalar;
+/// # use coasys_juniper::graphql_scalar;
 /// #
 /// /// Doc comments are used for the GraphQL type description.
 /// #[graphql_scalar(
@@ -679,7 +679,7 @@ pub fn derive_scalar(input: TokenStream) -> TokenStream {
 ///     // Optional specification URL.
 ///     specified_by_url = "https://tools.ietf.org/html/rfc4122",
 ///     // Explicit generic scalar.
-///     scalar = S: juniper::ScalarValue,
+///     scalar = S: coasys_juniper::ScalarValue,
 ///     transparent,
 /// )]
 /// struct UserId(String);
@@ -714,8 +714,8 @@ pub fn derive_scalar(input: TokenStream) -> TokenStream {
 /// #    }
 /// # }
 /// #
-/// # use juniper::DefaultScalarValue as CustomScalarValue;
-/// use juniper::{graphql_scalar, InputValue, ScalarValue, Value};
+/// # use coasys_juniper::DefaultScalarValue as CustomScalarValue;
+/// use coasys_juniper::{graphql_scalar, InputValue, ScalarValue, Value};
 ///
 /// #[graphql_scalar(
 ///     with = date_scalar,
@@ -746,8 +746,8 @@ pub fn derive_scalar(input: TokenStream) -> TokenStream {
 /// [0]: https://spec.graphql.org/October2021#sec-Scalars
 /// [1]: https://rust-unofficial.github.io/patterns/patterns/behavioural/newtype.html
 /// [orphan rules]: https://bit.ly/3glAGC2
-/// [`GraphQLScalar`]: juniper::GraphQLScalar
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`GraphQLScalar`]: coasys_juniper::GraphQLScalar
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn graphql_scalar(attr: TokenStream, body: TokenStream) -> TokenStream {
@@ -768,7 +768,7 @@ pub fn graphql_scalar(attr: TokenStream, body: TokenStream) -> TokenStream {
 /// # use std::fmt;
 /// #
 /// # use serde::{de, Deserialize, Deserializer, Serialize};
-/// # use juniper::ScalarValue;
+/// # use coasys_juniper::ScalarValue;
 /// #
 /// #[derive(Clone, Debug, PartialEq, ScalarValue, Serialize)]
 /// #[serde(untagged)]
@@ -855,7 +855,7 @@ pub fn graphql_scalar(attr: TokenStream, body: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 #[proc_macro_error]
 #[proc_macro_derive(ScalarValue, attributes(value))]
 pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
@@ -887,7 +887,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// have any arguments:
 ///
 /// ```rust
-/// use juniper::{graphql_interface, GraphQLObject};
+/// use coasys_juniper::{graphql_interface, GraphQLObject};
 ///
 /// // NOTICE: By default a `CharacterValue` enum is generated by macro to represent values of this
 /// //         GraphQL interface.
@@ -907,7 +907,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// Also [GraphQL interface][1] can be represented with trait:
 ///
 /// ```rust
-/// use juniper::{graphql_interface, GraphQLObject};
+/// use coasys_juniper::{graphql_interface, GraphQLObject};
 ///
 /// // NOTICE: By default a `CharacterValue` enum is generated by macro to represent values of this
 /// //         GraphQL interface.
@@ -945,7 +945,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// no exact value is specified then [`Default::default`] is used).
 ///
 /// ```rust
-/// # use juniper::graphql_interface;
+/// # use coasys_juniper::graphql_interface;
 /// #
 /// #[graphql_interface(name = "Character", desc = "Possible episode characters.")]
 /// trait Chrctr {
@@ -980,7 +980,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 ///
 /// ```rust
 /// # extern crate juniper;
-/// use juniper::{graphql_interface, graphql_object, ID};
+/// use coasys_juniper::{graphql_interface, graphql_object, ID};
 ///
 /// #[graphql_interface(for = [HumanValue, Luke])]
 /// struct Node {
@@ -1035,7 +1035,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 ///
 /// ```rust
 /// # extern crate juniper;
-/// use juniper::{graphql_interface, graphql_object, ID};
+/// use coasys_juniper::{graphql_interface, graphql_object, ID};
 ///
 /// #[graphql_interface(for = [HumanValue, Luke])]
 /// struct Node {
@@ -1101,7 +1101,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// `none` (disables any renaming).
 ///
 /// ```rust
-/// # use juniper::{graphql_interface, graphql_object};
+/// # use coasys_juniper::{graphql_interface, graphql_object};
 /// #
 /// #[graphql_interface(for = Human, rename_all = "none")] // disables renaming
 /// trait Character {
@@ -1140,7 +1140,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// and ignore it, use an `ignore` attribute's argument directly on that method.
 ///
 /// ```rust
-/// # use juniper::graphql_interface;
+/// # use coasys_juniper::graphql_interface;
 /// #
 /// #[graphql_interface]
 /// trait Character {
@@ -1165,13 +1165,13 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 ///
 /// ```rust
 /// # use std::collections::HashMap;
-/// # use juniper::{graphql_interface, graphql_object};
+/// # use coasys_juniper::{graphql_interface, graphql_object};
 /// #
 /// struct Database {
 ///     humans: HashMap<String, Human>,
 ///     droids: HashMap<String, Droid>,
 /// }
-/// impl juniper::Context for Database {}
+/// impl coasys_juniper::Context for Database {}
 ///
 /// #[graphql_interface(for = [Human, Droid], Context = Database)]
 /// trait Character {
@@ -1223,7 +1223,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// However, this requires to explicitly parametrize over [`ScalarValue`], as [`Executor`] does so.
 ///
 /// ```rust
-/// # use juniper::{graphql_interface, graphql_object, Executor, LookAheadMethods as _, ScalarValue};
+/// # use coasys_juniper::{graphql_interface, graphql_object, Executor, LookAheadMethods as _, ScalarValue};
 /// #
 /// // NOTICE: Specifying `ScalarValue` as existing type parameter.
 /// #[graphql_interface(for = Human, scalar = S)]
@@ -1265,7 +1265,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// attribute's argument.
 ///
 /// ```rust
-/// # use juniper::{graphql_interface, DefaultScalarValue, GraphQLObject};
+/// # use coasys_juniper::{graphql_interface, DefaultScalarValue, GraphQLObject};
 /// #
 /// // NOTICE: Removing `Scalar` argument will fail compilation.
 /// #[graphql_interface(for = Human, scalar = DefaultScalarValue)]
@@ -1281,9 +1281,9 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`Context`]: juniper::Context
-/// [`Executor`]: juniper::Executor
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`Context`]: coasys_juniper::Context
+/// [`Executor`]: coasys_juniper::Executor
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [0]: https://spec.graphql.org/October2021
 /// [1]: https://spec.graphql.org/October2021#sec-Interfaces
 /// [2]: https://doc.rust-lang.org/stable/reference/items/traits.html#object-safety
@@ -1304,7 +1304,7 @@ pub fn graphql_interface(attr: TokenStream, body: TokenStream) -> TokenStream {
 /// fields don't have any arguments:
 ///
 /// ```rust
-/// use juniper::{GraphQLInterface, GraphQLObject};
+/// use coasys_juniper::{GraphQLInterface, GraphQLObject};
 ///
 /// // NOTICE: By default a `CharacterValue` enum is generated by macro to represent values of this
 /// //         GraphQL interface.
@@ -1342,7 +1342,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// definition is totally okay. They all will be treated as a single attribute.
 ///
 /// ```
-/// use juniper::GraphQLObject;
+/// use coasys_juniper::GraphQLObject;
 ///
 /// #[derive(GraphQLObject)]
 /// struct Query {
@@ -1368,7 +1368,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// attribute.
 ///
 /// ```
-/// # use juniper::GraphQLObject;
+/// # use coasys_juniper::GraphQLObject;
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(
@@ -1408,7 +1408,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// `none` (disables any renaming).
 ///
 /// ```
-/// # use juniper::GraphQLObject;
+/// # use coasys_juniper::GraphQLObject;
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(rename_all = "none")] // disables renaming
@@ -1425,7 +1425,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// attribute's argument directly on that field.
 ///
 /// ```
-/// # use juniper::GraphQLObject;
+/// # use coasys_juniper::GraphQLObject;
 /// #
 /// #[derive(GraphQLObject)]
 /// struct Human {
@@ -1444,7 +1444,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// should be specified with a `scalar` attribute's argument.
 ///
 /// ```
-/// # use juniper::{DefaultScalarValue, GraphQLObject};
+/// # use coasys_juniper::{DefaultScalarValue, GraphQLObject};
 /// #
 /// #[derive(GraphQLObject)]
 /// // NOTICE: Removing `scalar` argument will fail compilation.
@@ -1461,7 +1461,7 @@ pub fn derive_interface(body: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [1]: https://spec.graphql.org/October2021#sec-Objects
 #[proc_macro_error]
 #[proc_macro_derive(GraphQLObject, attributes(graphql))]
@@ -1483,7 +1483,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// is totally okay. They all will be treated as a single attribute.
 ///
 /// ```
-/// use juniper::graphql_object;
+/// use coasys_juniper::graphql_object;
 ///
 /// // We can declare the type as a plain struct without any members.
 /// struct Query;
@@ -1523,7 +1523,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// Fields may also have a `self` receiver.
 ///
 /// ```
-/// # use juniper::graphql_object;
+/// # use coasys_juniper::graphql_object;
 /// #
 /// struct Person {
 ///     first_name: String,
@@ -1572,7 +1572,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// is used).
 ///
 /// ```
-/// # use juniper::graphql_object;
+/// # use coasys_juniper::graphql_object;
 /// #
 /// struct HumanWithAttrs;
 ///
@@ -1630,7 +1630,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// `none` (disables any renaming).
 ///
 /// ```
-/// # use juniper::graphql_object;
+/// # use coasys_juniper::graphql_object;
 /// #
 /// struct Query;
 ///
@@ -1656,7 +1656,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// it, use an `ignore` attribute's argument directly on that method.
 ///
 /// ```
-/// # use juniper::graphql_object;
+/// # use coasys_juniper::graphql_object;
 /// #
 /// struct Human(String);
 ///
@@ -1687,12 +1687,12 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 ///
 /// ```
 /// # use std::collections::HashMap;
-/// # use juniper::graphql_object;
+/// # use coasys_juniper::graphql_object;
 /// #
 /// struct Database {
 ///     humans: HashMap<String, Human>,
 /// }
-/// impl juniper::Context for Database {}
+/// impl coasys_juniper::Context for Database {}
 ///
 /// struct Human {
 ///     id: String,
@@ -1721,7 +1721,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// [`Executor`] does so.
 ///
 /// ```
-/// # use juniper::{graphql_object, Executor, GraphQLObject, LookAheadMethods as _, ScalarValue};
+/// # use coasys_juniper::{graphql_object, Executor, GraphQLObject, LookAheadMethods as _, ScalarValue};
 /// #
 /// struct Human {
 ///     name: String,
@@ -1756,7 +1756,7 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// should be specified with a `scalar` attribute's argument.
 ///
 /// ```
-/// # use juniper::{graphql_object, DefaultScalarValue, GraphQLObject};
+/// # use coasys_juniper::{graphql_object, DefaultScalarValue, GraphQLObject};
 /// #
 /// struct Human(String);
 ///
@@ -1781,11 +1781,11 @@ pub fn derive_object(body: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`Context`]: juniper::Context
-/// [`Executor`]: juniper::Executor
-/// [`GraphQLType`]: juniper::GraphQLType
-/// [`GraphQLValue`]: juniper::GraphQLValue
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`Context`]: coasys_juniper::Context
+/// [`Executor`]: coasys_juniper::Executor
+/// [`GraphQLType`]: coasys_juniper::GraphQLType
+/// [`GraphQLValue`]: coasys_juniper::GraphQLValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [0]: https://spec.graphql.org/October2021
 /// [1]: https://spec.graphql.org/October2021#sec-Objects
 #[proc_macro_error]
@@ -1813,7 +1813,7 @@ pub fn graphql_object(attr: TokenStream, body: TokenStream) -> TokenStream {
 ///
 /// ```
 /// # use futures::stream::{self, BoxStream};
-/// use juniper::graphql_subscription;
+/// use coasys_juniper::graphql_subscription;
 ///
 /// // We can declare the type as a plain struct without any members.
 /// struct Subscription;
@@ -1837,8 +1837,8 @@ pub fn graphql_object(attr: TokenStream, body: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`GraphQLType`]: juniper::GraphQLType
-/// [`GraphQLSubscriptionValue`]: juniper::GraphQLSubscriptionValue
+/// [`GraphQLType`]: coasys_juniper::GraphQLType
+/// [`GraphQLSubscriptionValue`]: coasys_juniper::GraphQLSubscriptionValue
 /// [`Stream`]: futures::Stream
 /// [1]: https://spec.graphql.org/October2021#sec-Subscription
 #[proc_macro_error]
@@ -1858,7 +1858,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 ///
 /// ```
 /// use derive_more::From;
-/// use juniper::{GraphQLObject, GraphQLUnion};
+/// use coasys_juniper::{GraphQLObject, GraphQLUnion};
 ///
 /// #[derive(GraphQLObject)]
 /// struct Human {
@@ -1888,7 +1888,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// attribute's argument, or with a regular Rust doc comment.
 ///
 /// ```
-/// # use juniper::{GraphQLObject, GraphQLUnion};
+/// # use coasys_juniper::{GraphQLObject, GraphQLUnion};
 /// #
 /// # #[derive(GraphQLObject)]
 /// # struct Human {
@@ -1934,7 +1934,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// specify it with `context` attribute's argument.
 ///
 /// ```
-/// # use juniper::{GraphQLObject, GraphQLUnion};
+/// # use coasys_juniper::{GraphQLObject, GraphQLUnion};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(Context = CustomContext)]
@@ -1951,7 +1951,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// }
 ///
 /// pub struct CustomContext;
-/// impl juniper::Context for CustomContext {}
+/// impl coasys_juniper::Context for CustomContext {}
 ///
 /// #[derive(GraphQLUnion)]
 /// #[graphql(Context = CustomContext)]
@@ -1970,7 +1970,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// type should be specified with a `scalar` attribute's argument.
 ///
 /// ```
-/// # use juniper::{DefaultScalarValue, GraphQLObject, GraphQLUnion};
+/// # use coasys_juniper::{DefaultScalarValue, GraphQLObject, GraphQLUnion};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(scalar = DefaultScalarValue)]
@@ -2006,7 +2006,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// ```
 /// # use std::marker::PhantomData;
 /// use derive_more::From;
-/// use juniper::{GraphQLObject, GraphQLUnion};
+/// use coasys_juniper::{GraphQLObject, GraphQLUnion};
 ///
 /// #[derive(GraphQLObject)]
 /// struct Human {
@@ -2038,7 +2038,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// - or an `on` attribute's argument on an enum/struct itself.
 ///
 /// ```
-/// # use juniper::{GraphQLObject, GraphQLUnion};
+/// # use coasys_juniper::{GraphQLObject, GraphQLUnion};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(Context = CustomContext)]
@@ -2057,7 +2057,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// pub struct CustomContext {
 ///     droid: Droid,
 /// }
-/// impl juniper::Context for CustomContext {}
+/// impl coasys_juniper::Context for CustomContext {}
 ///
 /// #[derive(GraphQLUnion)]
 /// #[graphql(Context = CustomContext)]
@@ -2102,7 +2102,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 ///
 /// ```
 /// # use std::collections::HashMap;
-/// # use juniper::{GraphQLObject, GraphQLUnion};
+/// # use coasys_juniper::{GraphQLObject, GraphQLUnion};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(Context = Database)]
@@ -2122,7 +2122,7 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 ///     humans: HashMap<String, Human>,
 ///     droids: HashMap<String, Droid>,
 /// }
-/// impl juniper::Context for Database {}
+/// impl coasys_juniper::Context for Database {}
 ///
 /// #[derive(GraphQLUnion)]
 /// #[graphql(
@@ -2145,8 +2145,8 @@ pub fn graphql_subscription(attr: TokenStream, body: TokenStream) -> TokenStream
 /// }
 /// ```
 ///
-/// [`Context`]: juniper::Context
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`Context`]: coasys_juniper::Context
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [1]: https://spec.graphql.org/October2021#sec-Unions
 /// [4]: https://doc.rust-lang.org/stable/std/primitive.unit.html
 #[proc_macro_error]
@@ -2167,7 +2167,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 /// [`Send`] and [`Sync`].
 ///
 /// ```
-/// use juniper::{graphql_union, GraphQLObject};
+/// use coasys_juniper::{graphql_union, GraphQLObject};
 ///
 /// #[derive(GraphQLObject)]
 /// struct Human {
@@ -2206,7 +2206,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 /// attribute's argument, or with a regular Rust doc comment.
 ///
 /// ```
-/// # use juniper::{graphql_union, GraphQLObject};
+/// # use coasys_juniper::{graphql_union, GraphQLObject};
 /// #
 /// # #[derive(GraphQLObject)]
 /// # struct Human {
@@ -2259,7 +2259,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 ///
 /// ```
 /// # use std::collections::HashMap;
-/// # use juniper::{graphql_union, GraphQLObject};
+/// # use coasys_juniper::{graphql_union, GraphQLObject};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(Context = Database)]
@@ -2279,7 +2279,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 ///     humans: HashMap<String, Human>,
 ///     droids: HashMap<String, Droid>,
 /// }
-/// impl juniper::Context for Database {}
+/// impl coasys_juniper::Context for Database {}
 ///
 /// #[graphql_union(Context = Database)]
 /// trait Character {
@@ -2309,7 +2309,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 /// type should be specified with a `scalar` attribute's argument.
 ///
 /// ```
-/// # use juniper::{graphql_union, DefaultScalarValue, GraphQLObject};
+/// # use coasys_juniper::{graphql_union, DefaultScalarValue, GraphQLObject};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(scalar = DefaultScalarValue)]
@@ -2341,7 +2341,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 /// ignore it, use an `ignore` attribute's argument directly on that method.
 ///
 /// ```
-/// # use juniper::{graphql_union, GraphQLObject};
+/// # use coasys_juniper::{graphql_union, GraphQLObject};
 /// #
 /// # #[derive(GraphQLObject)]
 /// # struct Human {
@@ -2379,7 +2379,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 ///
 /// ```
 /// # use std::collections::HashMap;
-/// # use juniper::{graphql_union, GraphQLObject};
+/// # use coasys_juniper::{graphql_union, GraphQLObject};
 /// #
 /// #[derive(GraphQLObject)]
 /// #[graphql(Context = Database)]
@@ -2399,7 +2399,7 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 ///     humans: HashMap<String, Human>,
 ///     droids: HashMap<String, Droid>,
 /// }
-/// impl juniper::Context for Database {}
+/// impl coasys_juniper::Context for Database {}
 ///
 /// #[graphql_union(Context = Database)]
 /// #[graphql_union(
@@ -2435,8 +2435,8 @@ pub fn derive_union(body: TokenStream) -> TokenStream {
 /// }
 /// ```
 ///
-/// [`Context`]: juniper::Context
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`Context`]: coasys_juniper::Context
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 /// [1]: https://spec.graphql.org/October2021#sec-Unions
 /// [2]: https://doc.rust-lang.org/stable/reference/items/traits.html#object-safety
 /// [3]: https://doc.rust-lang.org/stable/reference/types/trait-object.html

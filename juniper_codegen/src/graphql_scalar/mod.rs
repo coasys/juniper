@@ -56,27 +56,27 @@ struct Attr {
     /// should be specified only if one of the variants implements
     /// [`GraphQLType`] in a non-generic way over [`ScalarValue`] type.
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     scalar: Option<SpanContainer<scalar::AttrValue>>,
 
     /// Explicitly specified function to be used as
     /// [`ToInputValue::to_input_value`] implementation.
     ///
-    /// [`ToInputValue::to_input_value`]: juniper::ToInputValue::to_input_value
+    /// [`ToInputValue::to_input_value`]: coasys_juniper::ToInputValue::to_input_value
     to_output: Option<SpanContainer<syn::ExprPath>>,
 
     /// Explicitly specified function to be used as
     /// [`FromInputValue::from_input_value`] implementation.
     ///
-    /// [`FromInputValue::from_input_value`]: juniper::FromInputValue::from_input_value
+    /// [`FromInputValue::from_input_value`]: coasys_juniper::FromInputValue::from_input_value
     from_input: Option<SpanContainer<syn::ExprPath>>,
 
     /// Explicitly specified resolver to be used as
     /// [`ParseScalarValue::from_str`] implementation.
     ///
-    /// [`ParseScalarValue::from_str`]: juniper::ParseScalarValue::from_str
+    /// [`ParseScalarValue::from_str`]: coasys_juniper::ParseScalarValue::from_str
     parse_token: Option<SpanContainer<ParseToken>>,
 
     /// Explicitly specified module with all custom resolvers for
@@ -308,8 +308,8 @@ struct Definition {
     /// [`ScalarValue`] parametrization to generate [`GraphQLType`]
     /// implementation with for this [GraphQL scalar][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     scalar: scalar::Type,
 }
@@ -331,8 +331,8 @@ impl Definition {
     /// Returns generated code implementing [`marker::IsInputType`] and
     /// [`marker::IsOutputType`] trait for this [GraphQL scalar][1].
     ///
-    /// [`marker::IsInputType`]: juniper::marker::IsInputType
-    /// [`marker::IsOutputType`]: juniper::marker::IsOutputType
+    /// [`marker::IsInputType`]: coasys_juniper::marker::IsInputType
+    /// [`marker::IsOutputType`]: coasys_juniper::marker::IsOutputType
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     #[must_use]
     fn impl_output_and_input_type_tokens(&self) -> TokenStream {
@@ -343,11 +343,11 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::marker::IsInputType<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::marker::IsInputType<#scalar> for #ty
                 #where_clause { }
 
             #[automatically_derived]
-            impl #impl_gens ::juniper::marker::IsOutputType<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::marker::IsOutputType<#scalar> for #ty
                 #where_clause { }
         }
     }
@@ -355,7 +355,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLType`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_type_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -372,7 +372,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::GraphQLType<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::GraphQLType<#scalar> for #ty
                 #where_clause
             {
                 fn name(
@@ -383,8 +383,8 @@ impl Definition {
 
                 fn meta<'r>(
                     info: &Self::TypeInfo,
-                    registry: &mut ::juniper::Registry<'r, #scalar>,
-                ) -> ::juniper::meta::MetaType<'r, #scalar>
+                    registry: &mut ::coasys_juniper::Registry<'r, #scalar>,
+                ) -> ::coasys_juniper::meta::MetaType<'r, #scalar>
                 where
                     #scalar: 'r,
                 {
@@ -400,7 +400,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValue`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`GraphQLValue`]: juniper::GraphQLValue
+    /// [`GraphQLValue`]: coasys_juniper::GraphQLValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_value_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -412,7 +412,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::GraphQLValue<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::GraphQLValue<#scalar> for #ty
                 #where_clause
             {
                 type Context = ();
@@ -422,15 +422,15 @@ impl Definition {
                     &self,
                     info: &'i Self::TypeInfo,
                 ) -> ::core::option::Option<&'i ::core::primitive::str> {
-                    <Self as ::juniper::GraphQLType<#scalar>>::name(info)
+                    <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                 }
 
                 fn resolve(
                     &self,
                     info: &(),
-                    selection: ::core::option::Option<&[::juniper::Selection<'_, #scalar>]>,
-                    executor: &::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::ExecutionResult<#scalar> {
+                    selection: ::core::option::Option<&[::coasys_juniper::Selection<'_, #scalar>]>,
+                    executor: &::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::ExecutionResult<#scalar> {
                     #resolve
                 }
             }
@@ -440,7 +440,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValueAsync`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`GraphQLValueAsync`]: juniper::GraphQLValueAsync
+    /// [`GraphQLValueAsync`]: coasys_juniper::GraphQLValueAsync
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_value_async_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -450,17 +450,17 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::GraphQLValueAsync<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::GraphQLValueAsync<#scalar> for #ty
                 #where_clause
             {
                 fn resolve_async<'b>(
                     &'b self,
                     info: &'b Self::TypeInfo,
-                    selection_set: ::core::option::Option<&'b [::juniper::Selection<'_, #scalar>]>,
-                    executor: &'b ::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::BoxFuture<'b, ::juniper::ExecutionResult<#scalar>> {
-                    let v = ::juniper::GraphQLValue::resolve(self, info, selection_set, executor);
-                    ::std::boxed::Box::pin(::juniper::futures::future::ready(v))
+                    selection_set: ::core::option::Option<&'b [::coasys_juniper::Selection<'_, #scalar>]>,
+                    executor: &'b ::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::BoxFuture<'b, ::coasys_juniper::ExecutionResult<#scalar>> {
+                    let v = ::coasys_juniper::GraphQLValue::resolve(self, info, selection_set, executor);
+                    ::std::boxed::Box::pin(::coasys_juniper::futures::future::ready(v))
                 }
             }
         }
@@ -469,7 +469,7 @@ impl Definition {
     /// Returns generated code implementing [`InputValue`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`InputValue`]: juniper::InputValue
+    /// [`InputValue`]: coasys_juniper::InputValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_to_input_value_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -481,10 +481,10 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::ToInputValue<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::ToInputValue<#scalar> for #ty
                 #where_clause
             {
-                fn to_input_value(&self) -> ::juniper::InputValue<#scalar> {
+                fn to_input_value(&self) -> ::coasys_juniper::InputValue<#scalar> {
                     #to_input_value
                 }
             }
@@ -494,7 +494,7 @@ impl Definition {
     /// Returns generated code implementing [`FromInputValue`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`FromInputValue`]: juniper::FromInputValue
+    /// [`FromInputValue`]: coasys_juniper::FromInputValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_from_input_value_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -506,16 +506,16 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::FromInputValue<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::FromInputValue<#scalar> for #ty
                 #where_clause
             {
-                type Error = ::juniper::executor::FieldError<#scalar>;
+                type Error = ::coasys_juniper::executor::FieldError<#scalar>;
 
                 fn from_input_value(
-                    input: &::juniper::InputValue<#scalar>,
+                    input: &::coasys_juniper::InputValue<#scalar>,
                 ) -> ::core::result::Result<Self, Self::Error> {
                     #from_input_value
-                        .map_err(::juniper::executor::IntoFieldError::<#scalar>::into_field_error)
+                        .map_err(::coasys_juniper::executor::IntoFieldError::<#scalar>::into_field_error)
                 }
             }
         }
@@ -524,7 +524,7 @@ impl Definition {
     /// Returns generated code implementing [`ParseScalarValue`] trait for this
     /// [GraphQL scalar][1].
     ///
-    /// [`ParseScalarValue`]: juniper::ParseScalarValue
+    /// [`ParseScalarValue`]: coasys_juniper::ParseScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_parse_scalar_value_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -536,12 +536,12 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::ParseScalarValue<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::ParseScalarValue<#scalar> for #ty
                 #where_clause
             {
                 fn from_str(
-                    token: ::juniper::parser::ScalarToken<'_>,
-                ) -> ::juniper::ParseScalarResult<#scalar> {
+                    token: ::coasys_juniper::parser::ScalarToken<'_>,
+                ) -> ::coasys_juniper::ParseScalarResult<#scalar> {
                     #from_str
                 }
             }
@@ -551,9 +551,9 @@ impl Definition {
     /// Returns generated code implementing [`BaseType`], [`BaseSubTypes`] and
     /// [`WrappedType`] traits for this [GraphQL scalar][1].
     ///
-    /// [`BaseSubTypes`]: juniper::macros::reflection::BaseSubTypes
-    /// [`BaseType`]: juniper::macros::reflection::BaseType
-    /// [`WrappedType`]: juniper::macros::reflection::WrappedType
+    /// [`BaseSubTypes`]: coasys_juniper::macros::reflection::BaseSubTypes
+    /// [`BaseType`]: coasys_juniper::macros::reflection::BaseType
+    /// [`WrappedType`]: coasys_juniper::macros::reflection::WrappedType
     /// [1]: https://spec.graphql.org/October2021#sec-Scalars
     fn impl_reflection_traits_tokens(&self) -> TokenStream {
         let scalar = &self.scalar;
@@ -564,25 +564,25 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::macros::reflect::BaseType<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::macros::reflect::BaseType<#scalar> for #ty
                 #where_clause
             {
-                const NAME: ::juniper::macros::reflect::Type = #name;
+                const NAME: ::coasys_juniper::macros::reflect::Type = #name;
             }
 
             #[automatically_derived]
-            impl #impl_gens ::juniper::macros::reflect::BaseSubTypes<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::macros::reflect::BaseSubTypes<#scalar> for #ty
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Types =
-                    &[<Self as ::juniper::macros::reflect::BaseType<#scalar>>::NAME];
+                const NAMES: ::coasys_juniper::macros::reflect::Types =
+                    &[<Self as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME];
             }
 
             #[automatically_derived]
-            impl #impl_gens ::juniper::macros::reflect::WrappedType<#scalar> for #ty
+            impl #impl_gens ::coasys_juniper::macros::reflect::WrappedType<#scalar> for #ty
                 #where_clause
             {
-                const VALUE: ::juniper::macros::reflect::WrappedValue = 1;
+                const VALUE: ::coasys_juniper::macros::reflect::WrappedValue = 1;
             }
         }
     }
@@ -593,8 +593,8 @@ impl Definition {
     /// If `for_async` is `true`, then additional predicates are added to suit
     /// the [`GraphQLAsyncValue`] trait (and similar) requirements.
     ///
-    /// [`GraphQLAsyncValue`]: juniper::GraphQLAsyncValue
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLAsyncValue`]: coasys_juniper::GraphQLAsyncValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     #[must_use]
     fn impl_self_and_generics(&self, for_async: bool) -> (TokenStream, syn::Generics) {
         let mut generics = self.generics.clone();
@@ -622,7 +622,7 @@ impl Definition {
             generics
                 .make_where_clause()
                 .predicates
-                .push(parse_quote! { #scalar: ::juniper::ScalarValue });
+                .push(parse_quote! { #scalar: ::coasys_juniper::ScalarValue });
         }
         if let Some(bound) = scalar.bounds() {
             generics.make_where_clause().predicates.push(bound);
@@ -718,7 +718,7 @@ enum Methods {
 impl Methods {
     /// Expands [`GraphQLValue::resolve`] method.
     ///
-    /// [`GraphQLValue::resolve`]: juniper::GraphQLValue::resolve
+    /// [`GraphQLValue::resolve`]: coasys_juniper::GraphQLValue::resolve
     fn expand_resolve(&self, scalar: &scalar::Type) -> TokenStream {
         match self {
             Self::Custom { to_output, .. }
@@ -730,7 +730,7 @@ impl Methods {
             }
             Self::Delegated { field, .. } => {
                 quote! {
-                    ::juniper::GraphQLValue::<#scalar>::resolve(
+                    ::coasys_juniper::GraphQLValue::<#scalar>::resolve(
                         &self.#field,
                         info,
                         selection,
@@ -743,7 +743,7 @@ impl Methods {
 
     /// Expands [`ToInputValue::to_input_value`] method.
     ///
-    /// [`ToInputValue::to_input_value`]: juniper::ToInputValue::to_input_value
+    /// [`ToInputValue::to_input_value`]: coasys_juniper::ToInputValue::to_input_value
     fn expand_to_input_value(&self, scalar: &scalar::Type) -> TokenStream {
         match self {
             Self::Custom { to_output, .. }
@@ -753,12 +753,12 @@ impl Methods {
             } => {
                 quote! {
                     let v = #to_output(self);
-                    ::juniper::ToInputValue::to_input_value(&v)
+                    ::coasys_juniper::ToInputValue::to_input_value(&v)
                 }
             }
             Self::Delegated { field, .. } => {
                 quote! {
-                    ::juniper::ToInputValue::<#scalar>::to_input_value(&self.#field)
+                    ::coasys_juniper::ToInputValue::<#scalar>::to_input_value(&self.#field)
                 }
             }
         }
@@ -766,7 +766,7 @@ impl Methods {
 
     /// Expands [`FromInputValue::from_input_value`][1] method.
     ///
-    /// [1]: juniper::FromInputValue::from_input_value
+    /// [1]: coasys_juniper::FromInputValue::from_input_value
     fn expand_from_input_value(&self, scalar: &scalar::Type) -> TokenStream {
         match self {
             Self::Custom { from_input, .. }
@@ -780,7 +780,7 @@ impl Methods {
                 let field_ty = field.ty();
                 let self_constructor = field.closure_constructor();
                 quote! {
-                    <#field_ty as ::juniper::FromInputValue<#scalar>>::from_input_value(input)
+                    <#field_ty as ::coasys_juniper::FromInputValue<#scalar>>::from_input_value(input)
                         .map(#self_constructor)
                 }
             }
@@ -789,7 +789,7 @@ impl Methods {
 
     /// Expands [`ParseScalarValue::from_str`] method.
     ///
-    /// [`ParseScalarValue::from_str`]: juniper::ParseScalarValue::from_str
+    /// [`ParseScalarValue::from_str`]: coasys_juniper::ParseScalarValue::from_str
     fn expand_parse_scalar_value(&self, scalar: &scalar::Type) -> TokenStream {
         match self {
             Self::Custom { parse_token, .. }
@@ -803,7 +803,7 @@ impl Methods {
             Self::Delegated { field, .. } => {
                 let field_ty = field.ty();
                 quote! {
-                    <#field_ty as ::juniper::ParseScalarValue<#scalar>>::from_str(token)
+                    <#field_ty as ::coasys_juniper::ParseScalarValue<#scalar>>::from_str(token)
                 }
             }
         }
@@ -812,7 +812,7 @@ impl Methods {
 
 /// Representation of [`ParseScalarValue::from_str`] method.
 ///
-/// [`ParseScalarValue::from_str`]: juniper::ParseScalarValue::from_str
+/// [`ParseScalarValue::from_str`]: coasys_juniper::ParseScalarValue::from_str
 #[derive(Clone, Debug)]
 enum ParseToken {
     /// Custom method.
@@ -821,14 +821,14 @@ enum ParseToken {
     /// Tries to parse using [`syn::Type`]s [`ParseScalarValue`] impls until
     /// first success.
     ///
-    /// [`ParseScalarValue`]: juniper::ParseScalarValue
+    /// [`ParseScalarValue`]: coasys_juniper::ParseScalarValue
     Delegated(Vec<syn::Type>),
 }
 
 impl ParseToken {
     /// Expands [`ParseScalarValue::from_str`] method.
     ///
-    /// [`ParseScalarValue::from_str`]: juniper::ParseScalarValue::from_str
+    /// [`ParseScalarValue::from_str`]: coasys_juniper::ParseScalarValue::from_str
     fn expand_from_str(&self, scalar: &scalar::Type) -> TokenStream {
         match self {
             Self::Custom(parse_token) => {
@@ -838,11 +838,11 @@ impl ParseToken {
                 .iter()
                 .fold(None, |acc, ty| {
                     acc.map_or_else(
-                        || Some(quote! { <#ty as ::juniper::ParseScalarValue<#scalar>>::from_str(token) }),
+                        || Some(quote! { <#ty as ::coasys_juniper::ParseScalarValue<#scalar>>::from_str(token) }),
                         |prev| {
                             Some(quote! {
                                 #prev.or_else(|_| {
-                                    <#ty as ::juniper::ParseScalarValue<#scalar>>::from_str(token)
+                                    <#ty as ::coasys_juniper::ParseScalarValue<#scalar>>::from_str(token)
                                 })
                             })
                         }

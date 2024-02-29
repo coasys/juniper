@@ -11,13 +11,13 @@ use quote::quote;
 /// [1]: https://spec.graphql.org/October2021#sec-Types
 pub(crate) fn sync_resolving_code() -> TokenStream {
     quote! {
-        ::juniper::IntoResolvable::into_resolvable(res, executor.context())
+        ::coasys_juniper::IntoResolvable::into_resolvable(res, executor.context())
             .and_then(|res| match res {
                 ::core::option::Option::Some((ctx, r)) => {
                     executor.replaced_context(ctx).resolve_with_ctx(info, &r)
                 }
                 ::core::option::Option::None => {
-                    ::core::result::Result::Ok(::juniper::Value::null())
+                    ::core::result::Result::Ok(::coasys_juniper::Value::null())
                 }
             })
     }
@@ -38,14 +38,14 @@ pub(crate) fn async_resolving_code(ty: Option<&syn::Type>) -> TokenStream {
     let ty = ty.map(|t| quote! { : #t });
 
     quote! {
-        ::std::boxed::Box::pin(::juniper::futures::FutureExt::then(fut, move |res #ty| async move {
-            match ::juniper::IntoResolvable::into_resolvable(res, executor.context())? {
+        ::std::boxed::Box::pin(::coasys_juniper::futures::FutureExt::then(fut, move |res #ty| async move {
+            match ::coasys_juniper::IntoResolvable::into_resolvable(res, executor.context())? {
                 ::core::option::Option::Some((ctx, r)) => {
                     let subexec = executor.replaced_context(ctx);
                     subexec.resolve_with_ctx_async(info, &r).await
                 }
                 ::core::option::Option::None => {
-                    ::core::result::Result::Ok(::juniper::Value::null())
+                    ::core::result::Result::Ok(::coasys_juniper::Value::null())
                 }
             }
         }))

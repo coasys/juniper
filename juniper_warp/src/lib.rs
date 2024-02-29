@@ -7,7 +7,7 @@ use std::{collections::HashMap, str, sync::Arc};
 
 use anyhow::anyhow;
 use futures::{FutureExt as _, TryFutureExt};
-use juniper::{
+use coasys_juniper::{
     http::{GraphQLBatchRequest, GraphQLRequest},
     ScalarValue,
 };
@@ -27,14 +27,14 @@ use warp::{body, filters::BoxedFilter, http, hyper::body::Bytes, query, Filter};
 /// ```rust
 /// # use std::sync::Arc;
 /// # use warp::Filter;
-/// # use juniper::{graphql_object, EmptyMutation, EmptySubscription, RootNode};
+/// # use coasys_juniper::{graphql_object, EmptyMutation, EmptySubscription, RootNode};
 /// # use juniper_warp::make_graphql_filter;
 /// #
 /// type UserId = String;
 /// # #[derive(Debug)]
 /// struct AppState(Vec<i64>);
 /// struct ExampleContext(Arc<AppState>, UserId);
-/// # impl juniper::Context for ExampleContext {}
+/// # impl coasys_juniper::Context for ExampleContext {}
 ///
 /// struct QueryRoot;
 ///
@@ -70,15 +70,15 @@ use warp::{body, filters::BoxedFilter, http, hyper::body::Bytes, query, Filter};
 ///     .and(graphql_filter);
 /// ```
 pub fn make_graphql_filter<Query, Mutation, Subscription, CtxT, S>(
-    schema: impl Into<Arc<juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
+    schema: impl Into<Arc<coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
     context_extractor: BoxedFilter<(CtxT,)>,
 ) -> BoxedFilter<(http::Response<Vec<u8>>,)>
 where
-    Query: juniper::GraphQLTypeAsync<S, Context = CtxT> + Send + 'static,
+    Query: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT> + Send + 'static,
     Query::TypeInfo: Send + Sync,
-    Mutation: juniper::GraphQLTypeAsync<S, Context = CtxT> + Send + 'static,
+    Mutation: coasys_juniper::GraphQLTypeAsync<S, Context = CtxT> + Send + 'static,
     Mutation::TypeInfo: Send + Sync,
-    Subscription: juniper::GraphQLSubscriptionType<S, Context = CtxT> + Send + 'static,
+    Subscription: coasys_juniper::GraphQLSubscriptionType<S, Context = CtxT> + Send + 'static,
     Subscription::TypeInfo: Send + Sync,
     CtxT: Send + Sync + 'static,
     S: ScalarValue + Send + Sync + 'static,
@@ -155,13 +155,13 @@ where
 
 /// Make a synchronous filter for graphql endpoint.
 pub fn make_graphql_filter_sync<Query, Mutation, Subscription, CtxT, S>(
-    schema: impl Into<Arc<juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
+    schema: impl Into<Arc<coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
     context_extractor: BoxedFilter<(CtxT,)>,
 ) -> BoxedFilter<(http::Response<Vec<u8>>,)>
 where
-    Query: juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
-    Mutation: juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
-    Subscription: juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
+    Query: coasys_juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
+    Mutation: coasys_juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
+    Subscription: coasys_juniper::GraphQLType<S, Context = CtxT, TypeInfo = ()> + Send + Sync + 'static,
     CtxT: Send + Sync + 'static,
     S: ScalarValue + Send + Sync + 'static,
 {
@@ -304,7 +304,7 @@ fn graphiql_response(
     http::Response::builder()
         .header("content-type", "text/html;charset=utf-8")
         .body(
-            juniper::http::graphiql::graphiql_source(graphql_endpoint_url, subscriptions_endpoint)
+            coasys_juniper::http::graphiql::graphiql_source(graphql_endpoint_url, subscriptions_endpoint)
                 .into_bytes(),
         )
         .expect("response is valid")
@@ -327,7 +327,7 @@ fn playground_response(
     http::Response::builder()
         .header("content-type", "text/html;charset=utf-8")
         .body(
-            juniper::http::playground::playground_source(
+            coasys_juniper::http::playground::playground_source(
                 graphql_endpoint_url,
                 subscriptions_endpoint_url,
             )
@@ -341,7 +341,7 @@ fn playground_response(
 pub mod subscriptions {
     use std::{convert::Infallible, fmt, sync::Arc};
 
-    use juniper::{
+    use coasys_juniper::{
         futures::{
             future::{self, Either},
             sink::SinkExt,
@@ -422,7 +422,7 @@ pub mod subscriptions {
     ///
     /// The `schema` argument is your [`juniper`] schema.
     ///
-    /// The `init` argument is used to provide the custom [`juniper::Context`] and additional
+    /// The `init` argument is used to provide the custom [`coasys_juniper::Context`] and additional
     /// configuration for connections. This can be a
     /// [`juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
     /// already known, or it can be a closure that gets executed asynchronously whenever a client
@@ -435,7 +435,7 @@ pub mod subscriptions {
     /// # use std::{convert::Infallible, pin::Pin, sync::Arc, time::Duration};
     /// #
     /// # use futures::Stream;
-    /// # use juniper::{graphql_object, graphql_subscription, EmptyMutation, RootNode};
+    /// # use coasys_juniper::{graphql_object, graphql_subscription, EmptyMutation, RootNode};
     /// # use juniper_graphql_transport_ws::ConnectionConfig;
     /// # use juniper_warp::make_graphql_filter;
     /// # use warp::Filter as _;
@@ -445,7 +445,7 @@ pub mod subscriptions {
     /// struct AppState(Vec<i64>);
     /// #[derive(Clone)]
     /// struct ExampleContext(Arc<AppState>, UserId);
-    /// # impl juniper::Context for ExampleContext {}
+    /// # impl coasys_juniper::Context for ExampleContext {}
     ///
     /// struct QueryRoot;
     ///
@@ -503,7 +503,7 @@ pub mod subscriptions {
     ///     .or(warp::path("subscriptions")
     ///         .and(juniper_warp::subscriptions::make_ws_filter(
     ///             schema,
-    ///             move |variables: juniper::Variables| {
+    ///             move |variables: coasys_juniper::Variables| {
     ///                 let user_id = variables
     ///                     .get("authorization")
     ///                     .map(ToString::to_string)
@@ -520,7 +520,7 @@ pub mod subscriptions {
     /// [new]: https://github.com/enisdenjo/graphql-ws/blob/v5.14.0/PROTOCOL.md
     /// [old]: https://github.com/apollographql/subscriptions-transport-ws/blob/v0.11.0/PROTOCOL.md
     pub fn make_ws_filter<Query, Mutation, Subscription, CtxT, S, I>(
-        schema: impl Into<Arc<juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
+        schema: impl Into<Arc<coasys_juniper::RootNode<'static, Query, Mutation, Subscription, S>>>,
         init: I,
     ) -> BoxedFilter<(impl Reply,)>
     where
@@ -783,13 +783,13 @@ mod tests {
 
     #[tokio::test]
     async fn graphql_handler_works_json_post() {
-        use juniper::{
+        use coasys_juniper::{
             tests::fixtures::starwars::schema::{Database, Query},
             EmptyMutation, EmptySubscription, RootNode,
         };
 
         type Schema =
-            juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
+            coasys_juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
 
         let schema: Schema = RootNode::new(
             Query,
@@ -822,13 +822,13 @@ mod tests {
 
     #[tokio::test]
     async fn batch_requests_work() {
-        use juniper::{
+        use coasys_juniper::{
             tests::fixtures::starwars::schema::{Database, Query},
             EmptyMutation, EmptySubscription, RootNode,
         };
 
         type Schema =
-            juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
+            coasys_juniper::RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
 
         let schema: Schema = RootNode::new(
             Query,
@@ -875,7 +875,7 @@ mod tests {
 
 #[cfg(test)]
 mod tests_http_harness {
-    use juniper::{
+    use coasys_juniper::{
         http::tests::{run_http_test_suite, HttpIntegration, TestResponse},
         tests::fixtures::starwars::schema::{Database, Query},
         EmptyMutation, EmptySubscription, RootNode,

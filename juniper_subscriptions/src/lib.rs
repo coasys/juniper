@@ -8,7 +8,7 @@ use std::{
 };
 
 use futures::{future, stream, FutureExt as _, Stream, StreamExt as _, TryFutureExt as _};
-use juniper::{
+use coasys_juniper::{
     http::GraphQLRequest, BoxFuture, ExecutionError, ExecutionOutput, GraphQLError,
     GraphQLSubscriptionType, GraphQLTypeAsync, Object, ScalarValue, SubscriptionConnection,
     SubscriptionCoordinator, Value, ValuesStream,
@@ -28,7 +28,7 @@ where
     CtxT: Sync,
     S: ScalarValue + Send + Sync,
 {
-    root_node: juniper::RootNode<'a, QueryT, MutationT, SubscriptionT, S>,
+    root_node: coasys_juniper::RootNode<'a, QueryT, MutationT, SubscriptionT, S>,
 }
 
 impl<'a, QueryT, MutationT, SubscriptionT, CtxT, S>
@@ -44,7 +44,7 @@ where
     S: ScalarValue + Send + Sync,
 {
     /// Builds new [`Coordinator`] with specified `root_node`
-    pub fn new(root_node: juniper::RootNode<'a, QueryT, MutationT, SubscriptionT, S>) -> Self {
+    pub fn new(root_node: coasys_juniper::RootNode<'a, QueryT, MutationT, SubscriptionT, S>) -> Self {
         Self { root_node }
     }
 }
@@ -69,7 +69,7 @@ where
         req: &'a GraphQLRequest<S>,
         context: &'a CtxT,
     ) -> BoxFuture<'a, Result<Self::Connection, Self::Error>> {
-        juniper::http::resolve_into_stream(req, &self.root_node, context)
+        coasys_juniper::http::resolve_into_stream(req, &self.root_node, context)
             .map_ok(|(stream, errors)| Connection::from_stream(stream, errors))
             .boxed()
     }
@@ -243,7 +243,7 @@ where
 #[cfg(test)]
 mod whole_responses_stream {
     use futures::{stream, StreamExt as _};
-    use juniper::{graphql_value, DefaultScalarValue, ExecutionError, FieldError};
+    use coasys_juniper::{graphql_value, DefaultScalarValue, ExecutionError, FieldError};
 
     use super::*;
 

@@ -147,7 +147,7 @@ fn parse_variant_from_enum_variant(
         let resolver_fn = rslvr.into_inner();
 
         parse_quote! {
-            #resolver_fn(self, ::juniper::FromContext::from(context))
+            #resolver_fn(self, ::coasys_juniper::FromContext::from(context))
         }
     } else {
         parse_quote! {

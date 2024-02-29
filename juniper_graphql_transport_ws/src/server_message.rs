@@ -1,6 +1,6 @@
 use std::{any::Any, fmt, marker::PhantomPinned};
 
-use juniper::{ExecutionError, GraphQLError, Value};
+use coasys_juniper::{ExecutionError, GraphQLError, Value};
 use serde::{Serialize, Serializer};
 
 /// Sent after execution of an operation. For queries and mutations, this is sent to the client

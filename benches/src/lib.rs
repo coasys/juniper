@@ -1,4 +1,4 @@
-use juniper::{
+use coasys_juniper::{
     graphql_object, DefaultScalarValue, EmptyMutation, EmptySubscription, ExecutionError,
     FieldError, GraphQLEnum, GraphQLObject, RootNode, Value, Variables,
 };
@@ -19,7 +19,7 @@ impl Context {
     }
 }
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 #[derive(GraphQLEnum)]
 pub enum Gender {
@@ -97,13 +97,13 @@ pub fn new_schema() -> RootNode<'static, Query, EmptyMutation<Context>, EmptySub
 pub fn execute_sync(query: &str, vars: Variables) -> QueryResult {
     let root = new_schema();
     let ctx = Context::new();
-    juniper::execute_sync(query, None, &root, &vars, &ctx).map_err(|e| format!("{e:?}"))
+    coasys_juniper::execute_sync(query, None, &root, &vars, &ctx).map_err(|e| format!("{e:?}"))
 }
 
 pub async fn execute(query: &str, vars: Variables) -> QueryResult {
     let root = new_schema();
     let ctx = Context::new();
-    juniper::execute(query, None, &root, &vars, &ctx)
+    coasys_juniper::execute(query, None, &root, &vars, &ctx)
         .await
         .map_err(|e| format!("{e:?}"))
 }

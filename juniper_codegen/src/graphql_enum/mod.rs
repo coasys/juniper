@@ -50,7 +50,7 @@ struct ContainerAttr {
     ///
     /// If [`None`], then unit type `()` is assumed as a type of [`Context`].
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     context: Option<SpanContainer<syn::Type>>,
 
@@ -60,8 +60,8 @@ struct ContainerAttr {
     /// If [`None`], then generated code will be generic over any
     /// [`ScalarValue`] type.
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     scalar: Option<SpanContainer<scalar::AttrValue>>,
 
@@ -351,16 +351,16 @@ struct Definition {
     /// Rust type of [`Context`] to generate [`GraphQLType`] implementation with
     /// for this [GraphQL enum][0].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`Context`]: juniper::Context
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`Context`]: coasys_juniper::Context
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     context: syn::Type,
 
     /// [`ScalarValue`] parametrization to generate [`GraphQLType`]
     /// implementation with for this [GraphQL enum][0].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     scalar: scalar::Type,
 
@@ -393,7 +393,7 @@ impl Definition {
     /// Returns generated code implementing [`marker::IsOutputType`] trait for
     /// this [GraphQL enum][0].
     ///
-    /// [`marker::IsOutputType`]: juniper::marker::IsOutputType
+    /// [`marker::IsOutputType`]: coasys_juniper::marker::IsOutputType
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_input_and_output_type_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -405,12 +405,12 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::IsInputType<#scalar>
+            impl #impl_generics ::coasys_juniper::marker::IsInputType<#scalar>
                 for #ident #ty_generics
                 #where_clause {}
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::IsOutputType<#scalar>
+            impl #impl_generics ::coasys_juniper::marker::IsOutputType<#scalar>
                 for #ident #ty_generics
                 #where_clause {}
         }
@@ -419,7 +419,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLType`] trait for this
     /// [GraphQL enum][0].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_graphql_type_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -438,7 +438,7 @@ impl Definition {
             let v_deprecation = &v.deprecated;
 
             quote! {
-                ::juniper::meta::EnumValue::new(#v_name)
+                ::coasys_juniper::meta::EnumValue::new(#v_name)
                     #v_description
                     #v_deprecation
             }
@@ -446,7 +446,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLType<#scalar>
+            impl #impl_generics ::coasys_juniper::GraphQLType<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
@@ -458,8 +458,8 @@ impl Definition {
 
                 fn meta<'r>(
                     info: &Self::TypeInfo,
-                    registry: &mut ::juniper::Registry<'r, #scalar>
-                ) -> ::juniper::meta::MetaType<'r, #scalar>
+                    registry: &mut ::coasys_juniper::Registry<'r, #scalar>
+                ) -> ::coasys_juniper::meta::MetaType<'r, #scalar>
                 where #scalar: 'r,
                 {
                     let variants = [#( #variants_meta ),*];
@@ -475,7 +475,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValue`] trait for this
     /// [GraphQL enum][0].
     ///
-    /// [`GraphQLValue`]: juniper::GraphQLValue
+    /// [`GraphQLValue`]: coasys_juniper::GraphQLValue
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_graphql_value_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -491,7 +491,7 @@ impl Definition {
             let name = &v.name;
 
             quote! {
-                Self::#ident => ::core::result::Result::Ok(::juniper::Value::scalar(
+                Self::#ident => ::core::result::Result::Ok(::coasys_juniper::Value::scalar(
                     ::std::string::String::from(#name),
                 )),
             }
@@ -499,14 +499,14 @@ impl Definition {
 
         let ignored = self.has_ignored_variants.then(|| {
             quote! {
-                _ => ::core::result::Result::Err(::juniper::FieldError::<#scalar>::from(
+                _ => ::core::result::Result::Err(::coasys_juniper::FieldError::<#scalar>::from(
                     "Cannot resolve ignored enum variant",
                 )),
             }
         });
 
         quote! {
-            impl #impl_generics ::juniper::GraphQLValue<#scalar>
+            impl #impl_generics ::coasys_juniper::GraphQLValue<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
@@ -517,15 +517,15 @@ impl Definition {
                     &self,
                     info: &'__i Self::TypeInfo,
                 ) -> ::core::option::Option<&'__i ::core::primitive::str> {
-                    <Self as ::juniper::GraphQLType<#scalar>>::name(info)
+                    <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                 }
 
                 fn resolve(
                     &self,
                     _: &(),
-                    _: ::core::option::Option<&[::juniper::Selection<#scalar>]>,
-                    _: &::juniper::Executor<Self::Context, #scalar>,
-                ) -> ::juniper::ExecutionResult<#scalar> {
+                    _: ::core::option::Option<&[::coasys_juniper::Selection<#scalar>]>,
+                    _: &::coasys_juniper::Executor<Self::Context, #scalar>,
+                ) -> ::coasys_juniper::ExecutionResult<#scalar> {
                     match self {
                         #( #variants )*
                         #ignored
@@ -538,7 +538,7 @@ impl Definition {
     /// Returns generated code implementing [`GraphQLValueAsync`] trait for this
     /// [GraphQL enum][0].
     ///
-    /// [`GraphQLValueAsync`]: juniper::GraphQLValueAsync
+    /// [`GraphQLValueAsync`]: coasys_juniper::GraphQLValueAsync
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_graphql_value_async_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -549,18 +549,18 @@ impl Definition {
         let (_, ty_generics, _) = self.generics.split_for_impl();
 
         quote! {
-            impl #impl_generics ::juniper::GraphQLValueAsync<#scalar>
+            impl #impl_generics ::coasys_juniper::GraphQLValueAsync<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
                 fn resolve_async<'__a>(
                     &'__a self,
                     info: &'__a Self::TypeInfo,
-                    selection_set: ::core::option::Option<&'__a [::juniper::Selection<#scalar>]>,
-                    executor: &'__a ::juniper::Executor<Self::Context, #scalar>,
-                ) -> ::juniper::BoxFuture<'__a, ::juniper::ExecutionResult<#scalar>> {
-                    let v = ::juniper::GraphQLValue::resolve(self, info, selection_set, executor);
-                    ::std::boxed::Box::pin(::juniper::futures::future::ready(v))
+                    selection_set: ::core::option::Option<&'__a [::coasys_juniper::Selection<#scalar>]>,
+                    executor: &'__a ::coasys_juniper::Executor<Self::Context, #scalar>,
+                ) -> ::coasys_juniper::BoxFuture<'__a, ::coasys_juniper::ExecutionResult<#scalar>> {
+                    let v = ::coasys_juniper::GraphQLValue::resolve(self, info, selection_set, executor);
+                    ::std::boxed::Box::pin(::coasys_juniper::futures::future::ready(v))
                 }
             }
         }
@@ -569,7 +569,7 @@ impl Definition {
     /// Returns generated code implementing [`FromInputValue`] trait for this
     /// [GraphQL enum][0].
     ///
-    /// [`FromInputValue`]: juniper::FromInputValue
+    /// [`FromInputValue`]: coasys_juniper::FromInputValue
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_from_input_value_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -589,14 +589,14 @@ impl Definition {
         });
 
         quote! {
-            impl #impl_generics ::juniper::FromInputValue<#scalar>
+            impl #impl_generics ::coasys_juniper::FromInputValue<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
                 type Error = ::std::string::String;
 
                 fn from_input_value(
-                    v: &::juniper::InputValue<#scalar>,
+                    v: &::coasys_juniper::InputValue<#scalar>,
                 ) -> ::core::result::Result<Self, Self::Error> {
                     match v.as_enum_value().or_else(|| v.as_string_value()) {
                         #( #variants )*
@@ -612,7 +612,7 @@ impl Definition {
     /// Returns generated code implementing [`ToInputValue`] trait for this
     /// [GraphQL enum][0].
     ///
-    /// [`ToInputValue`]: juniper::ToInputValue
+    /// [`ToInputValue`]: coasys_juniper::ToInputValue
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_to_input_value_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -627,7 +627,7 @@ impl Definition {
             let name = &v.name;
 
             quote! {
-                #ident::#var_ident => ::juniper::InputValue::<#scalar>::scalar(
+                #ident::#var_ident => ::coasys_juniper::InputValue::<#scalar>::scalar(
                     ::std::string::String::from(#name),
                 ),
             }
@@ -640,11 +640,11 @@ impl Definition {
         });
 
         quote! {
-            impl #impl_generics ::juniper::ToInputValue<#scalar>
+            impl #impl_generics ::coasys_juniper::ToInputValue<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
-                fn to_input_value(&self) -> ::juniper::InputValue<#scalar> {
+                fn to_input_value(&self) -> ::coasys_juniper::InputValue<#scalar> {
                     match self {
                         #( #variants )*
                         #ignored
@@ -657,9 +657,9 @@ impl Definition {
     /// Returns generated code implementing [`BaseType`], [`BaseSubTypes`] and
     /// [`WrappedType`] traits for this [GraphQL enum][0].
     ///
-    /// [`BaseSubTypes`]: juniper::macros::reflect::BaseSubTypes
-    /// [`BaseType`]: juniper::macros::reflect::BaseType
-    /// [`WrappedType`]: juniper::macros::reflect::WrappedType
+    /// [`BaseSubTypes`]: coasys_juniper::macros::reflect::BaseSubTypes
+    /// [`BaseType`]: coasys_juniper::macros::reflect::BaseType
+    /// [`WrappedType`]: coasys_juniper::macros::reflect::WrappedType
     /// [0]: https://spec.graphql.org/October2021#sec-Enums
     fn impl_reflection_traits_tokens(&self) -> TokenStream {
         let ident = &self.ident;
@@ -671,26 +671,26 @@ impl Definition {
         let (_, ty_generics, _) = self.generics.split_for_impl();
 
         quote! {
-            impl #impl_generics ::juniper::macros::reflect::BaseType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseType<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
-                const NAME: ::juniper::macros::reflect::Type = #name;
+                const NAME: ::coasys_juniper::macros::reflect::Type = #name;
             }
 
-            impl #impl_generics ::juniper::macros::reflect::BaseSubTypes<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseSubTypes<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Types =
-                    &[<Self as ::juniper::macros::reflect::BaseType<#scalar>>::NAME];
+                const NAMES: ::coasys_juniper::macros::reflect::Types =
+                    &[<Self as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME];
             }
 
-            impl #impl_generics ::juniper::macros::reflect::WrappedType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::WrappedType<#scalar>
                 for #ident #ty_generics
                 #where_clause
             {
-                const VALUE: ::juniper::macros::reflect::WrappedValue = 1;
+                const VALUE: ::coasys_juniper::macros::reflect::WrappedValue = 1;
             }
         }
     }
@@ -701,8 +701,8 @@ impl Definition {
     /// If `for_async` is `true`, then additional predicates are added to suit
     /// the [`GraphQLAsyncValue`] trait (and similar) requirements.
     ///
-    /// [`GraphQLAsyncValue`]: juniper::GraphQLAsyncValue
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLAsyncValue`]: coasys_juniper::GraphQLAsyncValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     fn impl_generics(&self, for_async: bool) -> syn::Generics {
         let mut generics = self.generics.clone();
 
@@ -714,7 +714,7 @@ impl Definition {
             generics
                 .make_where_clause()
                 .predicates
-                .push(parse_quote! { #scalar: ::juniper::ScalarValue });
+                .push(parse_quote! { #scalar: ::coasys_juniper::ScalarValue });
         }
         if let Some(bound) = scalar.bounds() {
             generics.make_where_clause().predicates.push(bound);

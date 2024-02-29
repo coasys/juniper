@@ -1,4 +1,4 @@
-use juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
+use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
 use std::sync::Arc;
 
 /// Schema defines the requirements for schemas that can be used for operations. Typically this is

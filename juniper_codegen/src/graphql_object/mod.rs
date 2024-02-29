@@ -53,7 +53,7 @@ pub(crate) struct Attr {
     ///
     /// If [`None`], then unit type `()` is assumed as a type of [`Context`].
     ///
-    /// [`Context`]: juniper::Context
+    /// [`Context`]: coasys_juniper::Context
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     pub(crate) context: Option<SpanContainer<syn::Type>>,
 
@@ -66,8 +66,8 @@ pub(crate) struct Attr {
     /// should be specified only if one of the variants implements
     /// [`GraphQLType`] in a non-generic way over [`ScalarValue`] type.
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     pub(crate) scalar: Option<SpanContainer<scalar::AttrValue>>,
 
@@ -227,16 +227,16 @@ pub(crate) struct Definition<Operation: ?Sized> {
     /// Rust type of [`Context`] to generate [`GraphQLType`] implementation with
     /// for this [GraphQL object][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`Context`]: juniper::Context
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`Context`]: coasys_juniper::Context
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     pub(crate) context: syn::Type,
 
     /// [`ScalarValue`] parametrization to generate [`GraphQLType`]
     /// implementation with for this [GraphQL object][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     pub(crate) scalar: scalar::Type,
 
@@ -269,8 +269,8 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
     /// If `for_async` is `true`, then additional predicates are added to suit
     /// the [`GraphQLAsyncValue`] trait (and similar) requirements.
     ///
-    /// [`GraphQLAsyncValue`]: juniper::GraphQLAsyncValue
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLAsyncValue`]: coasys_juniper::GraphQLAsyncValue
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     pub(crate) fn impl_generics(&self, for_async: bool) -> (TokenStream, Option<syn::WhereClause>) {
@@ -284,7 +284,7 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
             generics
                 .make_where_clause()
                 .predicates
-                .push(parse_quote! { #scalar: ::juniper::ScalarValue });
+                .push(parse_quote! { #scalar: ::coasys_juniper::ScalarValue });
         }
         if let Some(bound) = scalar.bounds() {
             generics.make_where_clause().predicates.push(bound);
@@ -327,7 +327,7 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
     /// Returns generated code implementing [`marker::IsOutputType`] trait for
     /// this [GraphQL object][1].
     ///
-    /// [`marker::IsOutputType`]: juniper::marker::IsOutputType
+    /// [`marker::IsOutputType`]: coasys_juniper::marker::IsOutputType
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     pub(crate) fn impl_output_type_tokens(&self) -> TokenStream {
@@ -346,11 +346,11 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::IsOutputType<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::marker::IsOutputType<#scalar> for #ty #where_clause
             {
                 fn mark() {
                     #( #fields_marks )*
-                    #( <#interface_tys as ::juniper::marker::IsOutputType<#scalar>>::mark(); )*
+                    #( <#interface_tys as ::coasys_juniper::marker::IsOutputType<#scalar>>::mark(); )*
                 }
             }
         }
@@ -359,10 +359,10 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
     /// Returns generated code implementing [`BaseType`], [`BaseSubTypes`],
     /// [`WrappedType`] and [`Fields`] traits for this [GraphQL object][1].
     ///
-    /// [`BaseSubTypes`]: juniper::macros::reflect::BaseSubTypes
-    /// [`BaseType`]: juniper::macros::reflect::BaseType
-    /// [`Fields`]: juniper::macros::reflect::Fields
-    /// [`WrappedType`]: juniper::macros::reflect::WrappedType
+    /// [`BaseSubTypes`]: coasys_juniper::macros::reflect::BaseSubTypes
+    /// [`BaseType`]: coasys_juniper::macros::reflect::BaseType
+    /// [`Fields`]: coasys_juniper::macros::reflect::Fields
+    /// [`WrappedType`]: coasys_juniper::macros::reflect::WrappedType
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     pub(crate) fn impl_reflection_traits_tokens(&self) -> TokenStream {
@@ -375,45 +375,45 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::BaseType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseType<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAME: ::juniper::macros::reflect::Type = #name;
+                const NAME: ::coasys_juniper::macros::reflect::Type = #name;
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::BaseSubTypes<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::BaseSubTypes<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Types =
-                    &[<Self as ::juniper::macros::reflect::BaseType<#scalar>>::NAME];
+                const NAMES: ::coasys_juniper::macros::reflect::Types =
+                    &[<Self as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME];
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::Implements<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::Implements<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Types =
-                    &[#(<#interfaces as ::juniper::macros::reflect::BaseType<#scalar>>::NAME),*];
+                const NAMES: ::coasys_juniper::macros::reflect::Types =
+                    &[#(<#interfaces as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME),*];
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::WrappedType<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::WrappedType<#scalar>
                 for #ty
                 #where_clause
             {
-                const VALUE: ::juniper::macros::reflect::WrappedValue = 1;
+                const VALUE: ::coasys_juniper::macros::reflect::WrappedValue = 1;
             }
 
             #[automatically_derived]
-            impl #impl_generics ::juniper::macros::reflect::Fields<#scalar>
+            impl #impl_generics ::coasys_juniper::macros::reflect::Fields<#scalar>
                 for #ty
                 #where_clause
             {
-                const NAMES: ::juniper::macros::reflect::Names = &[#(#fields),*];
+                const NAMES: ::coasys_juniper::macros::reflect::Names = &[#(#fields),*];
             }
         }
     }
@@ -421,7 +421,7 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
     /// Returns generated code implementing [`GraphQLType`] trait for this
     /// [GraphQL object][1].
     ///
-    /// [`GraphQLType`]: juniper::GraphQLType
+    /// [`GraphQLType`]: coasys_juniper::GraphQLType
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     pub(crate) fn impl_graphql_type_tokens(&self) -> TokenStream {
@@ -455,7 +455,7 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLType<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLType<#scalar> for #ty #where_clause
             {
                 fn name(
                     _ : &Self::TypeInfo,
@@ -465,8 +465,8 @@ impl<Operation: ?Sized + 'static> Definition<Operation> {
 
                 fn meta<'r>(
                     info: &Self::TypeInfo,
-                    registry: &mut ::juniper::Registry<'r, #scalar>
-                ) -> ::juniper::meta::MetaType<'r, #scalar>
+                    registry: &mut ::coasys_juniper::Registry<'r, #scalar>
+                ) -> ::coasys_juniper::meta::MetaType<'r, #scalar>
                 where #scalar: 'r,
                 {
                     let fields = [
@@ -505,7 +505,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`GraphQLObject`] trait for this
     /// [GraphQL object][1].
     ///
-    /// [`GraphQLObject`]: juniper::GraphQLObject
+    /// [`GraphQLObject`]: coasys_juniper::GraphQLObject
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_graphql_object_tokens(&self) -> TokenStream {
@@ -533,16 +533,16 @@ impl Definition<Query> {
         //       but considering generics.
         //let interface_tys: Vec<_> = self.interfaces.iter().collect();
         //let all_interfaces_unique = (interface_tys.len() > 1).then(|| {
-        //    quote! { ::juniper::sa::assert_type_ne_all!(#( #interface_tys ),*); }
+        //    quote! { ::coasys_juniper::sa::assert_type_ne_all!(#( #interface_tys ),*); }
         //});
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::marker::GraphQLObject<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::marker::GraphQLObject<#scalar> for #ty #where_clause
             {
                 fn mark() {
-                    #( <#interface_tys as ::juniper::marker::GraphQLInterface<#scalar>>::mark(); )*
-                    ::juniper::assert_implemented_for!(
+                    #( <#interface_tys as ::coasys_juniper::marker::GraphQLInterface<#scalar>>::mark(); )*
+                    ::coasys_juniper::assert_implemented_for!(
                         #const_scalar, #ty, #(#const_interface_tys),*
                     );
                 }
@@ -553,7 +553,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`FieldMeta`] traits for each field
     /// of this [GraphQL object][1].
     ///
-    /// [`FieldMeta`]: juniper::FieldMeta
+    /// [`FieldMeta`]: coasys_juniper::FieldMeta
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_field_meta_tokens(&self) -> TokenStream {
@@ -577,8 +577,8 @@ impl Definition<Query> {
                             let (name, ty) = (&arg.name, &arg.ty);
                             Some(quote! {(
                                 #name,
-                                <#ty as ::juniper::macros::reflect::BaseType<#scalar>>::NAME,
-                                <#ty as ::juniper::macros::reflect::WrappedType<#scalar>>::VALUE,
+                                <#ty as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME,
+                                <#ty as ::coasys_juniper::macros::reflect::WrappedType<#scalar>>::VALUE,
                             )})
                         }
                         field::MethodArgument::Executor | field::MethodArgument::Context(_) => None,
@@ -588,22 +588,22 @@ impl Definition<Query> {
                 quote! {
                     #[allow(deprecated, non_snake_case)]
                     #[automatically_derived]
-                    impl #impl_generics ::juniper::macros::reflect::FieldMeta<
+                    impl #impl_generics ::coasys_juniper::macros::reflect::FieldMeta<
                         #scalar,
-                        { ::juniper::macros::reflect::fnv1a128(#name) }
+                        { ::coasys_juniper::macros::reflect::fnv1a128(#name) }
                     > for #impl_ty #where_clause {
                         type Context = #context;
                         type TypeInfo = ();
-                        const TYPE: ::juniper::macros::reflect::Type =
-                            <#ty as ::juniper::macros::reflect::BaseType<#scalar>>::NAME;
-                        const SUB_TYPES: ::juniper::macros::reflect::Types =
-                            <#ty as ::juniper::macros::reflect::BaseSubTypes<#scalar>>::NAMES;
-                        const WRAPPED_VALUE: juniper::macros::reflect::WrappedValue =
-                            <#ty as ::juniper::macros::reflect::WrappedType<#scalar>>::VALUE;
+                        const TYPE: ::coasys_juniper::macros::reflect::Type =
+                            <#ty as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME;
+                        const SUB_TYPES: ::coasys_juniper::macros::reflect::Types =
+                            <#ty as ::coasys_juniper::macros::reflect::BaseSubTypes<#scalar>>::NAMES;
+                        const WRAPPED_VALUE: coasys_juniper::macros::reflect::WrappedValue =
+                            <#ty as ::coasys_juniper::macros::reflect::WrappedType<#scalar>>::VALUE;
                         const ARGUMENTS: &'static [(
-                            ::juniper::macros::reflect::Name,
-                            ::juniper::macros::reflect::Type,
-                            ::juniper::macros::reflect::WrappedValue,
+                            ::coasys_juniper::macros::reflect::Name,
+                            ::coasys_juniper::macros::reflect::Type,
+                            ::coasys_juniper::macros::reflect::WrappedValue,
                         )] = &[#(#arguments,)*];
                     }
                 }
@@ -614,7 +614,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`Field`] trait for each field of
     /// this [GraphQL object][1].
     ///
-    /// [`Field`]: juniper::Field
+    /// [`Field`]: coasys_juniper::Field
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_field_tokens(&self) -> TokenStream {
@@ -631,7 +631,7 @@ impl Definition<Query> {
                         ::core::panic!(
                              "Tried to resolve async field `{}` on type `{}` with a sync resolver",
                              #name,
-                             <Self as ::juniper::macros::reflect::BaseType<#scalar>>::NAME,
+                             <Self as ::coasys_juniper::macros::reflect::BaseType<#scalar>>::NAME,
                          );
                     }
                 } else {
@@ -664,18 +664,18 @@ impl Definition<Query> {
                 quote! {
                     #[allow(deprecated, non_snake_case)]
                     #[automatically_derived]
-                    impl #impl_generics ::juniper::macros::reflect::Field<
+                    impl #impl_generics ::coasys_juniper::macros::reflect::Field<
                         #scalar,
-                        { ::juniper::macros::reflect::fnv1a128(#name) }
+                        { ::coasys_juniper::macros::reflect::fnv1a128(#name) }
                     > for #impl_ty
                         #where_clause
                     {
                         fn call(
                             &self,
                             info: &Self::TypeInfo,
-                            args: &::juniper::Arguments<'_, #scalar>,
-                            executor: &::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                        ) -> ::juniper::ExecutionResult<#scalar> {
+                            args: &::coasys_juniper::Arguments<'_, #scalar>,
+                            executor: &::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                        ) -> ::coasys_juniper::ExecutionResult<#scalar> {
                             #resolve
                         }
                     }
@@ -687,7 +687,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`AsyncField`] trait for each field
     /// of this [GraphQL object][1].
     ///
-    /// [`AsyncField`]: juniper::AsyncField
+    /// [`AsyncField`]: coasys_juniper::AsyncField
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_async_field_tokens(&self) -> TokenStream {
@@ -717,7 +717,7 @@ impl Definition<Query> {
                     quote! { &self.#ident }
                 };
                 if !field.is_async {
-                    res = quote! { ::juniper::futures::future::ready(#res) };
+                    res = quote! { ::coasys_juniper::futures::future::ready(#res) };
                 }
 
                 let resolving_code = gen::async_resolving_code(Some(&res_ty));
@@ -725,18 +725,18 @@ impl Definition<Query> {
                 quote! {
                     #[allow(deprecated, non_snake_case)]
                     #[automatically_derived]
-                    impl #impl_generics ::juniper::macros::reflect::AsyncField<
+                    impl #impl_generics ::coasys_juniper::macros::reflect::AsyncField<
                         #scalar,
-                        { ::juniper::macros::reflect::fnv1a128(#name) }
+                        { ::coasys_juniper::macros::reflect::fnv1a128(#name) }
                     > for #impl_ty
                         #where_clause
                     {
                         fn call<'b>(
                             &'b self,
                             info: &'b Self::TypeInfo,
-                            args: &'b ::juniper::Arguments<'_, #scalar>,
-                            executor: &'b ::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                        ) -> ::juniper::BoxFuture<'b, ::juniper::ExecutionResult<#scalar>> {
+                            args: &'b ::coasys_juniper::Arguments<'_, #scalar>,
+                            executor: &'b ::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                        ) -> ::coasys_juniper::BoxFuture<'b, ::coasys_juniper::ExecutionResult<#scalar>> {
                             let fut = #res;
                             #resolving_code
                         }
@@ -749,7 +749,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`GraphQLValue`] trait for this
     /// [GraphQL object][1].
     ///
-    /// [`GraphQLValue`]: juniper::GraphQLValue
+    /// [`GraphQLValue`]: coasys_juniper::GraphQLValue
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_graphql_value_tokens(&self) -> TokenStream {
@@ -766,9 +766,9 @@ impl Definition<Query> {
             let name = &f.name;
             quote! {
                 #name => {
-                    ::juniper::macros::reflect::Field::<
+                    ::coasys_juniper::macros::reflect::Field::<
                         #scalar,
-                        { ::juniper::macros::reflect::fnv1a128(#name) }
+                        { ::coasys_juniper::macros::reflect::fnv1a128(#name) }
                     >::call(self, info, args, executor)
                 }
             }
@@ -780,7 +780,7 @@ impl Definition<Query> {
         quote! {
             #[allow(deprecated)]
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLValue<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLValue<#scalar> for #ty #where_clause
             {
                 type Context = #context;
                 type TypeInfo = ();
@@ -789,16 +789,16 @@ impl Definition<Query> {
                     &self,
                     info: &'__i Self::TypeInfo,
                 ) -> ::core::option::Option<&'__i ::core::primitive::str> {
-                    <Self as ::juniper::GraphQLType<#scalar>>::name(info)
+                    <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                 }
 
                 fn resolve_field(
                     &self,
                     info: &Self::TypeInfo,
                     field: &::core::primitive::str,
-                    args: &::juniper::Arguments<'_, #scalar>,
-                    executor: &::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::ExecutionResult<#scalar> {
+                    args: &::coasys_juniper::Arguments<'_, #scalar>,
+                    executor: &::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::ExecutionResult<#scalar> {
                     match field {
                         #( #fields_resolvers )*
                         _ => #no_field_err,
@@ -819,7 +819,7 @@ impl Definition<Query> {
     /// Returns generated code implementing [`GraphQLValueAsync`] trait for this
     /// [GraphQL object][1].
     ///
-    /// [`GraphQLValueAsync`]: juniper::GraphQLValueAsync
+    /// [`GraphQLValueAsync`]: coasys_juniper::GraphQLValueAsync
     /// [1]: https://spec.graphql.org/October2021#sec-Objects
     #[must_use]
     fn impl_graphql_value_async_tokens(&self) -> TokenStream {
@@ -833,9 +833,9 @@ impl Definition<Query> {
             let name = &f.name;
             quote! {
                 #name => {
-                    ::juniper::macros::reflect::AsyncField::<
+                    ::coasys_juniper::macros::reflect::AsyncField::<
                         #scalar,
-                        { ::juniper::macros::reflect::fnv1a128(#name) }
+                        { ::coasys_juniper::macros::reflect::fnv1a128(#name) }
                     >::call(self, info, args, executor)
                 }
             }
@@ -847,15 +847,15 @@ impl Definition<Query> {
         quote! {
             #[allow(deprecated, non_snake_case)]
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLValueAsync<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLValueAsync<#scalar> for #ty #where_clause
             {
                 fn resolve_field_async<'b>(
                     &'b self,
                     info: &'b Self::TypeInfo,
                     field: &'b ::core::primitive::str,
-                    args: &'b ::juniper::Arguments<'_, #scalar>,
-                    executor: &'b ::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::BoxFuture<'b, ::juniper::ExecutionResult<#scalar>> {
+                    args: &'b ::coasys_juniper::Arguments<'_, #scalar>,
+                    executor: &'b ::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::BoxFuture<'b, ::coasys_juniper::ExecutionResult<#scalar>> {
                     match field {
                         #( #fields_resolvers )*
                         _ => ::std::boxed::Box::pin(async move { #no_field_err }),

@@ -11,7 +11,7 @@ use rocket::{
     Data, Request,
 };
 
-use juniper::{
+use coasys_juniper::{
     http::{self, GraphQLBatchRequest},
     DefaultScalarValue, FieldError, GraphQLSubscriptionType, GraphQLType, GraphQLTypeAsync,
     InputValue, RootNode, ScalarValue,
@@ -47,7 +47,7 @@ pub fn graphiql_source(
     graphql_endpoint_url: &str,
     subscriptions_endpoint_url: Option<&str>,
 ) -> content::RawHtml<String> {
-    content::RawHtml(juniper::http::graphiql::graphiql_source(
+    content::RawHtml(coasys_juniper::http::graphiql::graphiql_source(
         graphql_endpoint_url,
         subscriptions_endpoint_url,
     ))
@@ -58,7 +58,7 @@ pub fn playground_source(
     graphql_endpoint_url: &str,
     subscriptions_endpoint_url: Option<&str>,
 ) -> content::RawHtml<String> {
-    content::RawHtml(juniper::http::playground::playground_source(
+    content::RawHtml(coasys_juniper::http::playground::playground_source(
         graphql_endpoint_url,
         subscriptions_endpoint_url,
     ))
@@ -136,8 +136,8 @@ impl GraphQLResponse {
     /// # use rocket::response::content;
     /// # use rocket::State;
     /// #
-    /// # use juniper::tests::fixtures::starwars::schema::{Database, Query};
-    /// # use juniper::{EmptyMutation, EmptySubscription, FieldError, RootNode, Value};
+    /// # use coasys_juniper::tests::fixtures::starwars::schema::{Database, Query};
+    /// # use coasys_juniper::{EmptyMutation, EmptySubscription, FieldError, RootNode, Value};
     /// #
     /// # type Schema = RootNode<'static, Query, EmptyMutation<Database>, EmptySubscription<Database>>;
     /// #
@@ -349,7 +349,7 @@ impl<'r, 'o: 'r> Responder<'r, 'o> for GraphQLResponse {
 #[cfg(test)]
 mod fromform_tests {
     use super::*;
-    use juniper::InputValue;
+    use coasys_juniper::InputValue;
     use rocket::{
         form::{error::ErrorKind, Error, Form, Strict},
         http::RawStr,
@@ -490,7 +490,7 @@ mod fromform_tests {
 #[cfg(test)]
 mod tests {
 
-    use juniper::{
+    use coasys_juniper::{
         http::tests as http_tests,
         tests::fixtures::starwars::schema::{Database, Query},
         EmptyMutation, EmptySubscription, RootNode,

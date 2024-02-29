@@ -1,2 +1,2 @@
 #[doc(inline)]
-pub use juniper_graphql_ws::{ArcSchema, Schema};
+pub use coasys_juniper_graphql_ws::{ArcSchema, Schema};

@@ -10,7 +10,7 @@ use iron::{
     prelude::*,
     status,
 };
-use juniper::{
+use coasys_juniper::{
     http, http::GraphQLBatchRequest, DefaultScalarValue, GraphQLType, InputValue, RootNode,
     ScalarValue,
 };
@@ -231,7 +231,7 @@ impl Handler for GraphiQLHandler {
         Ok(Response::with((
             content_type,
             status::Ok,
-            juniper::http::graphiql::graphiql_source(
+            coasys_juniper::http::graphiql::graphiql_source(
                 &self.graphql_url,
                 self.subscription_url.as_deref(),
             ),
@@ -246,7 +246,7 @@ impl Handler for PlaygroundHandler {
         Ok(Response::with((
             content_type,
             status::Ok,
-            juniper::http::playground::playground_source(
+            coasys_juniper::http::playground::playground_source(
                 &self.graphql_url,
                 self.subscription_url.as_deref(),
             ),
@@ -299,7 +299,7 @@ mod tests {
     use iron_test::{request, response};
     use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 
-    use juniper::{
+    use coasys_juniper::{
         http::tests as http_tests,
         tests::fixtures::starwars::schema::{Database, Query},
         DefaultScalarValue, EmptyMutation, EmptySubscription,

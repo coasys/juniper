@@ -210,21 +210,21 @@ impl VariantAttr {
 
 /// Definition of a [`ScalarValue`] for code generation.
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 struct Definition {
     /// [`syn::Ident`] of the enum representing this [`ScalarValue`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     ident: syn::Ident,
 
     /// [`syn::Generics`] of the enum representing this [`ScalarValue`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     generics: syn::Generics,
 
     /// [`syn::Variant`]s of the enum representing this [`ScalarValue`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     variants: Vec<syn::Variant>,
 
     /// [`Variant`]s marked with a [`Method`] attribute.
@@ -242,7 +242,7 @@ impl ToTokens for Definition {
 impl Definition {
     /// Returns generated code implementing [`ScalarValue`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     fn impl_scalar_value_tokens(&self) -> TokenStream {
         let ident = &self.ident;
         let (impl_gens, ty_gens, where_clause) = self.generics.split_for_impl();
@@ -297,7 +297,7 @@ impl Definition {
 
         quote! {
             #[automatically_derived]
-            impl #impl_gens ::juniper::ScalarValue for #ident #ty_gens
+            impl #impl_gens ::coasys_juniper::ScalarValue for #ident #ty_gens
                 #where_clause
             {
                 #( #methods )*

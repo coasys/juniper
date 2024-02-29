@@ -1,7 +1,7 @@
 //! Common functions, definitions and extensions for parsing and code generation
 //! related to [`ScalarValue`].
 //!
-//! [`ScalarValue`]: juniper::ScalarValue
+//! [`ScalarValue`]: coasys_juniper::ScalarValue
 
 use proc_macro2::{Span, TokenStream};
 use quote::ToTokens;
@@ -16,13 +16,13 @@ use syn::{
 pub(crate) enum AttrValue {
     /// Concrete Rust type (like `DefaultScalarValue`).
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     Concrete(syn::Type),
 
     /// Generic Rust type parameter with a bound predicate
     /// (like `S: ScalarValue + Send + Sync`).
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     Generic(syn::PredicateType),
 }
 
@@ -55,25 +55,25 @@ impl Spanned for AttrValue {
 
 /// [`ScalarValue`] parametrization of the code generation.
 ///
-/// [`ScalarValue`]: juniper::ScalarValue
+/// [`ScalarValue`]: coasys_juniper::ScalarValue
 #[derive(Clone, Debug)]
 pub(crate) enum Type {
     /// Concrete Rust type is specified as [`ScalarValue`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     Concrete(syn::Type),
 
     /// One of type parameters of the original type is specified as [`ScalarValue`].
     ///
     /// The original type is the type that the code is generated for.
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     ExplicitGeneric(syn::Ident),
 
     /// [`ScalarValue`] parametrization is assumed to be generic and is not specified
     /// explicitly, or specified as bound predicate (like `S: ScalarValue + Send + Sync`).
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     ImplicitGeneric(Option<syn::PredicateType>),
 }
 
@@ -119,13 +119,13 @@ impl Type {
 
     /// Returns a default [`ScalarValue`] type that is compatible with this [`Type`].
     ///
-    /// [`ScalarValue`]: juniper::ScalarValue
+    /// [`ScalarValue`]: coasys_juniper::ScalarValue
     #[must_use]
     pub(crate) fn default_ty(&self) -> syn::Type {
         match self {
             Self::Concrete(ty) => ty.clone(),
             Self::ExplicitGeneric(_) | Self::ImplicitGeneric(_) => {
-                parse_quote! { ::juniper::DefaultScalarValue }
+                parse_quote! { ::coasys_juniper::DefaultScalarValue }
             }
         }
     }

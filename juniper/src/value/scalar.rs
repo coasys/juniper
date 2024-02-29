@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 use crate::parser::{ParseError, ScalarToken};
 
-pub use juniper_codegen::ScalarValue;
+pub use coasys_juniper_codegen::ScalarValue;
 
 /// The result of converting a string into a scalar value
 pub type ParseScalarResult<S = DefaultScalarValue> = Result<S, ParseError>;

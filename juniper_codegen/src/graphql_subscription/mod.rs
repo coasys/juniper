@@ -30,7 +30,7 @@ impl Definition<Subscription> {
     /// Returns generated code implementing [`GraphQLValue`] trait for this
     /// [GraphQL subscription][1].
     ///
-    /// [`GraphQLValue`]: juniper::GraphQLValue
+    /// [`GraphQLValue`]: coasys_juniper::GraphQLValue
     /// [1]: https://spec.graphql.org/October2021#sec-Subscription
     #[must_use]
     fn impl_graphql_value_tokens(&self) -> TokenStream {
@@ -44,7 +44,7 @@ impl Definition<Subscription> {
 
         quote! {
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLValue<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLValue<#scalar> for #ty #where_clause
             {
                 type Context = #context;
                 type TypeInfo = ();
@@ -53,17 +53,17 @@ impl Definition<Subscription> {
                     &self,
                     info: &'__i Self::TypeInfo,
                 ) -> ::core::option::Option<&'__i ::core::primitive::str> {
-                    <Self as ::juniper::GraphQLType<#scalar>>::name(info)
+                    <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
                 }
 
                 fn resolve_field(
                     &self,
                     _: &Self::TypeInfo,
                     _: &::core::primitive::str,
-                    _: &::juniper::Arguments<'_, #scalar>,
-                    _: &::juniper::Executor<'_, '_, Self::Context, #scalar>,
-                ) -> ::juniper::ExecutionResult<#scalar> {
-                    ::core::result::Result::Err(::juniper::FieldError::from(
+                    _: &::coasys_juniper::Arguments<'_, #scalar>,
+                    _: &::coasys_juniper::Executor<'_, '_, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::ExecutionResult<#scalar> {
+                    ::core::result::Result::Err(::coasys_juniper::FieldError::from(
                         "Called `resolve_field` on subscription object",
                     ))
                 }
@@ -82,7 +82,7 @@ impl Definition<Subscription> {
     /// Returns generated code implementing [`GraphQLSubscriptionValue`] trait
     /// for this [GraphQL subscription][1].
     ///
-    /// [`GraphQLSubscriptionValue`]: juniper::GraphQLSubscriptionValue
+    /// [`GraphQLSubscriptionValue`]: coasys_juniper::GraphQLSubscriptionValue
     /// [1]: https://spec.graphql.org/October2021#sec-Subscription
     #[must_use]
     fn impl_graphql_subscription_value_tokens(&self) -> TokenStream {
@@ -112,7 +112,7 @@ impl Definition<Subscription> {
         quote! {
             #[allow(deprecated)]
             #[automatically_derived]
-            impl #impl_generics ::juniper::GraphQLSubscriptionValue<#scalar> for #ty #where_clause
+            impl #impl_generics ::coasys_juniper::GraphQLSubscriptionValue<#scalar> for #ty #where_clause
             {
                 fn resolve_field_into_stream<
                     's, 'i, 'fi, 'args, 'e, 'ref_e, 'res, 'f,
@@ -120,11 +120,11 @@ impl Definition<Subscription> {
                     &'s self,
                     info: &'i Self::TypeInfo,
                     field: &'fi ::core::primitive::str,
-                    args: ::juniper::Arguments<'args, #scalar>,
-                    executor: &'ref_e ::juniper::Executor<'ref_e, 'e, Self::Context, #scalar>,
-                ) -> ::juniper::BoxFuture<'f, std::result::Result<
-                    ::juniper::Value<::juniper::ValuesStream<'res, #scalar>>,
-                    ::juniper::FieldError<#scalar>,
+                    args: ::coasys_juniper::Arguments<'args, #scalar>,
+                    executor: &'ref_e ::coasys_juniper::Executor<'ref_e, 'e, Self::Context, #scalar>,
+                ) -> ::coasys_juniper::BoxFuture<'f, std::result::Result<
+                    ::coasys_juniper::Value<::coasys_juniper::ValuesStream<'res, #scalar>>,
+                    ::coasys_juniper::FieldError<#scalar>,
                 >>
                 where
                     's: 'f,

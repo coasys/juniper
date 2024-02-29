@@ -17,7 +17,7 @@ use std::{
     sync::Arc, time::Duration,
 };
 
-use juniper::{
+use coasys_juniper::{
     futures::{
         channel::oneshot,
         future::{self, BoxFuture, Either, Future, FutureExt, TryFutureExt},
@@ -38,7 +38,7 @@ struct ExecutionParams<S: Schema> {
 /// message.
 #[derive(Clone, Copy, Debug)]
 pub struct ConnectionConfig<CtxT> {
-    /// Custom-provided [`juniper::Context`].
+    /// Custom-provided [`coasys_juniper::Context`].
     pub context: CtxT,
 
     /// Maximum number of in-flight operations that a connection can have.
@@ -311,7 +311,7 @@ impl<S: Schema, I: Init<S::ScalarValue, S::Context>> ConnectionState<S, I> {
         let params = Arc::new(params);
 
         // Try to execute this as a query or mutation.
-        match juniper::execute(
+        match coasys_juniper::execute(
             &params.start_payload.query,
             params.start_payload.operation_name.as_deref(),
             params.schema.root_node(),
@@ -369,14 +369,14 @@ enum SubscriptionStartState<S: Schema> {
         id: String,
         future: BoxFuture<
             'static,
-            Result<juniper_subscriptions::Connection<'static, S::ScalarValue>, GraphQLError>,
+            Result<coasys_juniper_subscriptions::Connection<'static, S::ScalarValue>, GraphQLError>,
         >,
     },
     /// Streaming is the state after we've successfully obtained the event stream for the
     /// subscription. In this state, we're just forwarding events back to the client.
     Streaming {
         id: String,
-        stream: juniper_subscriptions::Connection<'static, S::ScalarValue>,
+        stream: coasys_juniper_subscriptions::Connection<'static, S::ScalarValue>,
     },
     /// Terminated is the state once we're all done.
     Terminated,
@@ -420,7 +420,7 @@ impl<S: Schema> Stream for SubscriptionStart<S> {
                     *state = SubscriptionStartState::ResolvingIntoStream {
                         id: id.clone(),
                         future: unsafe {
-                            juniper::resolve_into_stream(
+                            coasys_juniper::resolve_into_stream(
                                 &(*params).start_payload.query,
                                 (*params).start_payload.operation_name.as_deref(),
                                 (*params).schema.root_node(),
@@ -429,7 +429,7 @@ impl<S: Schema> Stream for SubscriptionStart<S> {
                             )
                         }
                         .map_ok(|(stream, errors)| {
-                            juniper_subscriptions::Connection::from_stream(stream, errors)
+                            coasys_juniper_subscriptions::Connection::from_stream(stream, errors)
                         })
                         .boxed(),
                     };
@@ -631,7 +631,7 @@ where
 mod test {
     use std::{convert::Infallible, io};
 
-    use juniper::{
+    use coasys_juniper::{
         futures::sink::SinkExt,
         graphql_input_value, graphql_object, graphql_subscription, graphql_value, graphql_vars,
         parser::{ParseError, Spanning},
@@ -642,7 +642,7 @@ mod test {
 
     struct Context(i32);
 
-    impl juniper::Context for Context {}
+    impl coasys_juniper::Context for Context {}
 
     struct Query;
 

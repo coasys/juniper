@@ -6,7 +6,7 @@ use hyper::{
     header::{self, HeaderValue},
     Body, Method, Request, Response, StatusCode,
 };
-use juniper::{
+use coasys_juniper::{
     http::{GraphQLBatchRequest, GraphQLRequest as JuniperGraphQLRequest, GraphQLRequest},
     GraphQLSubscriptionType, GraphQLType, GraphQLTypeAsync, InputValue, RootNode, ScalarValue,
 };
@@ -125,7 +125,7 @@ pub async fn graphiql(
     let mut resp = new_html_response(StatusCode::OK);
     // XXX: is the call to graphiql_source blocking?
     *resp.body_mut() =
-        juniper::http::graphiql::graphiql_source(graphql_endpoint, subscriptions_endpoint);
+        coasys_juniper::http::graphiql::graphiql_source(graphql_endpoint, subscriptions_endpoint);
     resp
 }
 
@@ -135,7 +135,7 @@ pub async fn playground(
 ) -> Response<String> {
     let mut resp = new_html_response(StatusCode::OK);
     *resp.body_mut() =
-        juniper::http::playground::playground_source(graphql_endpoint, subscriptions_endpoint);
+        coasys_juniper::http::playground::playground_source(graphql_endpoint, subscriptions_endpoint);
     resp
 }
 
@@ -311,7 +311,7 @@ mod tests {
         service::{make_service_fn, service_fn},
         Method, Response, StatusCode,
     };
-    use juniper::{
+    use coasys_juniper::{
         http::tests as http_tests,
         tests::fixtures::starwars::schema::{Database, Query},
         EmptyMutation, EmptySubscription, RootNode,

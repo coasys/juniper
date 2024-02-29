@@ -505,8 +505,8 @@ macro_rules! assert_implemented_for {
         const _: () = {
             $({
                 let is_present = $crate::macros::reflect::str_exists_in_arr(
-                    <$implementor as ::juniper::macros::reflect::BaseType<$scalar>>::NAME,
-                    <$interfaces as ::juniper::macros::reflect::BaseSubTypes<$scalar>>::NAMES,
+                    <$implementor as ::coasys_juniper::macros::reflect::BaseType<$scalar>>::NAME,
+                    <$interfaces as ::coasys_juniper::macros::reflect::BaseSubTypes<$scalar>>::NAMES,
                 );
                 if !is_present {
                     const MSG: &str = $crate::const_concat!(
@@ -533,8 +533,8 @@ macro_rules! assert_interfaces_impls {
         const _: () = {
             $({
                 let is_present = $crate::macros::reflect::str_exists_in_arr(
-                    <$interface as ::juniper::macros::reflect::BaseType<$scalar>>::NAME,
-                    <$implementers as ::juniper::macros::reflect::Implements<$scalar>>::NAMES,
+                    <$interface as ::coasys_juniper::macros::reflect::BaseType<$scalar>>::NAME,
+                    <$implementers as ::coasys_juniper::macros::reflect::Implements<$scalar>>::NAMES,
                 );
                 if !is_present {
                     const MSG: &str = $crate::const_concat!(
@@ -707,12 +707,12 @@ macro_rules! assert_field_args {
 
             const FIELD_NAME: &::core::primitive::str = $field_name;
 
-            const BASE_ARGS: ::juniper::macros::reflect::Arguments =
+            const BASE_ARGS: ::coasys_juniper::macros::reflect::Arguments =
                 <$base_ty as $crate::macros::reflect::FieldMeta<
                     $scalar,
                     { $crate::checked_hash!(FIELD_NAME, $base_ty, $scalar, ERR_PREFIX) },
                 >>::ARGUMENTS;
-            const IMPL_ARGS: ::juniper::macros::reflect::Arguments =
+            const IMPL_ARGS: ::coasys_juniper::macros::reflect::Arguments =
                 <$impl_ty as $crate::macros::reflect::FieldMeta<
                     $scalar,
                     { $crate::checked_hash!(FIELD_NAME, $impl_ty, $scalar, ERR_PREFIX) },
@@ -720,8 +720,8 @@ macro_rules! assert_field_args {
 
             struct Error {
                 cause: Cause,
-                base: ::juniper::macros::reflect::Argument,
-                implementation: ::juniper::macros::reflect::Argument,
+                base: ::coasys_juniper::macros::reflect::Argument,
+                implementation: ::coasys_juniper::macros::reflect::Argument,
             }
 
             enum Cause {

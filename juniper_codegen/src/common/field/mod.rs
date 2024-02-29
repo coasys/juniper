@@ -219,7 +219,7 @@ impl Definition {
     /// Returns generated code that errors about unknown [GraphQL field][1]
     /// tried to be resolved in the [`GraphQLValue::resolve_field`] method.
     ///
-    /// [`GraphQLValue::resolve_field`]: juniper::GraphQLValue::resolve_field
+    /// [`GraphQLValue::resolve_field`]: coasys_juniper::GraphQLValue::resolve_field
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Fields
     #[must_use]
     pub(crate) fn method_resolve_field_err_no_field_tokens(
@@ -227,11 +227,11 @@ impl Definition {
         ty_name: &str,
     ) -> TokenStream {
         quote! {
-            return ::core::result::Result::Err(::juniper::FieldError::from(::std::format!(
+            return ::core::result::Result::Err(::coasys_juniper::FieldError::from(::std::format!(
                 "Field `{}` not found on type `{}`",
                 field,
-                <Self as ::juniper::GraphQLType<#scalar>>::name(info)
-                    .ok_or_else(|| ::juniper::macros::helper::err_unnamed_type(#ty_name))?,
+                <Self as ::coasys_juniper::GraphQLType<#scalar>>::name(info)
+                    .ok_or_else(|| ::coasys_juniper::macros::helper::err_unnamed_type(#ty_name))?,
             )))
         }
     }
@@ -239,7 +239,7 @@ impl Definition {
     /// Returns generated code for the [`marker::IsOutputType::mark`] method,
     /// which performs static checks for this [GraphQL field][1].
     ///
-    /// [`marker::IsOutputType::mark`]: juniper::marker::IsOutputType::mark
+    /// [`marker::IsOutputType::mark`]: coasys_juniper::marker::IsOutputType::mark
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Fields
     #[must_use]
     pub(crate) fn method_mark_tokens(
@@ -256,26 +256,26 @@ impl Definition {
         let mut ty = quote! { #ty };
         if infer_result {
             ty = quote! {
-                <#ty as ::juniper::IntoFieldResult::<_, #scalar>>::Item
+                <#ty as ::coasys_juniper::IntoFieldResult::<_, #scalar>>::Item
             };
         }
         let resolved_ty = quote! {
-            <#ty as ::juniper::IntoResolvable<
-                '_, #scalar, _, <Self as ::juniper::GraphQLValue<#scalar>>::Context,
+            <#ty as ::coasys_juniper::IntoResolvable<
+                '_, #scalar, _, <Self as ::coasys_juniper::GraphQLValue<#scalar>>::Context,
             >>::Type
         };
 
         quote_spanned! { self.ty.span() =>
             #( #args_marks )*
-            <#resolved_ty as ::juniper::marker::IsOutputType<#scalar>>::mark();
+            <#resolved_ty as ::coasys_juniper::marker::IsOutputType<#scalar>>::mark();
         }
     }
 
     /// Returns generated code for the [`GraphQLType::meta`] method, which
     /// registers this [GraphQL field][1] in [`Registry`].
     ///
-    /// [`GraphQLType::meta`]: juniper::GraphQLType::meta
-    /// [`Registry`]: juniper::Registry
+    /// [`GraphQLType::meta`]: coasys_juniper::GraphQLType::meta
+    /// [`Registry`]: coasys_juniper::Registry
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Fields
     #[must_use]
     pub(crate) fn method_meta_tokens(
@@ -286,7 +286,7 @@ impl Definition {
         let mut ty = quote! { #ty };
         if let Some(scalar) = extract_stream_type {
             ty = quote! {
-                <#ty as ::juniper::ExtractTypeFromStream<_, #scalar>>::Item
+                <#ty as ::coasys_juniper::ExtractTypeFromStream<_, #scalar>>::Item
             };
         }
 
@@ -310,7 +310,7 @@ impl Definition {
     /// [`GraphQLSubscriptionValue::resolve_field_into_stream`][0] method, which
     /// resolves this [GraphQL field][1] as [subscription][2].
     ///
-    /// [0]: juniper::GraphQLSubscriptionValue::resolve_field_into_stream
+    /// [0]: coasys_juniper::GraphQLSubscriptionValue::resolve_field_into_stream
     /// [1]: https://spec.graphql.org/October2021#sec-Language.Fields
     /// [2]: https://spec.graphql.org/October2021#sec-Subscription
     #[must_use]
@@ -338,19 +338,19 @@ impl Definition {
             quote! { &self.#ident }
         };
         if !self.is_async {
-            fut = quote! { ::juniper::futures::future::ready(#fut) };
+            fut = quote! { ::coasys_juniper::futures::future::ready(#fut) };
         }
 
         quote! {
             #name => {
-                ::juniper::futures::FutureExt::boxed(async move {
+                ::coasys_juniper::futures::FutureExt::boxed(async move {
                     let res: #ty = #fut.await;
-                    let res = ::juniper::IntoFieldResult::<_, #scalar>::into_result(res)?;
+                    let res = ::coasys_juniper::IntoFieldResult::<_, #scalar>::into_result(res)?;
                     let executor = executor.as_owned_executor();
-                    let stream = ::juniper::futures::StreamExt::then(res, move |res| {
+                    let stream = ::coasys_juniper::futures::StreamExt::then(res, move |res| {
                         let executor = executor.clone();
-                        let res2: ::juniper::FieldResult<_, #scalar> =
-                            ::juniper::IntoResolvable::into_resolvable(res, executor.context());
+                        let res2: ::coasys_juniper::FieldResult<_, #scalar> =
+                            ::coasys_juniper::IntoResolvable::into_resolvable(res, executor.context());
                         async move {
                             let ex = executor.as_executor();
                             match res2 {
@@ -363,7 +363,7 @@ impl Definition {
                                         .map_err(|e| ex.new_error(e))
                                 }
                                 ::core::result::Result::Ok(::core::option::Option::None) => {
-                                    ::core::result::Result::Ok(::juniper::Value::null())
+                                    ::core::result::Result::Ok(::coasys_juniper::Value::null())
                                 }
                                 ::core::result::Result::Err(e) => {
                                     ::core::result::Result::Err(ex.new_error(e))
@@ -371,9 +371,9 @@ impl Definition {
                             }
                         }
                     });
-                    ::core::result::Result::Ok(::juniper::Value::Scalar::<
-                        ::juniper::ValuesStream::<#scalar>
-                    >(::juniper::futures::StreamExt::boxed(stream)))
+                    ::core::result::Result::Ok(::coasys_juniper::Value::Scalar::<
+                        ::coasys_juniper::ValuesStream::<#scalar>
+                    >(::coasys_juniper::futures::StreamExt::boxed(stream)))
                 })
             }
         }

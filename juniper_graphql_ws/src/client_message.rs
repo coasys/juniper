@@ -1,4 +1,4 @@
-use juniper::Variables;
+use coasys_juniper::Variables;
 use serde::Deserialize;
 
 use crate::utils::default_for_null;
@@ -53,7 +53,7 @@ pub enum ClientMessage<S> {
 
 #[cfg(test)]
 mod test {
-    use juniper::{graphql_vars, DefaultScalarValue};
+    use coasys_juniper::{graphql_vars, DefaultScalarValue};
 
     use super::*;
 

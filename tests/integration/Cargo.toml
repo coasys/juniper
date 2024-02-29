@@ -1,5 +1,5 @@
 [package]
-name = "juniper_integration_tests"
+name = "coasys_juniper_integration_tests"
 version = "0.0.0"
 edition = "2021"
 publish = false

@@ -189,7 +189,7 @@ fn parse_variant_from_trait_method(
 
         if method_context_ty.is_some() {
             parse_quote! {
-                #trait_ident::#method_ident(self, ::juniper::FromContext::from(context))
+                #trait_ident::#method_ident(self, ::coasys_juniper::FromContext::from(context))
             }
         } else {
             parse_quote! {
@@ -200,7 +200,7 @@ fn parse_variant_from_trait_method(
 
     // Doing this may be quite an expensive, because resolving may contain some
     // heavy computation, so we're preforming it twice. Unfortunately, we have
-    // no other options here, until the `juniper::GraphQLType` itself will allow
+    // no other options here, until the `coasys_juniper::GraphQLType` itself will allow
     // to do it in some cleverer way.
     let resolver_check = parse_quote! {
         ({ #resolver_code } as ::core::option::Option<&#ty>).is_some()

@@ -7,7 +7,7 @@
 // Required for using `juniper_codegen` macros inside this crate to resolve
 // absolute `::juniper` path correctly, without errors.
 extern crate core;
-extern crate self as juniper;
+extern crate self as coasys_juniper;
 
 use std::fmt;
 
@@ -21,7 +21,7 @@ pub use futures::future::{BoxFuture, LocalBoxFuture};
 // Depend on juniper_codegen and re-export everything in it.
 // This allows users to just depend on juniper and get the derive
 // functionality automatically.
-pub use juniper_codegen::{
+pub use coasys_juniper_codegen::{
     graphql_interface, graphql_object, graphql_scalar, graphql_subscription, graphql_union,
     GraphQLEnum, GraphQLInputObject, GraphQLInterface, GraphQLObject, GraphQLScalar, GraphQLUnion,
 };
