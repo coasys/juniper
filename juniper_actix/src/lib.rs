@@ -183,7 +183,7 @@ pub mod subscriptions {
         SinkExt as _, Stream, StreamExt as _,
     };
     use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
-    use coasys_juniper_graphql_transport_ws::{ArcSchema, Init};
+    use coasys_coasys_juniper_graphql_transport_ws::{ArcSchema, Init};
     use tokio::sync::Mutex;
 
     /// Serves by auto-selecting between the
@@ -195,7 +195,7 @@ pub mod subscriptions {
     ///
     /// The `init` argument is used to provide the custom [`coasys_juniper::Context`] and additional
     /// configuration for connections. This can be a
-    /// [`juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
+    /// [`coasys_juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
     /// already known, or it can be a closure that gets executed asynchronously whenever a client
     /// sends the subscription initialization message. Using a closure allows to perform an
     /// authentication based on the parameters provided by a client.
@@ -234,7 +234,7 @@ pub mod subscriptions {
     /// Serves the [legacy `graphql-ws` GraphQL over WebSocket Protocol][old].
     ///
     /// The `init` argument is used to provide the context and additional configuration for
-    /// connections. This can be a [`juniper_graphql_ws::ConnectionConfig`] if the context and
+    /// connections. This can be a [`coasys_juniper_graphql_ws::ConnectionConfig`] if the context and
     /// configuration are already known, or it can be a closure that gets executed asynchronously
     /// when the client sends the `GQL_CONNECTION_INIT` message. Using a closure allows to perform
     /// an authentication based on the parameters provided by a client.
@@ -263,7 +263,7 @@ pub mod subscriptions {
         I: Init<S, CtxT> + Send,
     {
         let (s_tx, s_rx) =
-            juniper_graphql_ws::Connection::new(ArcSchema(schema), init).split::<Message>();
+            coasys_juniper_graphql_ws::Connection::new(ArcSchema(schema), init).split::<Message>();
 
         let mut resp = ws::start(
             Actor {
@@ -285,7 +285,7 @@ pub mod subscriptions {
     /// Serves the [new `graphql-transport-ws` GraphQL over WebSocket Protocol][new].
     ///
     /// The `init` argument is used to provide the context and additional configuration for
-    /// connections. This can be a [`juniper_graphql_transport_ws::ConnectionConfig`] if the context
+    /// connections. This can be a [`coasys_juniper_graphql_transport_ws::ConnectionConfig`] if the context
     /// and configuration are already known, or it can be a closure that gets executed
     /// asynchronously when the client sends the `ConnectionInit` message. Using a closure allows to
     /// perform an authentication based on the parameters provided by a client.
@@ -308,7 +308,7 @@ pub mod subscriptions {
         S: ScalarValue + Send + Sync + 'static,
         I: Init<S, CtxT> + Send,
     {
-        let (s_tx, s_rx) = juniper_graphql_transport_ws::Connection::new(ArcSchema(schema), init)
+        let (s_tx, s_rx) = coasys_juniper_graphql_transport_ws::Connection::new(ArcSchema(schema), init)
             .split::<Message>();
 
         let mut resp = ws::start(
@@ -331,7 +331,7 @@ pub mod subscriptions {
     type ConnectionSplitSink<Conn> = Arc<Mutex<SplitSink<Conn, Message>>>;
     type ConnectionSplitStream<Conn> = Arc<Mutex<SplitStream<Conn>>>;
 
-    /// [`actix::Actor`], coordinating messages between [`actix_web`] and [`juniper_graphql_ws`]:
+    /// [`actix::Actor`], coordinating messages between [`actix_web`] and [`coasys_juniper_graphql_ws`]:
     /// - incoming [`ws::Message`] -> [`Actor`] -> [`juniper`]
     /// - [`juniper`] -> [`Actor`] -> response [`ws::Message`]
     struct Actor<Conn> {
@@ -429,7 +429,7 @@ pub mod subscriptions {
         fn into_ws_response(self) -> Result<String, ws::CloseReason>;
     }
 
-    impl<S: ScalarValue> IntoWsResponse for juniper_graphql_transport_ws::Output<S> {
+    impl<S: ScalarValue> IntoWsResponse for coasys_juniper_graphql_transport_ws::Output<S> {
         fn into_ws_response(self) -> Result<String, ws::CloseReason> {
             match self {
                 Self::Message(msg) => serde_json::to_string(&msg).map_err(|e| ws::CloseReason {
@@ -444,7 +444,7 @@ pub mod subscriptions {
         }
     }
 
-    impl<S: ScalarValue> IntoWsResponse for juniper_graphql_ws::ServerMessage<S> {
+    impl<S: ScalarValue> IntoWsResponse for coasys_juniper_graphql_ws::ServerMessage<S> {
         fn into_ws_response(self) -> Result<String, ws::CloseReason> {
             serde_json::to_string(&self).map_err(|e| ws::CloseReason {
                 code: ws::CloseCode::Error,
@@ -456,7 +456,7 @@ pub mod subscriptions {
     #[derive(Debug)]
     struct Message(ws::Message);
 
-    impl<S: ScalarValue> TryFrom<Message> for juniper_graphql_transport_ws::Input<S> {
+    impl<S: ScalarValue> TryFrom<Message> for coasys_juniper_graphql_transport_ws::Input<S> {
         type Error = Error;
 
         fn try_from(msg: Message) -> Result<Self, Self::Error> {
@@ -470,7 +470,7 @@ pub mod subscriptions {
         }
     }
 
-    impl<S: ScalarValue> TryFrom<Message> for juniper_graphql_ws::ClientMessage<S> {
+    impl<S: ScalarValue> TryFrom<Message> for coasys_juniper_graphql_ws::ClientMessage<S> {
         type Error = Error;
 
         fn try_from(msg: Message) -> Result<Self, Self::Error> {
@@ -848,7 +848,7 @@ mod subscription_tests {
         tests::fixtures::starwars::schema::{Database, Query, Subscription},
         EmptyMutation, LocalBoxFuture,
     };
-    use coasys_juniper_graphql_ws::ConnectionConfig;
+    use coasys_coasys_juniper_graphql_ws::ConnectionConfig;
     use tokio::time::timeout;
 
     use super::subscriptions::graphql_ws_handler;
