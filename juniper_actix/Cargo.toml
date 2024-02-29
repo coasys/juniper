@@ -55,7 +55,3 @@ coasys_juniper = { version = "0.16.0", path = "../juniper", features = ["expose-
 log = "0.4"
 rand = "0.8"
 tokio = "1.0"
-
-[[example]]
-name = "subscription"
-required-features = ["subscriptions"]
