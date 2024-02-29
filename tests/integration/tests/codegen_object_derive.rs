@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_value, graphql_vars, DefaultScalarValue, GraphQLObject,
     ScalarValue,
 };
@@ -952,7 +952,7 @@ mod explicit_custom_context {
 
     struct CustomContext(prelude::String);
 
-    impl juniper::Context for CustomContext {}
+    impl coasys_juniper::Context for CustomContext {}
 
     #[derive(GraphQLObject)]
     #[graphql(context = CustomContext)]

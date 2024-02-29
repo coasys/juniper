@@ -3,7 +3,7 @@
 //! See [#925](https://github.com/graphql-rust/juniper/issues/925) for details.
 
 use futures::stream::BoxStream;
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_subscription, graphql_value, graphql_vars, EmptyMutation, FieldError,
     GraphQLObject, IntoFieldError, Object, ScalarValue, Value,
 };
@@ -46,7 +46,7 @@ impl Query {
     }
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation, SubscriptionsRoot>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation, SubscriptionsRoot>;
 
 #[tokio::test]
 async fn error_extensions() {
@@ -59,7 +59,7 @@ async fn error_extensions() {
     "#;
 
     let schema = Schema::new(Query, EmptyMutation::new(), SubscriptionsRoot);
-    let (_, errors) = juniper::resolve_into_stream(sub, None, &schema, &graphql_vars! {}, &())
+    let (_, errors) = coasys_juniper::resolve_into_stream(sub, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 

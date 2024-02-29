@@ -37,7 +37,7 @@ pub trait ParseScalarValue<S = DefaultScalarValue> {
 /// # use std::fmt;
 /// #
 /// # use serde::{de, Deserialize, Deserializer, Serialize};
-/// # use juniper::ScalarValue;
+/// # use coasys_juniper::ScalarValue;
 /// #
 /// #[derive(Clone, Debug, PartialEq, ScalarValue, Serialize)]
 /// #[serde(untagged)]
@@ -138,7 +138,7 @@ pub trait ScalarValue:
     /// type.
     ///
     /// ```
-    /// # use juniper::{ScalarValue, DefaultScalarValue};
+    /// # use coasys_juniper::{ScalarValue, DefaultScalarValue};
     /// #
     /// let value = DefaultScalarValue::Int(42);
     ///

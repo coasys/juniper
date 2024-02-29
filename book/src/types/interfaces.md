@@ -13,8 +13,8 @@ For implementing [GraphQL interfaces][1] Juniper provides the `#[graphql_interfa
 Defining a trait is mandatory for defining a [GraphQL interface][1], because this is the _obvious_ way we describe an _abstraction_ in Rust. All [interface][1] fields are defined as computed ones via trait methods.
 
 ```rust
-# extern crate juniper;
-use juniper::graphql_interface;
+# extern crate coasys_juniper;
+use coasys_juniper::graphql_interface;
 
 #[graphql_interface]
 trait Character {
@@ -32,10 +32,10 @@ However, to return values of such [interface][1], we should provide its implemen
 By default, Juniper generates an enum representing the values of the defined [GraphQL interface][1], and names it straightforwardly, `{Interface}Value`.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
-#[graphql_interface(for = [Human, Droid])] // enumerating all implementers is mandatory 
+#[graphql_interface(for = [Human, Droid])] // enumerating all implementers is mandatory
 trait Character {
     fn id(&self) -> &str;
 }
@@ -58,10 +58,10 @@ struct Droid {
 Also, enum name can be specified explicitly, if desired.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
-#[graphql_interface(enum = CharaterInterface, for = Human)] 
+#[graphql_interface(enum = CharaterInterface, for = Human)]
 trait Character {
     fn id(&self) -> &str;
 }
@@ -82,8 +82,8 @@ struct Human {
 GraphQL allows implementing interfaces on other interfaces in addition to objects.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, graphql_object, ID};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, graphql_object, ID};
 
 #[graphql_interface(for = [HumanValue, Luke])]
 struct Node {
@@ -106,7 +106,7 @@ impl Luke {
         &self.id
     }
 
-    // As `String` and `&str` aren't distinguished by 
+    // As `String` and `&str` aren't distinguished by
     // GraphQL spec, you can use them interchangeably.
     // Same is applied for `Cow<'a, str>`.
     //                  ⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄⌄
@@ -121,8 +121,8 @@ impl Luke {
 > __NOTE:__ Every interface has to specify all other interfaces/objects it implements or implemented for. Missing one of `for = ` or `impl = ` attributes is a compile-time error.
 
 ```compile_fail
-# extern crate juniper;
-use juniper::{graphql_interface, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
 #[derive(GraphQLObject)]
 pub struct ObjA {
@@ -130,7 +130,7 @@ pub struct ObjA {
 }
 
 #[graphql_interface(for = ObjA)]
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the evaluated program panicked at 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the evaluated program panicked at
 // 'Failed to implement interface `Character` on `ObjA`: missing interface reference in implementer's `impl` attribute.'
 struct Character {
   id: String,
@@ -157,8 +157,8 @@ These rules are recursively applied, so `Vec<Vec<I implements T>>` is a valid "s
 Also, GraphQL allows implementers to add `null`able fields, which aren't present on an original interface.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, graphql_object, ID};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, graphql_object, ID};
 
 #[graphql_interface(for = [HumanValue, Luke])]
 struct Node {
@@ -194,7 +194,7 @@ impl Luke {
     fn id(&self) -> &ID {
         &self.id
     }
-    
+
     fn home_planet(language: Option<String>) -> &'static str {
         //                   ^^^^^^^^^^^^^^
         // Notice additional `null`able field, which is missing on `Human`.
@@ -214,8 +214,8 @@ impl Luke {
 Violating GraphQL "subtyping" or additional nullable field rules is a compile-time error.
 
 ```compile_fail
-# extern crate juniper;
-use juniper::{graphql_interface, graphql_object};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, graphql_object};
 
 pub struct ObjA {
     id: String,
@@ -224,9 +224,9 @@ pub struct ObjA {
 #[graphql_object(impl = CharacterValue)]
 impl ObjA {
     fn id(&self, is_present: bool) -> &str {
-//     ^^ the evaluated program panicked at 
-//        'Failed to implement interface `Character` on `ObjA`: Field `id`: Argument `isPresent` of type `Boolean!` 
-//         isn't present on the interface and so has to be nullable.'        
+//     ^^ the evaluated program panicked at
+//        'Failed to implement interface `Character` on `ObjA`: Field `id`: Argument `isPresent` of type `Boolean!`
+//         isn't present on the interface and so has to be nullable.'
         is_present.then_some(&self.id).unwrap_or("missing")
     }
 }
@@ -240,16 +240,16 @@ struct Character {
 ```
 
 ```compile_fail
-# extern crate juniper;
-use juniper::{graphql_interface, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
 #[derive(GraphQLObject)]
 #[graphql(impl = CharacterValue)]
 pub struct ObjA {
     id: Vec<String>,
-//  ^^ the evaluated program panicked at 
-//     'Failed to implement interface `Character` on `ObjA`: Field `id`: implementor is expected to return a subtype of 
-//      interface's return object: `[String!]!` is not a subtype of `String!`.'    
+//  ^^ the evaluated program panicked at
+//     'Failed to implement interface `Character` on `ObjA`: Field `id`: implementor is expected to return a subtype of
+//      interface's return object: `[String!]!` is not a subtype of `String!`.'
 }
 
 #[graphql_interface(for = ObjA)]
@@ -266,10 +266,10 @@ struct Character {
 We may want to omit some trait methods to be assumed as [GraphQL interface][1] fields and ignore them.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
-#[graphql_interface(for = Human)]  
+#[graphql_interface(for = Human)]
 trait Character {
     fn id(&self) -> &str;
 
@@ -293,16 +293,16 @@ Similarly to [GraphQL objects][5] Juniper allows to fully customize [interface][
 
 ```rust
 # #![allow(deprecated)]
-# extern crate juniper;
-use juniper::graphql_interface;
+# extern crate coasys_juniper;
+use coasys_juniper::graphql_interface;
 
 // Renames the interface in GraphQL schema.
-#[graphql_interface(name = "MyCharacter")] 
+#[graphql_interface(name = "MyCharacter")]
 // Describes the interface in GraphQL schema.
 #[graphql_interface(description = "My own character.")]
-// Usual Rust docs are supported too as GraphQL interface description, 
+// Usual Rust docs are supported too as GraphQL interface description,
 // but `description` attribute argument takes precedence over them, if specified.
-/// This doc is absent in GraphQL schema.  
+/// This doc is absent in GraphQL schema.
 trait Character {
     // Renames the field in GraphQL schema.
     #[graphql(name = "myId")]
@@ -312,9 +312,9 @@ trait Character {
     #[graphql(deprecated = "Do not use it.")]
     // Describes the field in GraphQL schema.
     #[graphql(description = "ID of my own character.")]
-    // Usual Rust docs are supported too as field description, 
+    // Usual Rust docs are supported too as field description,
     // but `description` attribute argument takes precedence over them, if specified.
-    /// This description is absent in GraphQL schema.  
+    /// This description is absent in GraphQL schema.
     fn id(
         &self,
         // Renames the argument in GraphQL schema.
@@ -322,7 +322,7 @@ trait Character {
         // Describes the argument in GraphQL schema.
         #[graphql(description = "ID number of my own character.")]
         // Specifies the default value for the argument.
-        // The concrete value may be omitted, and the `Default::default` one 
+        // The concrete value may be omitted, and the `Default::default` one
         // will be used in such case.
         #[graphql(default = 5)]
         num: i32,
@@ -335,8 +335,8 @@ trait Character {
 Renaming policies for all [GraphQL interface][1] fields and arguments are supported as well:
 ```rust
 # #![allow(deprecated)]
-# extern crate juniper;
-use juniper::graphql_interface;
+# extern crate coasys_juniper;
+use coasys_juniper::graphql_interface;
 
 #[graphql_interface(rename_all = "none")] // disables any renaming
 trait Character {
@@ -353,14 +353,14 @@ trait Character {
 If a [`Context`][6] is required in a trait method to resolve a [GraphQL interface][1] field, specify it as an argument.
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 # use std::collections::HashMap;
-use juniper::{graphql_interface, GraphQLObject};
+use coasys_juniper::{graphql_interface, GraphQLObject};
 
 struct Database {
     humans: HashMap<String, Human>,
 }
-impl juniper::Context for Database {}
+impl coasys_juniper::Context for Database {}
 
 #[graphql_interface(for = Human)] // look, ma, context type is inferred! ＼(^o^)／
 trait Character {                 // while still can be specified via `Context = ...` attribute argument
@@ -387,14 +387,14 @@ struct Human {
 
 If an [`Executor`][4] is required in a trait method to resolve a [GraphQL interface][1] field, specify it as an argument.
 
-This requires to explicitly parametrize over [`ScalarValue`][3], as [`Executor`][4] does so. 
+This requires to explicitly parametrize over [`ScalarValue`][3], as [`Executor`][4] does so.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, graphql_object, Executor, LookAheadMethods as _, ScalarValue};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, graphql_object, Executor, LookAheadMethods as _, ScalarValue};
 
 #[graphql_interface(for = Human, Scalar = S)] // notice specifying `ScalarValue` as existing type parameter
-trait Character<S: ScalarValue> {             
+trait Character<S: ScalarValue> {
     // If a field argument is named `executor`, it's automatically assumed
     // as an executor argument.
     fn id<'a>(&self, executor: &'a Executor<'_, '_, (), S>) -> &'a str;
@@ -404,7 +404,7 @@ trait Character<S: ScalarValue> {
         &'b self,
         #[graphql(executor)] another: &Executor<'_, '_, (), S>,
     ) -> &'b str;
-    
+
     fn home_planet(&self) -> &str;
 }
 
@@ -415,7 +415,7 @@ struct Human {
 }
 #[graphql_object(scalar = S: ScalarValue, impl = CharacterValue<S>)]
 impl Human {
-    async fn id<'a, S>(&self, executor: &'a Executor<'_, '_, (), S>) -> &'a str 
+    async fn id<'a, S>(&self, executor: &'a Executor<'_, '_, (), S>) -> &'a str
     where
         S: ScalarValue,
     {
@@ -425,7 +425,7 @@ impl Human {
     async fn name<'b, S>(&'b self, #[graphql(executor)] _: &Executor<'_, '_, (), S>) -> &'b str {
         &self.name
     }
-    
+
     fn home_planet<'c, S>(&'c self, #[graphql(executor)] _: &Executor<'_, '_, (), S>) -> &'c str {
         // Executor may not be present on the trait method  ^^^^^^^^^^^^^^^^^^^^^^^^
         &self.home_planet
@@ -443,8 +443,8 @@ impl Human {
 By default, `#[graphql_interface]` macro generates code, which is generic over a [`ScalarValue`][3] type. This may introduce a problem when at least one of [GraphQL interface][1] implementers is restricted to a concrete [`ScalarValue`][3] type in its implementation. To resolve such problem, a concrete [`ScalarValue`][3] type should be specified.
 
 ```rust
-# extern crate juniper;
-use juniper::{graphql_interface, DefaultScalarValue, GraphQLObject};
+# extern crate coasys_juniper;
+use coasys_juniper::{graphql_interface, DefaultScalarValue, GraphQLObject};
 
 #[graphql_interface(for = [Human, Droid])]
 #[graphql_interface(scalar = DefaultScalarValue)] // removing this line will fail compilation

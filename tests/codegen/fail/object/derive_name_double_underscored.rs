@@ -1,4 +1,4 @@
-use juniper::GraphQLObject;
+use coasys_juniper::GraphQLObject;
 
 #[derive(GraphQLObject)]
 struct __Obj {

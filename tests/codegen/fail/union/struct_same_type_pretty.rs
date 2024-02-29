@@ -1,4 +1,4 @@
-use juniper::GraphQLUnion;
+use coasys_juniper::GraphQLUnion;
 
 #[derive(GraphQLUnion)]
 #[graphql(on i32 = Character::a)]

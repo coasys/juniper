@@ -6,17 +6,17 @@ attribute, similar to simple objects and enums:
 
 ```rust
 # #![allow(unused_variables)]
-# extern crate juniper;
-#[derive(juniper::GraphQLInputObject)]
+# extern crate coasys_juniper;
+#[derive(coasys_juniper::GraphQLInputObject)]
 struct Coordinate {
     latitude: f64,
     longitude: f64
 }
 
 struct Root;
-# #[derive(juniper::GraphQLObject)] struct User { name: String }
+# #[derive(coasys_juniper::GraphQLObject)] struct User { name: String }
 
-#[juniper::graphql_object]
+#[coasys_juniper::graphql_object]
 impl Root {
     fn users_at_location(coordinate: Coordinate, radius: f64) -> Vec<User> {
         // Send coordinate to database
@@ -35,8 +35,8 @@ and add documentation to both the type and the fields:
 
 ```rust
 # #![allow(unused_variables)]
-# extern crate juniper;
-#[derive(juniper::GraphQLInputObject)]
+# extern crate coasys_juniper;
+#[derive(coasys_juniper::GraphQLInputObject)]
 #[graphql(name="Coordinate", description="A position on the globe")]
 struct WorldCoordinate {
     #[graphql(name="lat", description="The latitude")]
@@ -47,9 +47,9 @@ struct WorldCoordinate {
 }
 
 struct Root;
-# #[derive(juniper::GraphQLObject)] struct User { name: String }
+# #[derive(coasys_juniper::GraphQLObject)] struct User { name: String }
 
-#[juniper::graphql_object]
+#[coasys_juniper::graphql_object]
 impl Root {
     fn users_at_location(coordinate: WorldCoordinate, radius: f64) -> Vec<User> {
         // Send coordinate to database

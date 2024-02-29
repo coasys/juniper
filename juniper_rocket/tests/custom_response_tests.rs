@@ -1,4 +1,4 @@
-use juniper_rocket::GraphQLResponse;
+use coasys_juniper_rocket::GraphQLResponse;
 use rocket::http::Status;
 
 #[test]

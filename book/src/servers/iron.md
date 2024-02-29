@@ -31,14 +31,14 @@ set up other global data that the schema might require.
 In this example, we won't use any global data so we just return an empty value.
 
 ```rust,ignore
-extern crate juniper;
+extern crate coasys_juniper;
 extern crate juniper_iron;
 extern crate iron;
 extern crate mount;
 
 use mount::Mount;
 use iron::prelude::*;
-use juniper::EmptyMutation;
+use coasys_juniper::EmptyMutation;
 use juniper_iron::GraphQLHandler;
 
 fn context_factory(_: &mut Request) -> IronResult<()> {
@@ -47,7 +47,7 @@ fn context_factory(_: &mut Request) -> IronResult<()> {
 
 struct Root;
 
-#[juniper::graphql_object]
+#[coasys_juniper::graphql_object]
 impl Root {
     fn foo() -> String {
         "Bar".into()
@@ -79,7 +79,7 @@ If you want to access e.g. the source IP address of the request from a field
 resolver, you need to pass this data using Juniper's [context feature](../types/objects/using_contexts.md).
 
 ```rust,ignore
-# extern crate juniper;
+# extern crate coasys_juniper;
 # extern crate juniper_iron;
 # extern crate iron;
 # use iron::prelude::*;
@@ -89,7 +89,7 @@ struct Context {
     remote_addr: SocketAddr,
 }
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 fn context_factory(req: &mut Request) -> IronResult<Context> {
     Ok(Context {
@@ -99,7 +99,7 @@ fn context_factory(req: &mut Request) -> IronResult<Context> {
 
 struct Root;
 
-#[juniper::graphql_object(
+#[coasys_juniper::graphql_object(
     Context = Context,
 )]
 impl Root {
@@ -112,7 +112,7 @@ impl Root {
 #     let _graphql_endpoint = juniper_iron::GraphQLHandler::new(
 #         context_factory,
 #         Root,
-#         juniper::EmptyMutation::<Context>::new(),
+#         coasys_juniper::EmptyMutation::<Context>::new(),
 #     );
 # }
 ```

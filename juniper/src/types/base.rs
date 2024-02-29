@@ -303,7 +303,7 @@ where
 /// `User` object as shown in the example in the documentation root:
 /// ```
 /// # use std::collections::HashMap;
-/// use juniper::{
+/// use coasys_juniper::{
 ///     meta::MetaType, Arguments, Context, DefaultScalarValue, Executor, ExecutionResult,
 ///     FieldResult, GraphQLType, GraphQLValue, Registry,
 /// };

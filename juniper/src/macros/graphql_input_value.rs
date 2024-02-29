@@ -9,10 +9,10 @@
 /// - [`InputValue::Enum`] is constructed with `ident`, so to capture outer
 ///   variable as [`InputValue::Scalar`] surround it with parens: `(var)`.
 /// ```rust
-/// # use juniper::{graphql_input_value, graphql_value};
+/// # use coasys_juniper::{graphql_input_value, graphql_value};
 /// #
-/// # type InputValue = juniper::InputValue;
-/// # type Value = juniper::Value;
+/// # type InputValue = coasys_juniper::InputValue;
+/// # type Value = coasys_juniper::Value;
 /// #
 /// const OUTER_VAR: i32 = 42;
 /// assert_eq!(graphql_value!(OUTER_VAR), Value::scalar(42));
@@ -22,9 +22,9 @@
 ///
 /// - [`InputValue::Variable`] is constructed by prefixing `ident` with `@`.
 /// ```rust
-/// # use juniper::graphql_input_value;
+/// # use coasys_juniper::graphql_input_value;
 /// #
-/// # type InputValue = juniper::InputValue;
+/// # type InputValue = coasys_juniper::InputValue;
 /// #
 /// assert_eq!(graphql_input_value!(@var), InputValue::variable("var"));
 /// ```
@@ -33,7 +33,7 @@
 /// ```rust
 /// # use std::borrow::Cow;
 /// #
-/// # use juniper::{graphql_input_value, InputValue};
+/// # use coasys_juniper::{graphql_input_value, InputValue};
 /// #
 /// let code = 200;
 /// let features = vec!["key", "value"];
@@ -55,7 +55,7 @@
 /// # Example
 ///
 /// ```rust
-/// # use juniper::{graphql_input_value, InputValue};
+/// # use coasys_juniper::{graphql_input_value, InputValue};
 /// #
 /// # type V = InputValue;
 /// #

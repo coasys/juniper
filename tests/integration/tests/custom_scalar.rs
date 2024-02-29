@@ -3,7 +3,7 @@ pub mod common;
 use std::pin::Pin;
 
 use futures::{stream, Stream};
-use juniper::{
+use coasys_juniper::{
     execute, graphql_input_value, graphql_object, graphql_scalar, graphql_subscription,
     graphql_vars,
     parser::{ParseError, ScalarToken, Token},

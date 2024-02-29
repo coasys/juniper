@@ -979,7 +979,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// >           `impl = ` attributes is an understandable compile-time error.
 ///
 /// ```rust
-/// # extern crate juniper;
+/// # extern crate coasys_juniper;
 /// use coasys_juniper::{graphql_interface, graphql_object, ID};
 ///
 /// #[graphql_interface(for = [HumanValue, Luke])]
@@ -1034,7 +1034,7 @@ pub fn derive_scalar_value(input: TokenStream) -> TokenStream {
 /// present on an original interface.
 ///
 /// ```rust
-/// # extern crate juniper;
+/// # extern crate coasys_juniper;
 /// use coasys_juniper::{graphql_interface, graphql_object, ID};
 ///
 /// #[graphql_interface(for = [HumanValue, Luke])]

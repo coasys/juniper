@@ -1,4 +1,4 @@
-use juniper::ScalarValue;
+use coasys_juniper::ScalarValue;
 
 #[derive(Clone, Debug, PartialEq, ScalarValue)]
 pub enum DefaultScalarValue {

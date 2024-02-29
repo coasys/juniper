@@ -113,21 +113,21 @@ pub type CultLoader = Loader<i32, Cult, CultBatcher>;
 // To create a new loader
 pub fn get_loader() -> CultLoader {
     Loader::new(CultBatcher)
-      // Usually a DataLoader will coalesce all individual loads which occur 
+      // Usually a DataLoader will coalesce all individual loads which occur
       // within a single frame of execution before calling your batch function with all requested keys.
-      // However sometimes this behavior is not desirable or optimal. 
+      // However sometimes this behavior is not desirable or optimal.
       // Perhaps you expect requests to be spread out over a few subsequent ticks
-      // See: https://github.com/cksac/dataloader-rs/issues/12 
-      // More info: https://github.com/graphql/dataloader#batch-scheduling 
+      // See: https://github.com/cksac/dataloader-rs/issues/12
+      // More info: https://github.com/graphql/dataloader#batch-scheduling
       // A larger yield count will allow more requests to append to batch but will wait longer before actual load.
       .with_yield_count(100)
 }
 
-#[juniper::graphql_object(Context = Context)]
+#[coasys_juniper::graphql_object(Context = Context)]
 impl Cult {
   //  your resolvers
 
-  // To call the dataloader 
+  // To call the dataloader
   pub async fn cult_by_id(ctx: &Context, id: i32) -> Cult {
     ctx.cult_loader.load(id).await
   }
@@ -150,14 +150,14 @@ For example:
 
 _When you declare your context_
 ```rust, ignore
-use juniper;
+use coasys_juniper::;
 
 #[derive(Clone)]
 pub struct Context {
     pub cult_loader: CultLoader,
 }
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 impl Context {
     pub fn new(cult_loader: CultLoader) -> Self {
@@ -180,7 +180,7 @@ pub async fn graphql(
     let ctx = Context::new(cult_loader);
 
     // Execute
-    let res = data.execute(&st, &ctx).await; 
+    let res = data.execute(&st, &ctx).await;
     let json = serde_json::to_string(&res).map_err(error::ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok()

@@ -16,7 +16,7 @@ note: ...which requires expanding type alias `Node2Value`...
 note: cycle used when collecting item types in top-level module
   --> fail/interface/trait/cyclic_impl.rs:1:1
    |
-1  | / use juniper::graphql_interface;
+1  | / use coasys_juniper::graphql_interface;
 2  | |
 3  | | #[graphql_interface(impl = Node2Value, for = Node2Value)]
 4  | | trait Node1 {

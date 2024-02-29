@@ -31,10 +31,10 @@ result can then be converted to JSON for use with tools and libraries such as
 
 ```rust
 # #![allow(unused_variables)]
-# extern crate juniper;
+# extern crate coasys_juniper;
 # extern crate serde_json;
-use juniper::{
-    graphql_object, EmptyMutation, EmptySubscription, FieldResult, 
+use coasys_juniper::{
+    graphql_object, EmptyMutation, EmptySubscription, FieldResult,
     GraphQLObject, IntrospectionFormat,
 };
 
@@ -46,7 +46,7 @@ struct Example {
 }
 
 struct Context;
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 struct Query;
 
@@ -57,10 +57,10 @@ impl Query {
    }
 }
 
-type Schema = juniper::RootNode<
-    'static, 
-    Query, 
-    EmptyMutation<Context>, 
+type Schema = coasys_juniper::RootNode<
+    'static,
+    Query,
+    EmptyMutation<Context>,
     EmptySubscription<Context>
 >;
 
@@ -69,7 +69,7 @@ fn main() {
     let ctx = Context;
 
     // Run the built-in introspection query.
-    let (res, _errors) = juniper::introspect(
+    let (res, _errors) = coasys_juniper::introspect(
         &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),
         &ctx,
         IntrospectionFormat::default(),

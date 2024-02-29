@@ -5,7 +5,7 @@
 /// The subscriptions endpoint URL can optionally be provided. For example:
 ///
 /// ```
-/// # use juniper::http::graphiql::graphiql_source;
+/// # use coasys_juniper::http::graphiql::graphiql_source;
 /// let graphiql = graphiql_source("/graphql", Some("/subscriptions"));
 /// ```
 pub fn graphiql_source(

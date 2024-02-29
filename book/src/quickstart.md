@@ -25,10 +25,10 @@ resolvers, which you will use for the `Query` and `Mutation` roots.
 
 ```rust
 # #![allow(unused_variables)]
-# extern crate juniper;
+# extern crate coasys_juniper;
 # use std::fmt::Display;
-use juniper::{
-    graphql_object, EmptySubscription, FieldResult, GraphQLEnum, 
+use coasys_juniper::{
+    graphql_object, EmptySubscription, FieldResult, GraphQLEnum,
     GraphQLInputObject, GraphQLObject, ScalarValue,
 };
 #
@@ -76,7 +76,7 @@ struct Context {
 }
 
 // To make our context usable by Juniper, we have to implement a marker trait.
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 struct Query;
 
@@ -127,7 +127,7 @@ impl Mutation {
 
 // A root schema consists of a query, a mutation, and a subscription.
 // Request queries can be executed against a RootNode.
-type Schema = juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
+type Schema = coasys_juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
 #
 # fn main() {
 #   let _ = Schema::new(Query, Mutation, EmptySubscription::new());
@@ -142,13 +142,13 @@ Juniper is a library that can be used in many contexts--it does not require a se
 
 ## Executor
 
-You can invoke `juniper::execute` directly to run a GraphQL query:
+You can invoke `coasys_juniper::execute` directly to run a GraphQL query:
 
 ```rust
 # // Only needed due to 2018 edition because the macro is not accessible.
-# #[macro_use] extern crate juniper;
-use juniper::{
-    graphql_object, EmptyMutation, EmptySubscription, FieldResult, 
+# #[macro_use] extern crate coasys_juniper;
+use coasys_juniper::{
+    graphql_object, EmptyMutation, EmptySubscription, FieldResult,
     GraphQLEnum, Variables, graphql_value,
 };
 
@@ -162,7 +162,7 @@ enum Episode {
 // Arbitrary context data.
 struct Ctx(Episode);
 
-impl juniper::Context for Ctx {}
+impl coasys_juniper::Context for Ctx {}
 
 struct Query;
 
@@ -175,14 +175,14 @@ impl Query {
 
 // A root schema consists of a query, a mutation, and a subscription.
 // Request queries can be executed against a RootNode.
-type Schema = juniper::RootNode<'static, Query, EmptyMutation<Ctx>, EmptySubscription<Ctx>>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation<Ctx>, EmptySubscription<Ctx>>;
 
 fn main() {
     // Create a context object.
     let ctx = Ctx(Episode::NewHope);
 
     // Run the executor.
-    let (res, _errors) = juniper::execute_sync(
+    let (res, _errors) = coasys_juniper::execute_sync(
         "query { favoriteEpisode }",
         None,
         &Schema::new(Query, EmptyMutation::new(), EmptySubscription::new()),

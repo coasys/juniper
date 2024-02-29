@@ -28,7 +28,7 @@ use warp::{body, filters::BoxedFilter, http, hyper::body::Bytes, query, Filter};
 /// # use std::sync::Arc;
 /// # use warp::Filter;
 /// # use coasys_juniper::{graphql_object, EmptyMutation, EmptySubscription, RootNode};
-/// # use juniper_warp::make_graphql_filter;
+/// # use coasys_juniper_warp::make_graphql_filter;
 /// #
 /// type UserId = String;
 /// # #[derive(Debug)]
@@ -273,7 +273,7 @@ fn build_response(response: Result<(Vec<u8>, bool), anyhow::Error>) -> http::Res
 ///
 /// ```
 /// # use warp::Filter;
-/// # use juniper_warp::graphiql_filter;
+/// # use coasys_juniper_warp::graphiql_filter;
 /// #
 /// let graphiql_route = warp::path("graphiql").and(graphiql_filter("/graphql",
 /// None));
@@ -283,7 +283,7 @@ fn build_response(response: Result<(Vec<u8>, bool), anyhow::Error>) -> http::Res
 ///
 /// ```
 /// # use warp::Filter;
-/// # use juniper_warp::graphiql_filter;
+/// # use coasys_juniper_warp::graphiql_filter;
 /// #
 /// let graphiql_route = warp::path("graphiql").and(graphiql_filter("/graphql",
 /// Some("ws://localhost:8080/subscriptions")));
@@ -349,8 +349,8 @@ pub mod subscriptions {
         },
         GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue,
     };
-    use juniper_graphql_transport_ws;
-    use juniper_graphql_ws;
+    use coasys_juniper_graphql_transport_ws;
+    use coasys_juniper_graphql_ws;
     use warp::{filters::BoxedFilter, reply::Reply, Filter as _};
 
     struct Message(warp::ws::Message);

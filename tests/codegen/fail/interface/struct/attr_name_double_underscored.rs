@@ -1,4 +1,4 @@
-use juniper::graphql_interface;
+use coasys_juniper::graphql_interface;
 
 #[graphql_interface]
 struct __Character {

@@ -1,7 +1,7 @@
 //! Checks that using a fragment of an implementation in an interface works okay.
 //! See [#407](https://github.com/graphql-rust/juniper/issues/407) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_interface, graphql_object, graphql_vars, EmptyMutation, EmptySubscription,
     GraphQLObject,
 };
@@ -42,7 +42,7 @@ impl Query {
     }
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
 
 #[tokio::test]
 async fn fragments_in_interface() {
@@ -65,12 +65,12 @@ async fn fragments_in_interface() {
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
 
-    let (_, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (_, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
     assert_eq!(errors.len(), 0);
 
-    let (_, errors) = juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+    let (_, errors) = coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
     assert_eq!(errors.len(), 0);
 }
 
@@ -99,11 +99,11 @@ async fn inline_fragments_in_interface() {
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
 
-    let (_, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (_, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
     assert_eq!(errors.len(), 0);
 
-    let (_, errors) = juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+    let (_, errors) = coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
     assert_eq!(errors.len(), 0);
 }

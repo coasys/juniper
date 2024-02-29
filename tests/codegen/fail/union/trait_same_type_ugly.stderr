@@ -7,4 +7,4 @@ error[E0119]: conflicting implementations of trait `MutuallyExclusive` for type 
   | first implementation here
   | conflicting implementation for `std::string::String`
   |
-  = note: this error originates in the macro `::juniper::sa::assert_type_ne_all` which comes from the expansion of the attribute macro `graphql_union` (in Nightly builds, run with -Z macro-backtrace for more info)
+  = note: this error originates in the macro `::coasys_juniper::sa::assert_type_ne_all` which comes from the expansion of the attribute macro `graphql_union` (in Nightly builds, run with -Z macro-backtrace for more info)

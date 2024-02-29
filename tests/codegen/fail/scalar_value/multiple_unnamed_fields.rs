@@ -1,4 +1,4 @@
-#[derive(juniper::ScalarValue)]
+#[derive(coasys_juniper::ScalarValue)]
 enum ScalarValue {
     Variant(u32, i64),
 }

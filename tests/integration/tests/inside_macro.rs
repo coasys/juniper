@@ -3,7 +3,7 @@
 //! See [#1051](https://github.com/graphql-rust/juniper/pull/1051) and
 //! [#1054](https://github.com/graphql-rust/juniper/pull/1054) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_value, graphql_vars, EmptyMutation, EmptySubscription, RootNode,
 };
 
@@ -30,7 +30,7 @@ async fn works() {
     "#;
 
     let schema = RootNode::new(Unit, EmptyMutation::new(), EmptySubscription::new());
-    let (res, errs) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errs) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 

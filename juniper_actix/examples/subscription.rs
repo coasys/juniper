@@ -10,13 +10,13 @@ use actix_web::{
     App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 
-use juniper::{
+use coasys_juniper::{
     graphql_subscription, graphql_value,
     tests::fixtures::starwars::schema::{Database, Query},
     EmptyMutation, FieldError, GraphQLObject, RootNode,
 };
-use juniper_actix::{graphiql_handler, graphql_handler, playground_handler, subscriptions};
-use juniper_graphql_ws::ConnectionConfig;
+use coasys_juniper_actix::{graphiql_handler, graphql_handler, playground_handler, subscriptions};
+use coasys_juniper_graphql_ws::ConnectionConfig;
 
 type Schema = RootNode<'static, Query, EmptyMutation<Database>, Subscription>;
 

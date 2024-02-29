@@ -1,7 +1,7 @@
 //! Checks that interface field resolves okay on a union.
 //! See [#798](https://github.com/graphql-rust/juniper/issues/798) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_interface, graphql_object, graphql_value, graphql_vars, EmptyMutation,
     EmptySubscription, GraphQLObject, GraphQLUnion, RootNode,
 };
@@ -75,7 +75,7 @@ async fn interface_inline_fragment_on_union() {
     "#;
 
     let schema = Schema::new(Query::Human, EmptyMutation::new(), EmptySubscription::new());
-    let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 
@@ -93,7 +93,7 @@ async fn interface_inline_fragment_on_union() {
 
     let schema = Schema::new(Query::Droid, EmptyMutation::new(), EmptySubscription::new());
     let (res, errors) =
-        juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+        coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
 
     assert_eq!(errors.len(), 0);
     assert_eq!(
@@ -130,7 +130,7 @@ async fn interface_fragment_on_union() {
     "#;
 
     let schema = Schema::new(Query::Human, EmptyMutation::new(), EmptySubscription::new());
-    let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 
@@ -148,7 +148,7 @@ async fn interface_fragment_on_union() {
 
     let schema = Schema::new(Query::Droid, EmptyMutation::new(), EmptySubscription::new());
     let (res, errors) =
-        juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+        coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
 
     assert_eq!(errors.len(), 0);
     assert_eq!(

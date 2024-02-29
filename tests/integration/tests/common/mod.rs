@@ -1,12 +1,12 @@
 use std::fmt;
 
-use juniper::ScalarValue;
+use coasys_juniper::ScalarValue;
 use serde::{de, Deserialize, Deserializer, Serialize};
 
 /// Common utilities used across tests.
 pub mod util {
     use futures::StreamExt as _;
-    use juniper::{
+    use coasys_juniper::{
         graphql_value, DefaultScalarValue, EmptyMutation, EmptySubscription, ExecutionError,
         GraphQLError, GraphQLType, RootNode, ScalarValue, Value, ValuesStream,
     };
@@ -39,7 +39,7 @@ pub mod util {
     }
 
     /// Extracts a single next value from the result returned by
-    /// [`juniper::resolve_into_stream()`] and transforms it into a regular
+    /// [`coasys_juniper::resolve_into_stream()`] and transforms it into a regular
     /// [`Value`].
     pub async fn extract_next<S: ScalarValue>(
         input: Result<(Value<ValuesStream<'_, S>>, Vec<ExecutionError<S>>), GraphQLError>,

@@ -8,7 +8,7 @@
 /// ```rust
 /// # use std::borrow::Cow;
 /// #
-/// # use juniper::{graphql_vars, Variables};
+/// # use coasys_juniper::{graphql_vars, Variables};
 /// #
 /// let code = 200;
 /// let features = vec!["key", "value"];

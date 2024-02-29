@@ -20,14 +20,14 @@ For recoverable errors, Juniper works well with the built-in `Result` type, you
 can use the `?` operator and things will generally just work as you expect them to:
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 use std::{
     str,
     path::PathBuf,
     fs::{File},
     io::{Read},
 };
-use juniper::{graphql_object, FieldResult};
+use coasys_juniper::{graphql_object, FieldResult};
 
 struct Example {
     filename: PathBuf,
@@ -131,8 +131,8 @@ Sometimes it is desirable to return additional structured error information
 to clients. This can be accomplished by implementing [`IntoFieldError`](https://docs.rs/juniper/latest/juniper/trait.IntoFieldError.html):
 
 ```rust
-# #[macro_use] extern crate juniper;
-# use juniper::{graphql_object, FieldError, IntoFieldError, ScalarValue};
+# #[macro_use] extern crate coasys_juniper;
+# use coasys_juniper::{graphql_object, FieldError, IntoFieldError, ScalarValue};
 #
 enum CustomError {
     WhateverNotSet,
@@ -207,8 +207,8 @@ the string contains a server-side localized error message. However, it is also
 possible to return a unique string identifier and have the client present a localized string to the user.
 
 ```rust
-# extern crate juniper;
-# use juniper::{graphql_object, GraphQLObject, GraphQLUnion};
+# extern crate coasys_juniper;
+# use coasys_juniper::{graphql_object, GraphQLObject, GraphQLUnion};
 #
 #[derive(GraphQLObject)]
 pub struct Item {
@@ -306,8 +306,8 @@ before. Each resolver function has a custom `ValidationResult` which
 contains only fields provided by the function.
 
 ```rust
-# extern crate juniper;
-# use juniper::{graphql_object, GraphQLObject, GraphQLUnion};
+# extern crate coasys_juniper;
+# use coasys_juniper::{graphql_object, GraphQLObject, GraphQLUnion};
 #
 #[derive(GraphQLObject)]
 pub struct Item {
@@ -386,9 +386,9 @@ and would generate errors. Since it is not common for the database to
 fail, the corresponding error is returned as a critical error:
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 #
-use juniper::{graphql_object, graphql_value, FieldError, GraphQLObject, GraphQLUnion, ScalarValue};
+use coasys_juniper::{graphql_object, graphql_value, FieldError, GraphQLObject, GraphQLUnion, ScalarValue};
 
 #[derive(GraphQLObject)]
 pub struct Item {
@@ -412,7 +412,7 @@ pub enum ApiError {
     Database,
 }
 
-impl<S: ScalarValue> juniper::IntoFieldError<S> for ApiError {
+impl<S: ScalarValue> coasys_juniper::IntoFieldError<S> for ApiError {
     fn into_field_error(self) -> FieldError<S> {
         match self {
             ApiError::Database => FieldError::new(

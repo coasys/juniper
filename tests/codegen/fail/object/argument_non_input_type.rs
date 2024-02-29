@@ -1,4 +1,4 @@
-use juniper::{graphql_object, GraphQLObject};
+use coasys_juniper::{graphql_object, GraphQLObject};
 
 #[derive(GraphQLObject)]
 struct ObjA {

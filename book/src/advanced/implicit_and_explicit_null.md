@@ -66,10 +66,10 @@ The last two cases rely on being able to distinguish between explicit and implic
 In Juniper, this can be done using the `Nullable` type:
 
 ```rust
-# extern crate juniper;
-use juniper::{FieldResult, Nullable};
+# extern crate coasys_juniper;
+use coasys_juniper::{FieldResult, Nullable};
 
-#[derive(juniper::GraphQLInputObject)]
+#[derive(coasys_juniper::GraphQLInputObject)]
 struct UserPatchInput {
     pub favorite_number: Nullable<i32>,
     pub least_favorite_number: Nullable<i32>,
@@ -99,11 +99,11 @@ impl Into<UserPatch> for UserPatchInput {
 struct Context {
     session: Session,
 }
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 struct Mutation;
 
-#[juniper::graphql_object(context = Context)]
+#[coasys_juniper::graphql_object(context = Context)]
 impl Mutation {
     fn patch_user(ctx: &Context, patch: UserPatchInput) -> FieldResult<bool> {
         ctx.session.patch_user(patch.into())?;

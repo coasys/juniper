@@ -1,4 +1,4 @@
-use juniper::GraphQLInterface;
+use coasys_juniper::GraphQLInterface;
 
 #[derive(GraphQLInterface)]
 #[graphql(impl = Node2Value, for = Node2Value)]

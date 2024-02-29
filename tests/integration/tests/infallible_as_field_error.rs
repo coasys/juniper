@@ -1,6 +1,6 @@
 use std::convert::Infallible;
 
-use juniper::graphql_object;
+use coasys_juniper::graphql_object;
 
 struct Query;
 

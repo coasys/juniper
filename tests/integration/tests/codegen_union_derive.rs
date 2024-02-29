@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_value, graphql_vars, DefaultScalarValue, GraphQLObject,
     GraphQLUnion, ScalarValue,
 };
@@ -36,7 +36,7 @@ pub enum CustomContext {
     Droid,
     Ewok,
 }
-impl juniper::Context for CustomContext {}
+impl coasys_juniper::Context for CustomContext {}
 
 #[derive(GraphQLObject)]
 #[graphql(context = CustomContext)]
@@ -1022,7 +1022,7 @@ mod external_resolver_enum {
     struct Database {
         droid: prelude::Option<Droid>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     enum QueryRoot {
         Human,
@@ -1113,7 +1113,7 @@ mod external_resolver_enum_variant {
     struct Database {
         droid: prelude::Option<Droid>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     enum QueryRoot {
         Human,
@@ -1375,7 +1375,7 @@ mod trivial_struct {
         human: prelude::Option<Human>,
         droid: prelude::Option<Droid>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     enum QueryRoot {
         Human,
@@ -1543,7 +1543,7 @@ mod generic_struct {
     struct Database {
         human: prelude::Option<Human>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     struct QueryRoot;
 
@@ -1644,7 +1644,7 @@ mod full_featured_struct {
         human: prelude::Option<Human>,
         droid: prelude::Option<Droid>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     enum QueryRoot {
         Human,

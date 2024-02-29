@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_value, graphql_vars, DefaultScalarValue, Executor, FieldError,
     FieldResult, GraphQLInputObject, GraphQLObject, IntoFieldError, ScalarValue,
 };
@@ -332,7 +332,7 @@ mod fallible_method {
 
     impl<S: ScalarValue> IntoFieldError<S> for CustomError {
         fn into_field_error(self) -> FieldError<S> {
-            juniper::FieldError::new("Whatever", graphql_value!({"code": "some"}))
+            coasys_juniper::FieldError::new("Whatever", graphql_value!({"code": "some"}))
         }
     }
 
@@ -1809,7 +1809,7 @@ mod explicit_custom_context {
 
     struct CustomContext(prelude::String);
 
-    impl juniper::Context for CustomContext {}
+    impl coasys_juniper::Context for CustomContext {}
 
     struct Human;
 
@@ -1869,7 +1869,7 @@ mod inferred_custom_context_from_field {
 
     struct CustomContext(prelude::String);
 
-    impl juniper::Context for CustomContext {}
+    impl coasys_juniper::Context for CustomContext {}
 
     struct Human;
 
@@ -1925,7 +1925,7 @@ mod inferred_custom_context_from_field {
 }
 
 mod executor {
-    use juniper::LookAheadMethods as _;
+    use coasys_juniper::LookAheadMethods as _;
 
     use super::*;
 
@@ -2021,7 +2021,7 @@ mod switched_context {
 
     struct CustomContext;
 
-    impl juniper::Context for CustomContext {}
+    impl coasys_juniper::Context for CustomContext {}
 
     #[derive(GraphQLObject)]
     #[graphql(context = CustomContext)]

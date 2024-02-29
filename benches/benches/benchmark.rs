@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 
-use juniper::InputValue;
-use juniper_benchmarks as j;
+use coasys_juniper::InputValue;
+use coasys_juniper_benchmarks as j;
 
 fn bench_sync_vs_async_users_flat_instant(c: &mut Criterion) {
     // language=GraphQL

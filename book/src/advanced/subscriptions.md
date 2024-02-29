@@ -1,14 +1,14 @@
 # Subscriptions
 ### How to achieve realtime data with GraphQL subscriptions
 
-GraphQL subscriptions are a way to push data from the server to clients requesting real-time messages 
+GraphQL subscriptions are a way to push data from the server to clients requesting real-time messages
 from the server. Subscriptions are similar to queries in that they specify a set of fields to be delivered to the client,
-but instead of immediately returning a single answer a result is sent every time a particular event happens on the 
-server. 
+but instead of immediately returning a single answer a result is sent every time a particular event happens on the
+server.
 
-In order to execute subscriptions you need a coordinator (that spawns connections) 
-and a GraphQL object that can be resolved into a stream--elements of which will then 
-be returned to the end user. The [`juniper_subscriptions`][juniper_subscriptions] crate 
+In order to execute subscriptions you need a coordinator (that spawns connections)
+and a GraphQL object that can be resolved into a stream--elements of which will then
+be returned to the end user. The [`juniper_subscriptions`][juniper_subscriptions] crate
 provides a default connection implementation. Currently subscriptions are only supported on the `master` branch. Add the following to your `Cargo.toml`:
 ```toml
 [dependencies]
@@ -18,22 +18,22 @@ juniper_subscriptions = "0.17.0"
 
 ### Schema Definition
 
-The `Subscription` is just a GraphQL object, similar to the query root and mutations object that you defined for the 
+The `Subscription` is just a GraphQL object, similar to the query root and mutations object that you defined for the
 operations in your [Schema][Schema]. For subscriptions all fields/operations should be async and should return a [Stream][Stream].
 
 This example shows a subscription operation that returns two events, the strings `Hello` and `World!`
-sequentially: 
+sequentially:
 
 ```rust
 # extern crate futures;
-# extern crate juniper;
+# extern crate coasys_juniper;
 # use std::pin::Pin;
 # use futures::Stream;
-# use juniper::{graphql_object, graphql_subscription, FieldError};
+# use coasys_juniper::{graphql_object, graphql_subscription, FieldError};
 #
 # #[derive(Clone)]
 # pub struct Database;
-# impl juniper::Context for Database {}
+# impl coasys_juniper::Context for Database {}
 
 # pub struct Query;
 # #[graphql_object(context = Database)]
@@ -66,56 +66,56 @@ impl Subscription {
 
 Subscriptions require a bit more resources than regular queries and provide a great vector for DOS attacks. This can can bring down a server easily if not handled correctly. The [`SubscriptionCoordinator`][SubscriptionCoordinator] trait provides coordination logic to enable functionality like DOS attack mitigation and resource limits.
 
-The [`SubscriptionCoordinator`][SubscriptionCoordinator] contains the schema and can keep track of opened connections, handle subscription 
-start and end, and maintain a global subscription id for each subscription. Each time a connection is established,  
-the [`SubscriptionCoordinator`][SubscriptionCoordinator] spawns a [`SubscriptionConnection`][SubscriptionConnection]. The [`SubscriptionConnection`][SubscriptionConnection] handles a single connection, providing resolver logic for a client stream as well as reconnection 
+The [`SubscriptionCoordinator`][SubscriptionCoordinator] contains the schema and can keep track of opened connections, handle subscription
+start and end, and maintain a global subscription id for each subscription. Each time a connection is established,
+the [`SubscriptionCoordinator`][SubscriptionCoordinator] spawns a [`SubscriptionConnection`][SubscriptionConnection]. The [`SubscriptionConnection`][SubscriptionConnection] handles a single connection, providing resolver logic for a client stream as well as reconnection
 and shutdown logic.
 
 
-While you can implement [`SubscriptionCoordinator`][SubscriptionCoordinator] yourself, Juniper contains a simple and generic implementation called [`Coordinator`][Coordinator].  The `subscribe` 
+While you can implement [`SubscriptionCoordinator`][SubscriptionCoordinator] yourself, Juniper contains a simple and generic implementation called [`Coordinator`][Coordinator].  The `subscribe`
 operation returns a [`Future`][Future] with an `Item` value of a `Result<Connection, GraphQLError>`,
 where [`Connection`][Connection] is a `Stream` of values returned by the operation and [`GraphQLError`][GraphQLError] is the error when the subscription fails.
 
 ```rust
 # #![allow(dead_code)]
 # extern crate futures;
-# extern crate juniper;
+# extern crate coasys_juniper;
 # extern crate juniper_subscriptions;
 # extern crate serde_json;
-# use juniper::{
+# use coasys_juniper::{
 #     http::GraphQLRequest,
-#     graphql_object, graphql_subscription, 
-#     DefaultScalarValue, EmptyMutation, FieldError, 
+#     graphql_object, graphql_subscription,
+#     DefaultScalarValue, EmptyMutation, FieldError,
 #     RootNode, SubscriptionCoordinator,
 # };
 # use juniper_subscriptions::Coordinator;
 # use futures::{Stream, StreamExt};
 # use std::pin::Pin;
-# 
+#
 # #[derive(Clone)]
 # pub struct Database;
-# 
-# impl juniper::Context for Database {}
-# 
+#
+# impl coasys_juniper::Context for Database {}
+#
 # impl Database {
 #     fn new() -> Self {
 #         Self
 #     }
 # }
-# 
+#
 # pub struct Query;
-# 
+#
 # #[graphql_object(context = Database)]
 # impl Query {
 #     fn hello_world() -> &'static str {
 #         "Hello World!"
 #     }
 # }
-# 
+#
 # pub struct Subscription;
-# 
+#
 # type StringStream = Pin<Box<dyn Stream<Item = Result<String, FieldError>> + Send>>;
-# 
+#
 # #[graphql_subscription(context = Database)]
 # impl Subscription {
 #     async fn hello_world() -> StringStream {
@@ -147,7 +147,7 @@ async fn run_subscription() {
 }
 #
 # fn main() { }
-```     
+```
 
 ### Web Integration and Examples
 

@@ -1,5 +1,5 @@
 use bencher::{benchmark_group, benchmark_main, Bencher};
-use juniper::{
+use coasys_juniper::{
     execute_sync, graphql_vars,
     tests::fixtures::starwars::schema::{Database, Query},
     DefaultScalarValue, EmptyMutation, EmptySubscription, RootNode,

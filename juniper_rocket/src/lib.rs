@@ -145,12 +145,12 @@ impl GraphQLResponse {
     /// fn get_graphql_handler(
     ///     cookies: &CookieJar,
     ///     context: &State<Database>,
-    ///     request: juniper_rocket::GraphQLRequest,
+    ///     request: coasys_juniper_rocket::GraphQLRequest,
     ///     schema: &State<Schema>,
-    /// ) -> juniper_rocket::GraphQLResponse {
+    /// ) -> coasys_juniper_rocket::GraphQLResponse {
     ///     if cookies.get("user_id").is_none() {
     ///         let err = FieldError::new("User is not logged in", Value::null());
-    ///         return juniper_rocket::GraphQLResponse::error(err);
+    ///         return coasys_juniper_rocket::GraphQLResponse::error(err);
     ///     }
     ///
     ///     request.execute_sync(&*schema, &*context)

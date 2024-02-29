@@ -13,11 +13,11 @@ Let's make a slightly more compact but generic implementation of [the last
 chapter](non_struct_objects.md):
 
 ```rust
-# extern crate juniper;
-# #[derive(juniper::GraphQLObject)] struct User { name: String }
-# #[derive(juniper::GraphQLObject)] struct ForumPost { title: String }
+# extern crate coasys_juniper;
+# #[derive(coasys_juniper::GraphQLObject)] struct User { name: String }
+# #[derive(coasys_juniper::GraphQLObject)] struct ForumPost { title: String }
 
-#[derive(juniper::GraphQLObject)]
+#[derive(coasys_juniper::GraphQLObject)]
 struct ValidationError {
     field: String,
     message: String,
@@ -26,7 +26,7 @@ struct ValidationError {
 # #[allow(dead_code)]
 struct MutationResult<T>(Result<T, Vec<ValidationError>>);
 
-#[juniper::graphql_object(
+#[coasys_juniper::graphql_object(
     name = "UserResult",
 )]
 impl MutationResult<User> {
@@ -39,7 +39,7 @@ impl MutationResult<User> {
     }
 }
 
-#[juniper::graphql_object(
+#[coasys_juniper::graphql_object(
     name = "ForumPostResult",
 )]
 impl MutationResult<ForumPost> {

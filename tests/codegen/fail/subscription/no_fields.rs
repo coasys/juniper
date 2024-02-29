@@ -1,4 +1,4 @@
-use juniper::graphql_subscription;
+use coasys_juniper::graphql_subscription;
 
 struct Obj;
 

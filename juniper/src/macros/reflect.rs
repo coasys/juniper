@@ -176,7 +176,7 @@ pub type WrappedValue = u128;
 /// # Examples
 ///
 /// ```rust
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     format_type,
 /// #     macros::reflect::{WrappedType, BaseType, WrappedValue, Type},
 /// #     DefaultScalarValue,
@@ -561,8 +561,8 @@ macro_rules! assert_transitive_impls {
         const _: () = {
             $({
                 let is_present = $crate::macros::reflect::str_exists_in_arr(
-                    <$implementor as ::juniper::macros::reflect::BaseType<$scalar>>::NAME,
-                    <$transitive as ::juniper::macros::reflect::BaseSubTypes<$scalar>>::NAMES,
+                    <$implementor as ::coasys_juniper::macros::reflect::BaseType<$scalar>>::NAME,
+                    <$transitive as ::coasys_juniper::macros::reflect::BaseSubTypes<$scalar>>::NAMES,
                 );
                 if !is_present {
                     const MSG: &str = $crate::const_concat!(
@@ -924,7 +924,7 @@ macro_rules! checked_hash {
 /// # Examples
 ///
 /// ```rust
-/// # use juniper::format_type;
+/// # use coasys_juniper::format_type;
 /// #
 /// assert_eq!(format_type!("String", 123), "[String]!");
 /// assert_eq!(format_type!("🦀", 123), "[🦀]!");

@@ -240,7 +240,7 @@ mod date_time {
 ///
 /// ```rust
 /// # use chrono::{FixedOffset, TimeZone};
-/// # use juniper::{
+/// # use coasys_juniper::{
 /// #     integrations::chrono::{FromFixedOffset, DateTime},
 /// #     graphql_object,
 /// # };

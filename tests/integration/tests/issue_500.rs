@@ -1,7 +1,7 @@
 //! Checks that using nested fragments works okay.
 //! See [#500](https://github.com/graphql-rust/juniper/issues/500) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_vars, EmptyMutation, EmptySubscription, Executor, ScalarValue,
 };
 
@@ -55,7 +55,7 @@ impl Country {
     }
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation<()>, EmptySubscription<()>>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation<()>, EmptySubscription<()>>;
 
 #[tokio::test]
 async fn nested_fragments() {
@@ -84,7 +84,7 @@ async fn nested_fragments() {
     "#;
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
-    let (_, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (_, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 

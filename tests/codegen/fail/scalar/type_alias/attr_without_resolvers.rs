@@ -1,4 +1,4 @@
-use juniper::graphql_scalar;
+use coasys_juniper::graphql_scalar;
 
 struct Scalar;
 

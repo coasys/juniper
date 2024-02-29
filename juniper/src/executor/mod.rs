@@ -138,7 +138,7 @@ where
 /// which makes error chaining with the `?` operator a breeze:
 ///
 /// ```rust
-/// # use juniper::{FieldError, ScalarValue};
+/// # use coasys_juniper::{FieldError, ScalarValue};
 /// fn get_string(data: Vec<u8>) -> Result<String, FieldError>
 /// {
 ///     let s = String::from_utf8(data)?;
@@ -165,7 +165,7 @@ impl<S> FieldError<S> {
     ///
     /// You can use the [`graphql_value!`] macro for construction:
     /// ```rust
-    /// use juniper::{graphql_value, FieldError};
+    /// use coasys_juniper::{graphql_value, FieldError};
     ///
     /// # let _: FieldError =
     /// FieldError::new(

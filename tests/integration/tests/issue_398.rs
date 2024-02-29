@@ -3,7 +3,7 @@
 //!
 //! Original author of this test is [@davidpdrsn](https://github.com/davidpdrsn).
 
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_vars, EmptyMutation, EmptySubscription, Executor, RootNode, ScalarValue,
 };
 
@@ -50,7 +50,7 @@ type Schema = RootNode<'static, Query, EmptyMutation<()>, EmptySubscription<()>>
 
 #[tokio::test]
 async fn lookahead_from_fragment_with_nested_type() {
-    let _ = juniper::execute(
+    let _ = coasys_juniper::execute(
         r#"
             query Query {
                 users {

@@ -129,7 +129,7 @@ pub enum ServerMessage<S> {
 
 #[cfg(test)]
 mod test {
-    use juniper::{graphql_value, DefaultScalarValue};
+    use coasys_juniper::{graphql_value, DefaultScalarValue};
 
     use super::*;
 

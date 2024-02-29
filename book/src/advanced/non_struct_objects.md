@@ -9,9 +9,9 @@ Using `Result`-like enums can be a useful way of reporting e.g. validation
 errors from a mutation:
 
 ```rust
-# extern crate juniper;
-# use juniper::{graphql_object, GraphQLObject};
-# #[derive(juniper::GraphQLObject)] struct User { name: String }
+# extern crate coasys_juniper;
+# use coasys_juniper::{graphql_object, GraphQLObject};
+# #[derive(coasys_juniper::GraphQLObject)] struct User { name: String }
 #
 #[derive(GraphQLObject)]
 struct ValidationError {

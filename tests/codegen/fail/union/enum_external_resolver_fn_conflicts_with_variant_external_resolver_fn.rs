@@ -1,4 +1,4 @@
-use juniper::{GraphQLObject, GraphQLUnion};
+use coasys_juniper::{GraphQLObject, GraphQLUnion};
 
 #[derive(GraphQLUnion)]
 #[graphql(on Human = resolve_fn1)]

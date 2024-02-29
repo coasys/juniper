@@ -2,7 +2,7 @@
 //! See [#372](https://github.com/graphql-rust/juniper/issues/372) for details.
 
 use futures::stream;
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_subscription, graphql_value, graphql_vars,
     resolve_into_stream, GraphQLError, RootNode,
 };

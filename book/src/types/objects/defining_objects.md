@@ -9,8 +9,8 @@ attribute. The other way is described in the [Complex fields](complex_fields.md)
 chapter.
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     name: String,
@@ -33,8 +33,8 @@ descriptions:
 !FILENAME GraphQL descriptions via Rust doc comments
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 /// Information about a person
 struct Person {
@@ -53,8 +53,8 @@ via the `graphql` attribute. The following example is equivalent to the above:
 !FILENAME GraphQL descriptions via attribute
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 #[graphql(description = "Information about a person")]
 struct Person {
@@ -72,8 +72,8 @@ doc comments. This enables internal Rust documentation and external GraphQL
 documentation to differ:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 #[graphql(description = "This description shows up in GraphQL")]
 /// This description shows up in RustDoc
@@ -94,7 +94,7 @@ You can only use the custom derive attribute under these circumstances:
 
 - The annotated type is a `struct`,
 - Every struct field is either
-  - A primitive type (`i32`, `f64`, `bool`, `String`, `juniper::ID`), or
+  - A primitive type (`i32`, `f64`, `bool`, `String`, `coasys_juniper::ID`), or
   - A valid custom GraphQL type, e.g. another struct marked with this attribute,
     or
   - A container/reference containing any of the above, e.g. `Vec<T>`, `Box<T>`,
@@ -103,8 +103,8 @@ You can only use the custom derive attribute under these circumstances:
 Let's see what that means for building relationships between objects:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     name: String,
@@ -130,8 +130,8 @@ By default, struct fields are converted from Rust's standard `snake_case` naming
 convention into GraphQL's `camelCase` convention:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     first_name: String, // Would be exposed as firstName in the GraphQL schema
@@ -145,8 +145,8 @@ You can override the name by using the `graphql` attribute on individual struct
 fields:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     name: String,
@@ -160,8 +160,8 @@ struct Person {
 
 Or provide a different renaming policy on a struct for all its fields:
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 #[graphql(rename_all = "none")] // disables any renaming
 struct Person {
@@ -179,8 +179,8 @@ To deprecate a field, you specify a deprecation reason using the `graphql`
 attribute:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     name: String,
@@ -201,8 +201,8 @@ only deprecate object fields and enum values.
 By default, all fields in a `GraphQLObject` are included in the generated GraphQL type. To prevent including a specific field, annotate the field with `#[graphql(ignore)]`:
 
 ```rust
-# extern crate juniper;
-# use juniper::GraphQLObject;
+# extern crate coasys_juniper;
+# use coasys_juniper::GraphQLObject;
 #[derive(GraphQLObject)]
 struct Person {
     name: String,

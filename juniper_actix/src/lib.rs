@@ -137,7 +137,7 @@ where
 /// For example:
 ///
 /// ```
-/// # use juniper_actix::graphiql_handler;
+/// # use coasys_juniper_actix::graphiql_handler;
 /// # use actix_web::{web, App};
 ///
 /// let app = App::new()
@@ -183,7 +183,7 @@ pub mod subscriptions {
         SinkExt as _, Stream, StreamExt as _,
     };
     use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
-    use juniper_graphql_transport_ws::{ArcSchema, Init};
+    use coasys_juniper_graphql_transport_ws::{ArcSchema, Init};
     use tokio::sync::Mutex;
 
     /// Serves by auto-selecting between the
@@ -848,7 +848,7 @@ mod subscription_tests {
         tests::fixtures::starwars::schema::{Database, Query, Subscription},
         EmptyMutation, LocalBoxFuture,
     };
-    use juniper_graphql_ws::ConnectionConfig;
+    use coasys_juniper_graphql_ws::ConnectionConfig;
     use tokio::time::timeout;
 
     use super::subscriptions::graphql_ws_handler;

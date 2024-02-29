@@ -5,8 +5,8 @@ possible values. Simple Rust enums can be converted to GraphQL enums by using a
 custom derive attribute:
 
 ```rust
-# extern crate juniper;
-#[derive(juniper::GraphQLEnum)]
+# extern crate coasys_juniper;
+#[derive(coasys_juniper::GraphQLEnum)]
 enum Episode {
     NewHope,
     Empire,
@@ -22,8 +22,8 @@ you want to override this, you can use the `graphql` attribute, similar to how
 it works when [defining objects](objects/defining_objects.md):
 
 ```rust
-# extern crate juniper;
-#[derive(juniper::GraphQLEnum)]
+# extern crate coasys_juniper;
+#[derive(coasys_juniper::GraphQLEnum)]
 enum Episode {
     #[graphql(name="NEW_HOPE")]
     NewHope,
@@ -40,8 +40,8 @@ Just like when defining objects, the type itself can be renamed and documented,
 while individual enum variants can be renamed, documented, and deprecated:
 
 ```rust
-# extern crate juniper;
-#[derive(juniper::GraphQLEnum)]
+# extern crate coasys_juniper;
+#[derive(coasys_juniper::GraphQLEnum)]
 #[graphql(name="Episode", description="An episode of Star Wars")]
 enum StarWarsEpisode {
     #[graphql(deprecated="We don't really talk about this one")]

@@ -1,4 +1,4 @@
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_value, graphql_vars, EmptyMutation, EmptySubscription,
     GraphQLInputObject, RootNode,
 };
@@ -24,7 +24,7 @@ mod as_output_field {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -68,7 +68,7 @@ mod as_input_field {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -85,7 +85,7 @@ mod as_input_field {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let res = juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
+        let res = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
 
         assert!(res.is_err());
         assert!(res
@@ -103,7 +103,7 @@ mod as_input_field {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let res = juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
+        let res = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
 
         assert!(res.is_err());
         assert!(res
@@ -121,7 +121,7 @@ mod as_input_field {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -159,7 +159,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -176,7 +176,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let res = juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
+        let res = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
 
         assert!(res.is_err());
         assert!(res
@@ -194,7 +194,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let res = juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
+        let res = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &()).await;
 
         assert!(res.is_err());
         assert!(res
@@ -212,7 +212,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -229,7 +229,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 
@@ -246,7 +246,7 @@ mod as_input_argument {
         "#;
 
         let schema = RootNode::new(Query, EmptyMutation::new(), EmptySubscription::new());
-        let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+        let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
             .await
             .unwrap();
 

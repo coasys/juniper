@@ -1,4 +1,4 @@
-use juniper::{graphql_interface, GraphQLInputObject};
+use coasys_juniper::{graphql_interface, GraphQLInputObject};
 
 #[derive(GraphQLInputObject)]
 pub struct ObjB {

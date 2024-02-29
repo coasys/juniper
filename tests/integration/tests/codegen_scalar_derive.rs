@@ -5,7 +5,7 @@ pub mod common;
 use std::fmt;
 
 use chrono::{DateTime, TimeZone, Utc};
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_value, graphql_vars, GraphQLScalar, InputValue,
     ParseScalarResult, ParseScalarValue, ScalarToken, ScalarValue, Value,
 };

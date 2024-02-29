@@ -1,7 +1,7 @@
 //! Checks that spreading untyped union fragment work okay.
 //! See [#945](https://github.com/graphql-rust/juniper/issues/945) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_value, graphql_vars, EmptyMutation, EmptySubscription, GraphQLObject,
     GraphQLUnion,
 };
@@ -40,7 +40,7 @@ struct Droid {
     pub sensor_color: String,
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
 
 #[tokio::test]
 async fn fragment_on_union() {
@@ -66,7 +66,7 @@ async fn fragment_on_union() {
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
 
-    let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 
@@ -79,7 +79,7 @@ async fn fragment_on_union() {
     );
 
     let (res, errors) =
-        juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+        coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
 
     assert_eq!(errors.len(), 0);
     assert_eq!(

@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_value, graphql_vars, parser::SourcePosition, GraphQLError,
     GraphQLInputObject, RuleError,
 };

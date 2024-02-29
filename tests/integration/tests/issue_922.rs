@@ -1,7 +1,7 @@
 //! Checks that fields on interface fragment spreads resolve okay.
 //! See [#922](https://github.com/graphql-rust/juniper/issues/922) for details.
 
-use juniper::{
+use coasys_juniper::{
     graphql_interface, graphql_object, graphql_value, graphql_vars, EmptyMutation,
     EmptySubscription, GraphQLObject,
 };
@@ -45,7 +45,7 @@ struct Droid {
     pub name: String,
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
 
 #[tokio::test]
 async fn object_fragment_on_interface() {
@@ -71,7 +71,7 @@ async fn object_fragment_on_interface() {
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
 
-    let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 
@@ -87,7 +87,7 @@ async fn object_fragment_on_interface() {
     );
 
     let (res, errors) =
-        juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+        coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
 
     assert_eq!(errors.len(), 0);
     assert_eq!(
@@ -121,7 +121,7 @@ async fn interface_fragment_on_interface() {
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
 
-    let (res, errors) = juniper::execute(query, None, &schema, &graphql_vars! {}, &())
+    let (res, errors) = coasys_juniper::execute(query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap();
 
@@ -137,7 +137,7 @@ async fn interface_fragment_on_interface() {
     );
 
     let (res, errors) =
-        juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
+        coasys_juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()).unwrap();
 
     assert_eq!(errors.len(), 0);
     assert_eq!(

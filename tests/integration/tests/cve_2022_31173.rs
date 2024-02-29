@@ -18,7 +18,7 @@
 use std::iter;
 
 use itertools::Itertools as _;
-use juniper::{graphql_object, graphql_vars, EmptyMutation, EmptySubscription};
+use coasys_juniper::{graphql_object, graphql_vars, EmptyMutation, EmptySubscription};
 
 struct Query;
 
@@ -29,7 +29,7 @@ impl Query {
     }
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation, EmptySubscription>;
 
 #[tokio::test]
 async fn test() {
@@ -50,7 +50,7 @@ async fn test() {
         .collect::<String>();
 
     let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new());
-    let _ = juniper::execute(&query, None, &schema, &graphql_vars! {}, &())
+    let _ = coasys_juniper::execute(&query, None, &schema, &graphql_vars! {}, &())
         .await
         .unwrap_err();
 }

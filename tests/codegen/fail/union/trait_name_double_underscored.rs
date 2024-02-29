@@ -1,4 +1,4 @@
-use juniper::{graphql_union, GraphQLObject};
+use coasys_juniper::{graphql_union, GraphQLObject};
 
 #[graphql_union]
 trait __Character {

@@ -1,4 +1,4 @@
-use juniper::GraphQLInputObject;
+use coasys_juniper::GraphQLInputObject;
 
 #[derive(GraphQLInputObject)]
 struct Object {}

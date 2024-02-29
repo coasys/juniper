@@ -1,7 +1,7 @@
 use std::pin::Pin;
 
 use futures::{future, stream};
-use juniper::{graphql_subscription, GraphQLInputObject};
+use coasys_juniper::{graphql_subscription, GraphQLInputObject};
 
 type Stream<'a, I> = Pin<Box<dyn futures::Stream<Item = I> + Send + 'a>>;
 

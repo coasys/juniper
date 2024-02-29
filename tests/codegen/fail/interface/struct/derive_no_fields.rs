@@ -1,4 +1,4 @@
-use juniper::GraphQLInterface;
+use coasys_juniper::GraphQLInterface;
 
 #[derive(GraphQLInterface)]
 struct Character {}

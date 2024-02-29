@@ -3,16 +3,16 @@
 use std::pin::Pin;
 
 use futures::{Stream, StreamExt};
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_subscription, http::GraphQLRequest, DefaultScalarValue, EmptyMutation,
     FieldError, RootNode, SubscriptionCoordinator,
 };
-use juniper_subscriptions::Coordinator;
+use coasys_juniper_subscriptions::Coordinator;
 
 #[derive(Clone)]
 pub struct Database;
 
-impl juniper::Context for Database {}
+impl coasys_juniper::Context for Database {}
 
 impl Database {
     fn new() -> Self {

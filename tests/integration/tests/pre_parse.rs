@@ -1,7 +1,7 @@
 use std::pin::Pin;
 
 use futures::{Stream, StreamExt, TryFutureExt};
-use juniper::{
+use coasys_juniper::{
     executor::{execute_validated_query_async, get_operation, resolve_validated_subscription},
     graphql_object, graphql_subscription, graphql_vars,
     parser::parse_document_source,
@@ -11,7 +11,7 @@ use juniper::{
 
 pub struct Context;
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 pub type UserStream = Pin<Box<dyn Stream<Item = Result<User, FieldError>> + Send>>;
 
@@ -90,7 +90,7 @@ async fn subscription_document_can_be_pre_parsed() {
         &graphql_vars! {},
         &Context,
     )
-    .map_ok(|(stream, errors)| juniper_subscriptions::Connection::from_stream(stream, errors))
+    .map_ok(|(stream, errors)| coasys_juniper_subscriptions::Connection::from_stream(stream, errors))
     .await
     .unwrap();
 

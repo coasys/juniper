@@ -3,7 +3,7 @@
 If you've got a struct that can't be mapped directly to GraphQL, that contains
 computed fields or circular structures, you have to use a more powerful tool:
 the `#[graphql_object]` procedural macro. This macro lets you define GraphQL object
-fields in a Rust `impl` block for a type. Note, that GraphQL fields are defined in 
+fields in a Rust `impl` block for a type. Note, that GraphQL fields are defined in
 this `impl` block by default. If you want to define normal methods on the struct,
 you have to do so either in a separate "normal" `impl` block, or mark them with
 `#[graphql(ignore)]` attribute to be omitted by the macro. Continuing with the
@@ -12,8 +12,8 @@ macro:
 
 ```rust
 # #![allow(dead_code)]
-# extern crate juniper;
-# use juniper::graphql_object;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_object;
 #
 struct Person {
     name: String,
@@ -49,8 +49,8 @@ While this is a bit more verbose, it lets you write any kind of function in the
 field resolver. With this syntax, fields can also take arguments:
 
 ```rust
-# extern crate juniper;
-# use juniper::{graphql_object, GraphQLObject};
+# extern crate coasys_juniper;
+# use coasys_juniper::{graphql_object, GraphQLObject};
 #
 #[derive(GraphQLObject)]
 struct Person {
@@ -84,8 +84,8 @@ to `camelCase`. If you need to override the conversion, you can simply rename
 the field. Also, the type name can be changed with an alias:
 
 ```rust
-# extern crate juniper;
-# use juniper::graphql_object;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_object;
 #
 struct Person;
 
@@ -94,7 +94,7 @@ struct Person;
     // With this attribute you can change the public GraphQL name of the type.
     name = "PersonObject",
 
-    // You can also specify a description here, which will overwrite 
+    // You can also specify a description here, which will overwrite
     // a doc comment description.
     description = "...",
 )]
@@ -132,8 +132,8 @@ impl Person {
 
 Or provide a different renaming policy on a `impl` block for all its fields:
 ```rust
-# extern crate juniper;
-# use juniper::graphql_object;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_object;
 struct Person;
 
 #[graphql_object(rename_all = "none")] // disables any renaming
@@ -154,8 +154,8 @@ Method field arguments can also be customized.
 They can have custom descriptions and default values.
 
 ```rust
-# extern crate juniper;
-# use juniper::graphql_object;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_object;
 #
 struct Person;
 
@@ -186,8 +186,8 @@ impl Person {
 
 Provide a different renaming policy on a `impl` block also implies for arguments:
 ```rust
-# extern crate juniper;
-# use juniper::graphql_object;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_object;
 struct Person;
 
 #[graphql_object(rename_all = "none")] // disables any renaming

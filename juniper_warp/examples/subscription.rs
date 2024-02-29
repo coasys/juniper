@@ -3,17 +3,17 @@
 use std::{env, pin::Pin, sync::Arc, time::Duration};
 
 use futures::Stream;
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_subscription, graphql_value, EmptyMutation, FieldError, GraphQLEnum,
     RootNode,
 };
-use juniper_graphql_transport_ws::ConnectionConfig;
+use coasys_juniper_graphql_transport_ws::ConnectionConfig;
 use warp::{http::Response, Filter};
 
 #[derive(Clone)]
 struct Context;
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 #[derive(Clone, Copy, GraphQLEnum)]
 enum UserKind {

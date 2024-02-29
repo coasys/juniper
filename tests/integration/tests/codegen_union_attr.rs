@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{
+use coasys_juniper::{
     execute, graphql_object, graphql_union, graphql_value, graphql_vars, DefaultScalarValue,
     GraphQLObject, ScalarValue,
 };
@@ -36,7 +36,7 @@ pub enum CustomContext {
     Droid,
     Ewok,
 }
-impl juniper::Context for CustomContext {}
+impl coasys_juniper::Context for CustomContext {}
 
 #[derive(GraphQLObject)]
 #[graphql(context = CustomContext)]
@@ -1105,7 +1105,7 @@ mod external_resolver {
     struct Database {
         droid: prelude::Option<Droid>,
     }
-    impl juniper::Context for Database {}
+    impl coasys_juniper::Context for Database {}
 
     enum QueryRoot {
         Human,

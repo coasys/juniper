@@ -1,4 +1,4 @@
-use juniper::{graphql_object, GraphQLInterface};
+use coasys_juniper::{graphql_object, GraphQLInterface};
 
 pub struct ObjA {
     id: String,

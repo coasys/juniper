@@ -1,11 +1,11 @@
 use std::env;
 
 use iron::prelude::*;
-use juniper::{
+use coasys_juniper::{
     tests::fixtures::starwars::schema::{Database, Query},
     DefaultScalarValue, EmptyMutation, EmptySubscription,
 };
-use juniper_iron::{GraphQLHandler, GraphiQLHandler};
+use coasys_juniper_iron::{GraphQLHandler, GraphiQLHandler};
 use logger::Logger;
 use mount::Mount;
 

@@ -1,11 +1,11 @@
-use juniper::{
+use coasys_juniper::{
     graphql_object, graphql_value, graphql_vars, EmptyMutation, EmptySubscription,
     GraphQLInputObject, Nullable, Variables,
 };
 
 pub struct Context;
 
-impl juniper::Context for Context {}
+impl coasys_juniper::Context for Context {}
 
 pub struct Query;
 
@@ -25,7 +25,7 @@ impl Query {
     }
 }
 
-type Schema = juniper::RootNode<'static, Query, EmptyMutation<Context>, EmptySubscription<Context>>;
+type Schema = coasys_juniper::RootNode<'static, Query, EmptyMutation<Context>, EmptySubscription<Context>>;
 
 #[tokio::test]
 async fn explicit_null() {
@@ -54,7 +54,7 @@ async fn explicit_null() {
     };
 
     assert_eq!(
-        juniper::execute(query, None, schema, &vars, &Context).await,
+        coasys_juniper::execute(query, None, schema, &vars, &Context).await,
         Ok((
             graphql_value!({
                 "literalOneIsExplicitNull": false,

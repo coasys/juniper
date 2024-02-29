@@ -23,7 +23,7 @@ Juniper has built-in support for:
 * `f64` as `Float`
 * `String` and `&str` as `String`
 * `bool` as `Boolean`
-* `juniper::ID` as `ID`. This type is defined [in the
+* `coasys_juniper::ID` as `ID`. This type is defined [in the
   spec](https://spec.graphql.org/October2021#sec-ID) as a type that is serialized
   as a string but can be parsed from both a string and an integer.
 
@@ -54,13 +54,13 @@ This can be done with the newtype pattern and a custom derive, similar to how
 serde supports this pattern with `#[serde(transparent)]`.
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 #
-#[derive(juniper::GraphQLScalar)]
+#[derive(coasys_juniper::GraphQLScalar)]
 #[graphql(transparent)]
 pub struct UserId(i32);
 
-#[derive(juniper::GraphQLObject)]
+#[derive(coasys_juniper::GraphQLObject)]
 struct User {
     id: UserId,
 }
@@ -68,19 +68,19 @@ struct User {
 # fn main() {}
 ```
 
-`#[derive(GraphQLScalar)]` is mostly interchangeable with `#[graphql_scalar]` 
+`#[derive(GraphQLScalar)]` is mostly interchangeable with `#[graphql_scalar]`
 attribute:
 
 ```rust
-# extern crate juniper;
-# use juniper::graphql_scalar;
+# extern crate coasys_juniper;
+# use coasys_juniper::graphql_scalar;
 #
 #[graphql_scalar(transparent)]
 pub struct UserId {
   value: i32,
 }
 
-#[derive(juniper::GraphQLObject)]
+#[derive(coasys_juniper::GraphQLObject)]
 struct User {
     id: UserId,
 }
@@ -93,9 +93,9 @@ That's it, you can now use `UserId` in your schema.
 The macro also allows for more customization:
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 /// You can use a doc comment to specify a description.
-#[derive(juniper::GraphQLScalar)]
+#[derive(coasys_juniper::GraphQLScalar)]
 #[graphql(
     transparent,
     // Overwrite the GraphQL type name.
@@ -114,8 +114,8 @@ All the methods used from newtype's field can be replaced with attributes:
 ### `#[graphql(to_output_with = <fn>)]` attribute
 
 ```rust
-# extern crate juniper;
-# use juniper::{GraphQLScalar, ScalarValue, Value};
+# extern crate coasys_juniper;
+# use coasys_juniper::{GraphQLScalar, ScalarValue, Value};
 #
 #[derive(GraphQLScalar)]
 #[graphql(to_output_with = to_output, transparent)]
@@ -125,15 +125,15 @@ struct Incremented(i32);
 fn to_output<S: ScalarValue>(v: &Incremented) -> Value<S> {
     Value::from(v.0 + 1)
 }
-# 
+#
 # fn main() {}
 ```
 
 ### `#[graphql(from_input_with = <fn>)]` attribute
 
 ```rust
-# extern crate juniper;
-# use juniper::{GraphQLScalar, InputValue, ScalarValue};
+# extern crate coasys_juniper;
+# use coasys_juniper::{GraphQLScalar, InputValue, ScalarValue};
 #
 #[derive(GraphQLScalar)]
 #[graphql(from_input_with = Self::from_input, transparent)]
@@ -142,7 +142,7 @@ struct UserId(String);
 impl UserId {
     /// Checks whether [`InputValue`] is `String` beginning with `id: ` and
     /// strips it.
-    fn from_input<S>(input: &InputValue<S>) -> Result<Self, String> 
+    fn from_input<S>(input: &InputValue<S>) -> Result<Self, String>
     where
         S: ScalarValue
     {
@@ -167,9 +167,9 @@ impl UserId {
 ### `#[graphql(parse_token_with = <fn>]` or `#[graphql(parse_token(<types>)]` attributes
 
 ```rust
-# extern crate juniper;
-# use juniper::{
-#     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue, 
+# extern crate coasys_juniper;
+# use coasys_juniper::{
+#     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 #     ScalarValue, ScalarToken, Value
 # };
 #
@@ -187,7 +187,7 @@ enum StringOrInt {
     Int(i32),
 }
 
-fn to_output<S>(v: &StringOrInt) -> Value<S> 
+fn to_output<S>(v: &StringOrInt) -> Value<S>
 where
     S: ScalarValue
 {
@@ -197,7 +197,7 @@ where
     }
 }
 
-fn from_input<S>(v: &InputValue<S>) -> Result<StringOrInt, String> 
+fn from_input<S>(v: &InputValue<S>) -> Result<StringOrInt, String>
 where
     S: ScalarValue
 {
@@ -220,15 +220,15 @@ fn parse_token<S: ScalarValue>(value: ScalarToken<'_>) -> ParseScalarResult<S> {
 
 ### `#[graphql(with = <path>)]` attribute
 
-Instead of providing all custom resolvers, you can provide path to the `to_output`, 
+Instead of providing all custom resolvers, you can provide path to the `to_output`,
 `from_input`, `parse_token` functions.
 
-Path can be simply `with = Self` (default path where macro expects resolvers to be), 
+Path can be simply `with = Self` (default path where macro expects resolvers to be),
 in case there is an impl block with custom resolvers:
 
 ```rust
-# extern crate juniper;
-# use juniper::{
+# extern crate coasys_juniper;
+# use coasys_juniper::{
 #     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 #     ScalarValue, ScalarToken, Value
 # };
@@ -247,7 +247,7 @@ impl StringOrInt {
             Self::Int(i) => Value::scalar(*i),
         }
     }
-  
+
     fn from_input<S>(v: &InputValue<S>) -> Result<Self, String>
     where
         S: ScalarValue,
@@ -257,7 +257,7 @@ impl StringOrInt {
             .or_else(|| v.as_int_value().map(Self::Int))
             .ok_or_else(|| format!("Expected `String` or `Int`, found: {v}"))
     }
-  
+
     fn parse_token<S>(value: ScalarToken<'_>) -> ParseScalarResult<S>
     where
         S: ScalarValue,
@@ -273,9 +273,9 @@ impl StringOrInt {
 Or it can be path to a module, where custom resolvers are located.
 
 ```rust
-# extern crate juniper;
-# use juniper::{
-#     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue, 
+# extern crate coasys_juniper;
+# use coasys_juniper::{
+#     GraphQLScalar, InputValue, ParseScalarResult, ParseScalarValue,
 #     ScalarValue, ScalarToken, Value
 # };
 #
@@ -298,7 +298,7 @@ mod string_or_int {
             StringOrInt::Int(i) => Value::scalar(*i),
         }
     }
-  
+
     pub(super) fn from_input<S>(v: &InputValue<S>) -> Result<StringOrInt, String>
     where
         S: ScalarValue,
@@ -308,7 +308,7 @@ mod string_or_int {
             .or_else(|| v.as_int_value().map(StringOrInt::Int))
             .ok_or_else(|| format!("Expected `String` or `Int`, found: {v}"))
     }
-  
+
     pub(super) fn parse_token<S>(value: ScalarToken<'_>) -> ParseScalarResult<S>
     where
         S: ScalarValue,
@@ -324,8 +324,8 @@ mod string_or_int {
 Also, you can partially override `#[graphql(with)]` attribute with other custom scalars.
 
 ```rust
-# extern crate juniper;
-# use juniper::{GraphQLScalar, InputValue, ParseScalarResult, ScalarValue, ScalarToken, Value};
+# extern crate coasys_juniper;
+# use coasys_juniper::{GraphQLScalar, InputValue, ParseScalarResult, ScalarValue, ScalarToken, Value};
 #
 #[derive(GraphQLScalar)]
 #[graphql(parse_token(String, i32))]
@@ -344,7 +344,7 @@ impl StringOrInt {
             Self::Int(i) => Value::scalar(*i),
         }
     }
-  
+
     fn from_input<S>(v: &InputValue<S>) -> Result<Self, String>
     where
         S: ScalarValue,
@@ -366,13 +366,13 @@ For implementing custom scalars on foreign types there is `#[graphql_scalar]` at
 > __NOTE:__ To satisfy [orphan rules] you should provide local [`ScalarValue`] implementation.
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 # mod date {
 #    pub struct Date;
 #    impl std::str::FromStr for Date {
 #        type Err = String;
 #
-#        fn from_str(_value: &str) -> Result<Self, Self::Err> { 
+#        fn from_str(_value: &str) -> Result<Self, Self::Err> {
 #            unimplemented!()
 #        }
 #    }
@@ -384,11 +384,11 @@ For implementing custom scalars on foreign types there is `#[graphql_scalar]` at
 #    }
 # }
 #
-# use juniper::DefaultScalarValue as CustomScalarValue;
-use juniper::{graphql_scalar, InputValue, ScalarValue, Value};
+# use coasys_juniper::DefaultScalarValue as CustomScalarValue;
+use coasys_juniper::{graphql_scalar, InputValue, ScalarValue, Value};
 
 #[graphql_scalar(
-    with = date_scalar, 
+    with = date_scalar,
     parse_token(String),
     scalar = CustomScalarValue,
 //           ^^^^^^^^^^^^^^^^^ Local `ScalarValue` implementation.
@@ -398,7 +398,7 @@ type Date = date::Date;
 
 mod date_scalar {
     use super::*;
-  
+
     pub(super) fn to_output(v: &Date) -> Value<CustomScalarValue> {
         Value::scalar(v.to_string())
     }

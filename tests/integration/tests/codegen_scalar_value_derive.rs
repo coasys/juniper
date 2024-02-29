@@ -2,7 +2,7 @@
 
 pub mod common;
 
-use juniper::{DefaultScalarValue, ScalarValue};
+use coasys_juniper::{DefaultScalarValue, ScalarValue};
 use serde::{Deserialize, Serialize};
 
 // Override `std::prelude` items to check whether macros expand hygienically.

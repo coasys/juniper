@@ -1,4 +1,4 @@
-use juniper::{GraphQLObject, GraphQLUnion};
+use coasys_juniper::{GraphQLObject, GraphQLUnion};
 
 #[derive(GraphQLUnion)]
 enum Character1 {

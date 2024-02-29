@@ -31,16 +31,16 @@ We would like a `friends` field on `User` that returns a list of `User` objects.
 In order to write such a field though, the database must be queried.
 
 To solve this, we mark the `Database` as a valid context type and assign it to
-the user object. 
+the user object.
 
-To gain access to the context, we need to specify an argument with the same 
+To gain access to the context, we need to specify an argument with the same
 type as the specified `Context` for the type:
 
 
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 # use std::collections::HashMap;
-# use juniper::graphql_object;
+# use coasys_juniper::graphql_object;
 #
 // This struct represents our context.
 struct Database {
@@ -48,7 +48,7 @@ struct Database {
 }
 
 // Mark the Database as a valid context type for Juniper
-impl juniper::Context for Database {}
+impl coasys_juniper::Context for Database {}
 
 struct User {
     id: i32,
@@ -60,7 +60,7 @@ struct User {
 #[graphql_object(context = Database)]
 impl User {
     // Inject the context by specifying an argument with the context type.
-    // Note: 
+    // Note:
     //   - the type must be a reference
     //   - the name of the argument SHOULD be `context`
     fn friends<'db>(&self, context: &'db Database) -> Vec<&'db User> {
@@ -70,12 +70,12 @@ impl User {
             .collect()
     }
 
-    fn name(&self) -> &str { 
-        self.name.as_str() 
+    fn name(&self) -> &str {
+        self.name.as_str()
     }
 
-    fn id(&self) -> i32 { 
-        self.id 
+    fn id(&self) -> i32 {
+        self.id
     }
 }
 #
@@ -96,21 +96,21 @@ Context cannot be specified by a mutable reference, because concurrent fields re
 
 For example, when using async runtime with [work stealing][2] (like `tokio`), which obviously requires thread safety in addition, you will need to use a corresponding async version of `RwLock`:
 ```rust
-# extern crate juniper;
+# extern crate coasys_juniper;
 # extern crate tokio;
 # use std::collections::HashMap;
-# use juniper::graphql_object;
+# use coasys_juniper::graphql_object;
 use tokio::sync::RwLock;
 
 struct Database {
     requested_count: HashMap<i32, i32>,
 }
 
-// Since we cannot directly implement juniper::Context
+// Since we cannot directly implement coasys_juniper::Context
 // for RwLock we use the newtype idiom
 struct DatabaseContext(RwLock<Database>);
 
-impl juniper::Context for DatabaseContext {}
+impl coasys_juniper::Context for DatabaseContext {}
 
 struct User {
     id: i32,
@@ -121,7 +121,7 @@ struct User {
 impl User {
     async fn times_requested<'db>(&self, context: &'db DatabaseContext) -> i32 {
         // Acquire a mutable reference and await if async RwLock is used,
-        // which is necessary if context consists async operations like 
+        // which is necessary if context consists async operations like
         // querying remote databases.
         // Obtain base type
         let DatabaseContext(context) = context;
@@ -131,12 +131,12 @@ impl User {
         context.requested_count.entry(self.id).and_modify(|e| { *e += 1 }).or_insert(1).clone()
     }
 
-    fn name(&self) -> &str { 
-        self.name.as_str() 
+    fn name(&self) -> &str {
+        self.name.as_str()
     }
 
-    fn id(&self) -> i32 { 
-        self.id 
+    fn id(&self) -> i32 {
+        self.id
     }
 }
 #

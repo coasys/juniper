@@ -1,4 +1,4 @@
-use juniper::{GraphQLEnum, GraphQLUnion};
+use coasys_juniper::{GraphQLEnum, GraphQLUnion};
 
 #[derive(GraphQLEnum)]
 pub enum Test {

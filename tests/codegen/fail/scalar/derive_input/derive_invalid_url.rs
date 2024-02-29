@@ -1,4 +1,4 @@
-use juniper::GraphQLScalar;
+use coasys_juniper::GraphQLScalar;
 
 #[derive(GraphQLScalar)]
 #[graphql(specified_by_url = "not an url", transparent)]

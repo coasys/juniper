@@ -8,7 +8,7 @@
 ///
 /// [`Value::Object`] key should implement [`AsRef`]`<`[`str`]`>`.
 /// ```rust
-/// # use juniper::{graphql_value, Value};
+/// # use coasys_juniper::{graphql_value, Value};
 /// #
 /// let code = 200;
 /// let features = ["key", "value"];
@@ -26,7 +26,7 @@
 ///
 /// Resulting JSON will look just like what you passed in.
 /// ```rust
-/// # use juniper::{graphql_value, DefaultScalarValue, Value};
+/// # use coasys_juniper::{graphql_value, DefaultScalarValue, Value};
 /// #
 /// # type V = Value<DefaultScalarValue>;
 /// #

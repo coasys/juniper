@@ -16,7 +16,7 @@ note: ...which requires expanding type alias `Node2Value`...
 note: cycle used when collecting item types in top-level module
   --> fail/interface/struct/derive_cyclic_impl.rs:1:1
    |
-1  | / use juniper::GraphQLInterface;
+1  | / use coasys_juniper::GraphQLInterface;
 2  | |
 3  | | #[derive(GraphQLInterface)]
 4  | | #[graphql(impl = Node2Value, for = Node2Value)]

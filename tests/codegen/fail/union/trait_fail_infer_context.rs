@@ -1,4 +1,4 @@
-use juniper::{graphql_union, FromContext, GraphQLObject};
+use coasys_juniper::{graphql_union, FromContext, GraphQLObject};
 
 #[graphql_union]
 trait Character {
@@ -21,10 +21,10 @@ pub struct Droid {
 }
 
 pub struct CustomContext;
-impl juniper::Context for CustomContext {}
+impl coasys_juniper::Context for CustomContext {}
 
 pub struct SubContext;
-impl juniper::Context for SubContext {}
+impl coasys_juniper::Context for SubContext {}
 
 impl FromContext<CustomContext> for SubContext {
     fn from(_: &CustomContext) -> &Self {
