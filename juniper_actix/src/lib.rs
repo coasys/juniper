@@ -183,7 +183,7 @@ pub mod subscriptions {
         SinkExt as _, Stream, StreamExt as _,
     };
     use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
-    use coasys_coasys_juniper_graphql_transport_ws::{ArcSchema, Init};
+    use coasys_juniper_graphql_transport_ws::{ArcSchema, Init};
     use tokio::sync::Mutex;
 
     /// Serves by auto-selecting between the
