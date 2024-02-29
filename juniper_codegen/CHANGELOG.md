@@ -6,7 +6,8 @@ All user visible changes to `juniper_codegen` crate will be documented in this f
 
 
 
-## master
+## [0.16.0] · 2024-02-29
+[0.16.0]: /../../tree/coasys_juniper_codegen-v0.16.0/coasys_juniper_codegen
 
 ### BC Breaks
 
