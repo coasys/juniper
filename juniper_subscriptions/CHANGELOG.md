@@ -6,7 +6,8 @@ All user visible changes to `juniper_subscriptions` crate will be documented in 
 
 
 
-## master
+## [0.17.0] · 2024-02-29
+[0.17.0]: /../../tree/coasys_juniper_subscriptions-v0.17.0/coasys_juniper_subscriptions
 
 ### BC Breaks
 

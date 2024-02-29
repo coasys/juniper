@@ -1,6 +1,6 @@
 [package]
 name = "coasys_juniper_subscriptions"
-version = "0.17.0-dev"
+version = "0.17.0"
 edition = "2021"
 rust-version = "1.65"
 description = "Juniper `SubscriptionCoordinator` and `SubscriptionConnection` implementations."
