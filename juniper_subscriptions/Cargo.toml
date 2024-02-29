@@ -1,5 +1,5 @@
 [package]
-name = "juniper_subscriptions"
+name = "coasys_juniper_subscriptions"
 version = "0.17.0-dev"
 edition = "2021"
 rust-version = "1.65"
@@ -16,7 +16,7 @@ exclude = ["/release.toml"]
 
 [dependencies]
 futures = "0.3.22"
-juniper = { version = "0.16.0-dev", path = "../juniper", default-features = false }
+coasys_juniper = { version = "0.16.0-dev", path = "../juniper", default-features = false }
 
 [dev-dependencies]
 serde_json = "1.0.18"

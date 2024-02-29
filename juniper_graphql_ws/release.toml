@@ -1,14 +1,14 @@
 [[pre-release-replacements]]
 file = "../juniper_actix/Cargo.toml"
 exactly = 1
-search = "juniper_graphql_ws = \\{ version = \"[^\"]+\""
-replace = "juniper_graphql_ws = { version = \"{{version}}\""
+search = "coasys_juniper_graphql_ws = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper_graphql_ws = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_warp/Cargo.toml"
 exactly = 1
-search = "juniper_graphql_ws = \\{ version = \"[^\"]+\""
-replace = "juniper_graphql_ws = { version = \"{{version}}\""
+search = "coasys_juniper_graphql_ws = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper_graphql_ws = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

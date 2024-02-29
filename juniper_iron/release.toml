@@ -1,8 +1,8 @@
 [[pre-release-replacements]]
 file = "../book/src/servers/iron.md"
 exactly = 1
-search = "juniper_iron = \"[^\"]+\""
-replace = "juniper_iron = \"{{version}}\""
+search = "coasys_juniper_iron = \"[^\"]+\""
+replace = "coasys_juniper_iron = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

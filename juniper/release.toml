@@ -1,80 +1,80 @@
 [[pre-release-replacements]]
 file = "../book/src/advanced/dataloaders.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/advanced/subscriptions.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/quickstart.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/servers/hyper.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/servers/iron.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/servers/rocket.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 [[pre-release-replacements]]
 file = "../book/src/servers/warp.md"
 exactly = 1
-search = "juniper = \"[^\"]+\""
-replace = "juniper = \"{{version}}\""
+search = "coasys_juniper = \"[^\"]+\""
+replace = "coasys_juniper = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_actix/Cargo.toml"
 exactly = 2
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_graphql_ws/Cargo.toml"
 exactly = 1
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_hyper/Cargo.toml"
 exactly = 2
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_iron/Cargo.toml"
 exactly = 2
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_rocket/Cargo.toml"
 exactly = 2
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_subscriptions/Cargo.toml"
 exactly = 1
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_warp/Cargo.toml"
 exactly = 2
-search = "juniper = \\{ version = \"[^\"]+\""
-replace = "juniper = { version = \"{{version}}\""
+search = "coasys_juniper = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

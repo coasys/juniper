@@ -1,20 +1,20 @@
 [[pre-release-replacements]]
 file = "../book/src/advanced/subscriptions.md"
 exactly = 1
-search = "juniper_subscriptions = \"[^\"]+\""
-replace = "juniper_subscriptions = \"{{version}}\""
+search = "coasys_juniper_subscriptions = \"[^\"]+\""
+replace = "coasys_juniper_subscriptions = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_graphql_ws/Cargo.toml"
 exactly = 1
-search = "juniper_subscriptions = \\{ version = \"[^\"]+\""
-replace = "juniper_subscriptions = { version = \"{{version}}\""
+search = "coasys_juniper_subscriptions = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper_subscriptions = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "../juniper_graphql_transport_ws/Cargo.toml"
 exactly = 1
-search = "juniper_subscriptions = \\{ version = \"[^\"]+\""
-replace = "juniper_subscriptions = { version = \"{{version}}\""
+search = "coasys_juniper_subscriptions = \\{ version = \"[^\"]+\""
+replace = "coasys_juniper_subscriptions = { version = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

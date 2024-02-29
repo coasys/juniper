@@ -1,5 +1,5 @@
 [package]
-name = "juniper_benchmarks"
+name = "coasys_juniper_benchmarks"
 version = "0.0.0"
 edition = "2021"
 authors = ["Christoph Herzog <chris@theduke.at>"]
@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 futures = "0.3"
-juniper = { path = "../juniper" }
+coasys_juniper = { path = "../juniper" }
 
 [dev-dependencies]
 criterion = "0.5"

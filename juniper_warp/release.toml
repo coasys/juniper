@@ -1,8 +1,8 @@
 [[pre-release-replacements]]
 file = "../book/src/servers/warp.md"
 exactly = 1
-search = "juniper_warp = \"[^\"]+\""
-replace = "juniper_warp = \"{{version}}\""
+search = "coasys_juniper_warp = \"[^\"]+\""
+replace = "coasys_juniper_warp = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

@@ -1,5 +1,5 @@
 [package]
-name = "juniper_actix"
+name = "coasys_juniper_actix"
 version = "0.5.0-dev"
 edition = "2021"
 rust-version = "1.68"
@@ -22,8 +22,8 @@ rustdoc-args = ["--cfg", "docsrs"]
 subscriptions = [
     "dep:actix",
     "dep:actix-web-actors",
-    "dep:juniper_graphql_transport_ws",
-    "dep:juniper_graphql_ws",
+    "dep:coasys_juniper_graphql_transport_ws",
+    "dep:coasys_juniper_graphql_ws",
     "dep:tokio",
 ]
 
@@ -34,9 +34,9 @@ actix-web = "4.4"
 actix-web-actors = { version = "4.1", optional = true }
 anyhow = "1.0.47"
 futures = "0.3.22"
-juniper = { version = "0.16.0-dev", path = "../juniper", default-features = false }
-juniper_graphql_transport_ws = { version = "0.4.0-dev", path = "../juniper_graphql_transport_ws", optional = true }
-juniper_graphql_ws = { version = "0.4.0-dev", path = "../juniper_graphql_ws", optional = true }
+coasys_juniper = { version = "0.16.0-dev", path = "../juniper", default-features = false }
+coasys_juniper_graphql_transport_ws = { version = "0.4.0-dev", path = "../juniper_graphql_transport_ws", optional = true }
+coasys_juniper_graphql_ws = { version = "0.4.0-dev", path = "../juniper_graphql_ws", optional = true }
 http = "0.2.4"
 serde = { version = "1.0.122", features = ["derive"] }
 serde_json = "1.0.18"
@@ -51,7 +51,7 @@ actix-test = "0.1"
 async-stream = "0.3"
 bytes = "1.0"
 env_logger = "0.10"
-juniper = { version = "0.16.0-dev", path = "../juniper", features = ["expose-test-schema"] }
+coasys_juniper = { version = "0.16.0-dev", path = "../juniper", features = ["expose-test-schema"] }
 log = "0.4"
 rand = "0.8"
 tokio = "1.0"

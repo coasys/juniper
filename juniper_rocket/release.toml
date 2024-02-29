@@ -1,8 +1,8 @@
 [[pre-release-replacements]]
 file = "../book/src/servers/rocket.md"
 exactly = 1
-search = "juniper_rocket = \"[^\"]+\""
-replace = "juniper_rocket = \"{{version}}\""
+search = "coasys_juniper_rocket = \"[^\"]+\""
+replace = "coasys_juniper_rocket = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"

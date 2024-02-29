@@ -1,8 +1,8 @@
 [[pre-release-replacements]]
 file = "../book/src/servers/hyper.md"
 exactly = 1
-search = "juniper_hyper = \"[^\"]+\""
-replace = "juniper_hyper = \"{{version}}\""
+search = "coasys_juniper_hyper = \"[^\"]+\""
+replace = "coasys_juniper_hyper = \"{{version}}\""
 
 [[pre-release-replacements]]
 file = "CHANGELOG.md"
