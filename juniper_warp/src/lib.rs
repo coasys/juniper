@@ -355,7 +355,7 @@ pub mod subscriptions {
 
     struct Message(warp::ws::Message);
 
-    impl<S: ScalarValue> TryFrom<Message> for juniper_graphql_ws::ClientMessage<S> {
+    impl<S: ScalarValue> TryFrom<Message> for coasys_juniper_graphql_ws::ClientMessage<S> {
         type Error = serde_json::Error;
 
         fn try_from(msg: Message) -> serde_json::Result<Self> {
@@ -367,7 +367,7 @@ pub mod subscriptions {
         }
     }
 
-    impl<S: ScalarValue> TryFrom<Message> for juniper_graphql_transport_ws::Input<S> {
+    impl<S: ScalarValue> TryFrom<Message> for coasys_juniper_graphql_transport_ws::Input<S> {
         type Error = serde_json::Error;
 
         fn try_from(msg: Message) -> serde_json::Result<Self> {
@@ -424,7 +424,7 @@ pub mod subscriptions {
     ///
     /// The `init` argument is used to provide the custom [`coasys_juniper::Context`] and additional
     /// configuration for connections. This can be a
-    /// [`juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
+    /// [`coasys_juniper_graphql_transport_ws::ConnectionConfig`] if the context and configuration are
     /// already known, or it can be a closure that gets executed asynchronously whenever a client
     /// sends the subscription initialization message. Using a closure allows to perform an
     /// authentication based on the parameters provided by a client.
@@ -436,7 +436,7 @@ pub mod subscriptions {
     /// #
     /// # use futures::Stream;
     /// # use coasys_juniper::{graphql_object, graphql_subscription, EmptyMutation, RootNode};
-    /// # use juniper_graphql_transport_ws::ConnectionConfig;
+    /// # use coasys_juniper_graphql_transport_ws::ConnectionConfig;
     /// # use juniper_warp::make_graphql_filter;
     /// # use warp::Filter as _;
     /// #
@@ -532,7 +532,7 @@ pub mod subscriptions {
         Subscription::TypeInfo: Send + Sync,
         CtxT: Unpin + Send + Sync + 'static,
         S: ScalarValue + Send + Sync + 'static,
-        I: juniper_graphql_transport_ws::Init<S, CtxT> + Clone + Send + Sync,
+        I: coasys_juniper_graphql_transport_ws::Init<S, CtxT> + Clone + Send + Sync,
     {
         let schema = schema.into();
 
@@ -569,7 +569,7 @@ pub mod subscriptions {
     /// Serves the [legacy `graphql-ws` GraphQL over WebSocket Protocol][old].
     ///
     /// The `init` argument is used to provide the context and additional configuration for
-    /// connections. This can be a [`juniper_graphql_ws::ConnectionConfig`] if the context and
+    /// connections. This can be a [`coasys_juniper_graphql_ws::ConnectionConfig`] if the context and
     /// configuration are already known, or it can be a closure that gets executed asynchronously
     /// when the client sends the `GQL_CONNECTION_INIT` message. Using a closure allows to perform
     /// an authentication based on the parameters provided by a client.
@@ -594,11 +594,11 @@ pub mod subscriptions {
         Subscription::TypeInfo: Send + Sync,
         CtxT: Unpin + Send + Sync + 'static,
         S: ScalarValue + Send + Sync + 'static,
-        I: juniper_graphql_ws::Init<S, CtxT> + Send,
+        I: coasys_juniper_graphql_ws::Init<S, CtxT> + Send,
     {
         let (ws_tx, ws_rx) = websocket.split();
         let (s_tx, s_rx) =
-            juniper_graphql_ws::Connection::new(juniper_graphql_ws::ArcSchema(root_node), init)
+            coasys_juniper_graphql_ws::Connection::new(coasys_juniper_graphql_ws::ArcSchema(root_node), init)
                 .split();
 
         let ws_rx = ws_rx.map(|r| r.map(Message));
@@ -622,7 +622,7 @@ pub mod subscriptions {
     /// Serves the [new `graphql-transport-ws` GraphQL over WebSocket Protocol][new].
     ///
     /// The `init` argument is used to provide the context and additional configuration for
-    /// connections. This can be a [`juniper_graphql_transport_ws::ConnectionConfig`] if the context
+    /// connections. This can be a [`coasys_juniper_graphql_transport_ws::ConnectionConfig`] if the context
     /// and configuration are already known, or it can be a closure that gets executed
     /// asynchronously when the client sends the `ConnectionInit` message. Using a closure allows to
     /// perform an authentication based on the parameters provided by a client.
@@ -642,21 +642,21 @@ pub mod subscriptions {
         Subscription::TypeInfo: Send + Sync,
         CtxT: Unpin + Send + Sync + 'static,
         S: ScalarValue + Send + Sync + 'static,
-        I: juniper_graphql_transport_ws::Init<S, CtxT> + Send,
+        I: coasys_juniper_graphql_transport_ws::Init<S, CtxT> + Send,
     {
         let (ws_tx, ws_rx) = websocket.split();
-        let (s_tx, s_rx) = juniper_graphql_transport_ws::Connection::new(
-            juniper_graphql_transport_ws::ArcSchema(root_node),
+        let (s_tx, s_rx) = coasys_juniper_graphql_transport_ws::Connection::new(
+            coasys_juniper_graphql_transport_ws::ArcSchema(root_node),
             init,
         )
         .split();
 
         let ws_rx = ws_rx.map(|r| r.map(Message));
         let s_rx = s_rx.map(|output| match output {
-            juniper_graphql_transport_ws::Output::Message(msg) => serde_json::to_string(&msg)
+            coasys_juniper_graphql_transport_ws::Output::Message(msg) => serde_json::to_string(&msg)
                 .map(warp::ws::Message::text)
                 .map_err(Error::Serde),
-            juniper_graphql_transport_ws::Output::Close { code, message } => {
+            coasys_juniper_graphql_transport_ws::Output::Close { code, message } => {
                 Ok(warp::ws::Message::close_with(code, message))
             }
         });
