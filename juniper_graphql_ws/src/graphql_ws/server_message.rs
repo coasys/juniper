@@ -1,4 +1,4 @@
-use juniper::{ExecutionError, Value};
+use coasys_juniper::{ExecutionError, Value};
 use serde::Serialize;
 
 pub use crate::server_message::ErrorPayload;

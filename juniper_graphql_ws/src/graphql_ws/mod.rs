@@ -20,7 +20,7 @@ use std::{
     sync::Arc, time::Duration,
 };
 
-use juniper::{
+use coasys_juniper::{
     futures::{
         channel::oneshot,
         future::{self, BoxFuture, Either, Future, FutureExt as _, TryFutureExt as _},
@@ -229,7 +229,7 @@ impl<S: Schema, I: Init<S::ScalarValue, S::Context>> ConnectionState<S, I> {
         let params = Arc::new(params);
 
         // Try to execute this as a query or mutation.
-        match juniper::execute(
+        match coasys_juniper::execute(
             &params.start_payload.query,
             params.start_payload.operation_name.as_deref(),
             params.schema.root_node(),
@@ -270,14 +270,14 @@ enum SubscriptionStartState<S: Schema> {
         id: String,
         future: BoxFuture<
             'static,
-            Result<juniper_subscriptions::Connection<'static, S::ScalarValue>, GraphQLError>,
+            Result<coasys_juniper_subscriptions::Connection<'static, S::ScalarValue>, GraphQLError>,
         >,
     },
     /// Streaming is the state after we've successfully obtained the event stream for the
     /// subscription. In this state, we're just forwarding events back to the client.
     Streaming {
         id: String,
-        stream: juniper_subscriptions::Connection<'static, S::ScalarValue>,
+        stream: coasys_juniper_subscriptions::Connection<'static, S::ScalarValue>,
     },
     /// Terminated is the state once we're all done.
     Terminated,
@@ -321,7 +321,7 @@ impl<S: Schema> Stream for SubscriptionStart<S> {
                     *state = SubscriptionStartState::ResolvingIntoStream {
                         id: id.clone(),
                         future: unsafe {
-                            juniper::resolve_into_stream(
+                            coasys_juniper::resolve_into_stream(
                                 &(*params).start_payload.query,
                                 (*params).start_payload.operation_name.as_deref(),
                                 (*params).schema.root_node(),
@@ -330,7 +330,7 @@ impl<S: Schema> Stream for SubscriptionStart<S> {
                             )
                         }
                         .map_ok(|(stream, errors)| {
-                            juniper_subscriptions::Connection::from_stream(stream, errors)
+                            coasys_juniper_subscriptions::Connection::from_stream(stream, errors)
                         })
                         .boxed(),
                     };

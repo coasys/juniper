@@ -7,8 +7,8 @@ use futures::{
     sink::SinkExt as _,
     stream::StreamExt as _,
 };
-use juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
-use juniper_graphql_ws::{graphql_transport_ws, graphql_ws};
+use coasys_juniper::{GraphQLSubscriptionType, GraphQLTypeAsync, RootNode, ScalarValue};
+use coasys_juniper_graphql_ws::{graphql_transport_ws, graphql_ws};
 use warp::{filters::BoxedFilter, reply::Reply, Filter as _};
 
 struct Message(warp::ws::Message);
@@ -189,7 +189,7 @@ where
     Subscription::TypeInfo: Send + Sync,
     CtxT: Unpin + Send + Sync + 'static,
     S: ScalarValue + Send + Sync + 'static,
-    I: juniper_graphql_ws::Init<S, CtxT> + Clone + Send + Sync,
+    I: coasys_juniper_graphql_ws::Init<S, CtxT> + Clone + Send + Sync,
 {
     let schema = schema.into();
 
@@ -251,11 +251,11 @@ where
     Subscription::TypeInfo: Send + Sync,
     CtxT: Unpin + Send + Sync + 'static,
     S: ScalarValue + Send + Sync + 'static,
-    I: juniper_graphql_ws::Init<S, CtxT> + Send,
+    I: coasys_juniper_graphql_ws::Init<S, CtxT> + Send,
 {
     let (ws_tx, ws_rx) = websocket.split();
     let (s_tx, s_rx) =
-        graphql_ws::Connection::new(juniper_graphql_ws::ArcSchema(root_node), init).split();
+        graphql_ws::Connection::new(coasys_juniper_graphql_ws::ArcSchema(root_node), init).split();
 
     let ws_rx = ws_rx.map(|r| r.map(Message));
     let s_rx = s_rx.map(|msg| {
@@ -298,11 +298,11 @@ where
     Subscription::TypeInfo: Send + Sync,
     CtxT: Unpin + Send + Sync + 'static,
     S: ScalarValue + Send + Sync + 'static,
-    I: juniper_graphql_ws::Init<S, CtxT> + Send,
+    I: coasys_juniper_graphql_ws::Init<S, CtxT> + Send,
 {
     let (ws_tx, ws_rx) = websocket.split();
     let (s_tx, s_rx) =
-        graphql_transport_ws::Connection::new(juniper_graphql_ws::ArcSchema(root_node), init)
+        graphql_transport_ws::Connection::new(coasys_juniper_graphql_ws::ArcSchema(root_node), init)
             .split();
 
     let ws_rx = ws_rx.map(|r| r.map(Message));
