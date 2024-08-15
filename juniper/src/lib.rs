@@ -58,7 +58,10 @@ use crate::{
     executor::{execute_validated_query, get_operation},
     introspection::{INTROSPECTION_QUERY, INTROSPECTION_QUERY_WITHOUT_DESCRIPTIONS},
     parser::parse_document_source,
-    validation::{validate_input_values, visit_all_rules, ValidatorContext},
+    validation::{
+        rules, validate_input_values, visit as visit_rule, visit_all_rules, MultiVisitorNil,
+        ValidatorContext,
+    },
 };
 
 pub use crate::{
@@ -68,12 +71,13 @@ pub use crate::{
     },
     executor::{
         Applies, Context, ExecutionError, ExecutionResult, Executor, FieldError, FieldResult,
-        FromContext, IntoFieldError, IntoResolvable, LookAheadArgument, LookAheadMethods,
-        LookAheadSelection, LookAheadValue, OwnedExecutor, Registry, ValuesStream, Variables,
+        FromContext, IntoFieldError, IntoResolvable, LookAheadArgument, LookAheadChildren,
+        LookAheadList, LookAheadObject, LookAheadSelection, LookAheadValue, OwnedExecutor,
+        Registry, ValuesStream, Variables,
     },
     introspection::IntrospectionFormat,
     macros::helper::subscription::{ExtractTypeFromStream, IntoFieldResult},
-    parser::{ParseError, ScalarToken, Spanning},
+    parser::{ParseError, ScalarToken, Span, Spanning},
     schema::{
         meta,
         model::{RootNode, SchemaType},
@@ -95,7 +99,7 @@ pub use crate::{
 
 /// An error that prevented query execution
 #[allow(missing_docs)]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum GraphQLError {
     ParseError(Spanning<ParseError>),
     ValidationError(Vec<RuleError>),
@@ -158,6 +162,13 @@ where
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
         visit_all_rules(&mut ctx, &document);
+        if root_node.introspection_disabled {
+            visit_rule(
+                &mut MultiVisitorNil.with(rules::disable_introspection::factory()),
+                &mut ctx,
+                &document,
+            );
+        }
 
         let errors = ctx.into_errors();
         if !errors.is_empty() {
@@ -201,6 +212,13 @@ where
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
         visit_all_rules(&mut ctx, &document);
+        if root_node.introspection_disabled {
+            visit_rule(
+                &mut MultiVisitorNil.with(rules::disable_introspection::factory()),
+                &mut ctx,
+                &document,
+            );
+        }
 
         let errors = ctx.into_errors();
         if !errors.is_empty() {
@@ -246,6 +264,13 @@ where
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
         visit_all_rules(&mut ctx, &document);
+        if root_node.introspection_disabled {
+            visit_rule(
+                &mut MultiVisitorNil.with(rules::disable_introspection::factory()),
+                &mut ctx,
+                &document,
+            );
+        }
 
         let errors = ctx.into_errors();
         if !errors.is_empty() {

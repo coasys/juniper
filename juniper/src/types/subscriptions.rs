@@ -283,8 +283,7 @@ where
         match selection {
             Selection::Field(Spanning {
                 item: ref f,
-                start: ref start_pos,
-                ..
+                ref span,
             }) => {
                 if is_excluded(&f.directives, executor.variables()) {
                     continue;
@@ -308,7 +307,7 @@ where
                 let sub_exec = executor.field_sub_executor(
                     response_name,
                     f.name.item,
-                    *start_pos,
+                    span.start,
                     f.selection_set.as_ref().map(|x| &x[..]),
                 );
 
@@ -317,7 +316,8 @@ where
                         m.item
                             .iter()
                             .filter_map(|(k, v)| {
-                                v.item.clone().into_const(exec_vars).map(|v| (k.item, v))
+                                let val = v.item.clone().into_const(exec_vars)?;
+                                Some((k.item, Spanning::new(v.span, val)))
                             })
                             .collect()
                     }),
@@ -336,7 +336,7 @@ where
                     }
                     Ok(v) => merge_key_into(&mut object, response_name, v),
                     Err(e) => {
-                        sub_exec.push_error_at(e, *start_pos);
+                        sub_exec.push_error_at(e, span.start);
 
                         if meta_field.field_type.is_non_null() {
                             return Value::Null;
@@ -349,8 +349,7 @@ where
 
             Selection::FragmentSpread(Spanning {
                 item: ref spread,
-                start: ref start_pos,
-                ..
+                ref span,
             }) => {
                 if is_excluded(&spread.directives, executor.variables()) {
                     continue;
@@ -382,14 +381,13 @@ where
                             _ => unreachable!(),
                         }
                     }
-                    Err(e) => sub_exec.push_error_at(e, *start_pos),
+                    Err(e) => sub_exec.push_error_at(e, span.start),
                 }
             }
 
             Selection::InlineFragment(Spanning {
                 item: ref fragment,
-                start: ref start_pos,
-                ..
+                ref span,
             }) => {
                 if is_excluded(&fragment.directives, executor.variables()) {
                     continue;
@@ -410,7 +408,7 @@ where
                             merge_key_into(&mut object, &k, v);
                         }
                     } else if let Err(e) = sub_result {
-                        sub_exec.push_error_at(e, *start_pos);
+                        sub_exec.push_error_at(e, span.start);
                     }
                 } else if let Some(type_name) = meta_type.name() {
                     let sub_result = instance
@@ -422,7 +420,7 @@ where
                             merge_key_into(&mut object, &k, v);
                         }
                     } else if let Err(e) = sub_result {
-                        sub_exec.push_error_at(e, *start_pos);
+                        sub_exec.push_error_at(e, span.start);
                     }
                 } else {
                     return Value::Null;

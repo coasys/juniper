@@ -1,14 +1,15 @@
-use std::pin::Pin;
+use std::{future, pin::Pin};
 
 use coasys_juniper::graphql_subscription;
+use futures::{stream, Stream};
 
-type Stream<'a, I> = Pin<Box<dyn futures::Stream<Item = I> + Send + 'a>>;
+type BoxStream<'a, I> = Pin<Box<dyn Stream<Item = I> + Send + 'a>>;
 
 struct ObjA;
 
 #[graphql_subscription]
 impl ObjA {
-    fn id(&self) -> Stream<'static, bool> {
+    fn id(&self) -> BoxStream<'static, bool> {
         Box::pin(stream::once(future::ready(true)))
     }
 }

@@ -59,26 +59,26 @@ impl<K: Eq + Hash + Clone, V> OrderedMap<K, V> {
         }
     }
 
-    fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+    fn get<Q>(&self, k: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
-        Q: Hash + Eq,
+        Q: Hash + Eq + ?Sized,
     {
         self.data.get(k)
     }
 
-    fn get_mut<Q: ?Sized>(&mut self, k: &Q) -> Option<&mut V>
+    fn get_mut<Q>(&mut self, k: &Q) -> Option<&mut V>
     where
         K: Borrow<Q>,
-        Q: Hash + Eq,
+        Q: Hash + Eq + ?Sized,
     {
         self.data.get_mut(k)
     }
 
-    fn contains_key<Q: ?Sized>(&self, k: &Q) -> bool
+    fn contains_key<Q>(&self, k: &Q) -> bool
     where
         K: Borrow<Q>,
-        Q: Hash + Eq,
+        Q: Hash + Eq + ?Sized,
     {
         self.data.contains_key(k)
     }
@@ -406,8 +406,8 @@ impl<'a, S: Debug> OverlappingFieldsCanBeMerged<'a, S> {
                             "{name1} and {name2} are different fields",
                         )),
                     ),
-                    vec![ast1.start],
-                    vec![ast2.start],
+                    vec![ast1.span.start],
+                    vec![ast2.span.start],
                 ));
             }
 
@@ -417,8 +417,8 @@ impl<'a, S: Debug> OverlappingFieldsCanBeMerged<'a, S> {
                         response_name.into(),
                         ConflictReasonMessage::Message("they have differing arguments".into()),
                     ),
-                    vec![ast1.start],
-                    vec![ast2.start],
+                    vec![ast1.span.start],
+                    vec![ast2.span.start],
                 ));
             }
         }
@@ -435,8 +435,8 @@ impl<'a, S: Debug> OverlappingFieldsCanBeMerged<'a, S> {
                             "they return conflicting types {t1} and {t2}",
                         )),
                     ),
-                    vec![ast1.start],
-                    vec![ast2.start],
+                    vec![ast1.span.start],
+                    vec![ast2.span.start],
                 ));
             }
         }
@@ -451,7 +451,12 @@ impl<'a, S: Debug> OverlappingFieldsCanBeMerged<'a, S> {
                 ctx,
             );
 
-            return self.subfield_conflicts(&conflicts, response_name, &ast1.start, &ast2.start);
+            return self.subfield_conflicts(
+                &conflicts,
+                response_name,
+                &ast1.span.start,
+                &ast2.span.start,
+            );
         }
 
         None

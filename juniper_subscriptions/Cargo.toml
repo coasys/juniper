@@ -2,7 +2,7 @@
 name = "coasys_juniper_subscriptions"
 version = "0.17.0"
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.75"
 description = "Juniper `SubscriptionCoordinator` and `SubscriptionConnection` implementations."
 license = "BSD-2-Clause"
 authors = ["nWacky <gosha.evtushenko@gmail.com>"]

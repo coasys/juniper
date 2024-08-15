@@ -37,7 +37,7 @@ use crate::{
 
 pub use self::{
     look_ahead::{
-        Applies, ConcreteLookAheadSelection, LookAheadArgument, LookAheadMethods,
+        Applies, LookAheadArgument, LookAheadChildren, LookAheadList, LookAheadObject,
         LookAheadSelection, LookAheadValue,
     },
     owned_executor::OwnedExecutor,
@@ -87,7 +87,7 @@ where
 ///
 /// All execution errors contain the source position in the query of the field
 /// that failed to resolve. It also contains the field stack.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ExecutionError<S> {
     location: SourcePosition,
     path: Vec<String>,
@@ -626,7 +626,7 @@ where
     /// Access the current context
     ///
     /// You usually provide the context when calling the top-level `execute`
-    /// function, or using the context factory in the Iron integration.
+    /// function, or using the context factory.
     pub fn context(&self) -> &'r CtxT {
         self.context
     }
@@ -698,48 +698,38 @@ where
         };
         self.parent_selection_set
             .and_then(|p| {
-                // Search the parent's fields to find this field within the set
-                let found_field = p.iter().find(|&x| {
-                    match *x {
+                // Search the parent's fields to find this field within the selection set.
+                p.iter().find_map(|x| {
+                    match x {
                         Selection::Field(ref field) => {
                             let field = &field.item;
                             // TODO: support excludes.
                             let name = field.name.item;
                             let alias = field.alias.as_ref().map(|a| a.item);
-                            alias.unwrap_or(name) == field_name
+
+                            (alias.unwrap_or(name) == field_name).then(|| {
+                                LookAheadSelection::new(
+                                    look_ahead::SelectionSource::Field(field),
+                                    self.variables,
+                                    self.fragments,
+                                )
+                            })
                         }
-                        _ => false,
+                        Selection::FragmentSpread(_) | Selection::InlineFragment(_) => None,
                     }
-                });
-                if let Some(p) = found_field {
-                    LookAheadSelection::build_from_selection(p, self.variables, self.fragments)
-                } else {
-                    None
-                }
+                })
             })
             .unwrap_or_else(|| {
-                // We didn't find a field in the parent's selection matching
-                // this field, which means we're inside a FragmentSpread
-                let mut ret = LookAheadSelection {
-                    name: field_name,
-                    alias: None,
-                    arguments: Vec::new(),
-                    children: Vec::new(),
-                    applies_for: Applies::All,
-                };
-
-                // Add in all the children - this will mutate `ret`
-                if let Some(selection_set) = self.current_selection_set {
-                    for c in selection_set {
-                        LookAheadSelection::build_from_selection_with_parent(
-                            c,
-                            Some(&mut ret),
-                            self.variables,
-                            self.fragments,
-                        );
-                    }
-                }
-                ret
+                // We didn't find this field in the parent's selection matching it, which means
+                // we're inside a `FragmentSpread`.
+                LookAheadSelection::new(
+                    look_ahead::SelectionSource::Spread {
+                        field_name,
+                        set: self.current_selection_set,
+                    },
+                    self.variables,
+                    self.fragments,
+                )
             })
     }
 
@@ -885,7 +875,7 @@ where
             schema: &root_node.schema,
             context,
             errors: &errors,
-            field_path: Arc::new(FieldPath::Root(operation.start)),
+            field_path: Arc::new(FieldPath::Root(operation.span.start)),
         };
 
         value = match operation.item.operation_type {
@@ -983,7 +973,7 @@ where
             schema: &root_node.schema,
             context,
             errors: &errors,
-            field_path: Arc::new(FieldPath::Root(operation.start)),
+            field_path: Arc::new(FieldPath::Root(operation.span.start)),
         };
 
         value = match operation.item.operation_type {
@@ -1129,7 +1119,7 @@ where
             schema: &root_node.schema,
             context,
             errors: &errors,
-            field_path: Arc::new(FieldPath::Root(operation.start)),
+            field_path: Arc::new(FieldPath::Root(operation.span.start)),
         };
 
         value = match operation.item.operation_type {

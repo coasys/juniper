@@ -1,9 +1,4 @@
-use std::{
-    char, fmt,
-    iter::{Iterator, Peekable},
-    result::Result,
-    str::CharIndices,
-};
+use std::{char, fmt, iter::Peekable, str::CharIndices};
 
 use crate::parser::{SourcePosition, Spanning};
 
@@ -51,7 +46,7 @@ pub enum Token<'a> {
 }
 
 /// Error when tokenizing the input source
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum LexerError {
     /// An unknown character was found
     ///

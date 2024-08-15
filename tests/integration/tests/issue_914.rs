@@ -1,6 +1,9 @@
 //! Checks that multiple fragments on sub types don't override each other.
 //! See [#914](https://github.com/graphql-rust/juniper/issues/914) for details.
 
+
+#![allow(clippy::disallowed_names)]
+
 use coasys_juniper::{graphql_object, graphql_vars, EmptyMutation, EmptySubscription, GraphQLObject};
 
 struct Query;

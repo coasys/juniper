@@ -2,10 +2,13 @@
 name = "coasys_juniper_warp"
 version = "0.8.0"
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.75"
 description = "`juniper` GraphQL integration with `warp`."
 license = "BSD-2-Clause"
-authors = ["Tom Houlé <tom@tomhoule.com>"]
+authors = [
+    "Tom Houlé <tom@tomhoule.com>",
+    "Kai Ren <tyranron@gmail.com>",
+]
 documentation = "https://docs.rs/juniper_warp"
 homepage = "https://github.com/graphql-rust/juniper/tree/master/juniper_warp"
 repository = "https://github.com/graphql-rust/juniper"
@@ -20,33 +23,33 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 subscriptions = [
-    "dep:coasys_juniper_graphql_transport_ws",
     "dep:coasys_juniper_graphql_ws",
+    "dep:futures",
     "dep:log",
     "warp/websocket",
 ]
 
 [dependencies]
 anyhow = "1.0.47"
-futures = "0.3.22"
-coasys_juniper = { version = "0.16.0", path = "../juniper", default-features = false }
-coasys_juniper_graphql_ws = { version = "0.4.0", path = "../juniper_graphql_ws", optional = true }
-coasys_juniper_graphql_transport_ws = { version = "0.4.0", path = "../juniper_graphql_transport_ws", optional = true }
+futures = { version = "0.3.22", optional = true }
+coasys_juniper = { version = "0.16", path = "../juniper", default-features = false }
+coasys_juniper_graphql_ws = { version = "0.4.0", path = "../juniper_graphql_ws", features = ["graphql-transport-ws", "graphql-ws"], optional = true }
 log = { version = "0.4", optional = true }
 serde = { version = "1.0.122", features = ["derive"] }
 serde_json = "1.0.18"
 thiserror = "1.0"
-tokio = { version = "1.0", features = ["rt-multi-thread"] }
+tokio = { version = "1.0", features = ["rt"] }
 warp = { version = "0.3.2", default-features = false }
 
-# Fixes for MSRV check.
+# Fixes for `minimal-versions` check.
 # TODO: Try remove on upgrade of `warp` crate.
 headers = "0.3.8"
 
 [dev-dependencies]
 async-stream = "0.3"
-env_logger = "0.10"
-coasys_juniper = { version = "0.16.0", path = "../juniper", features = ["expose-test-schema"] }
+env_logger = "0.11"
+futures = "0.3.22"
+coasys_juniper = { version = "0.16", path = "../juniper", features = ["expose-test-schema"] }
 log = "0.4"
 percent-encoding = "2.1"
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

@@ -146,8 +146,13 @@ impl TypeExt for syn::Type {
                             match arg {
                                 GA::Lifetime(lt) => func(lt),
                                 GA::Type(ty) => ty.lifetimes_iter_mut(func),
-                                GA::Binding(b) => b.ty.lifetimes_iter_mut(func),
-                                GA::Constraint(_) | GA::Const(_) => {}
+                                GA::AssocType(a) => a.ty.lifetimes_iter_mut(func),
+                                GA::Constraint(_) | GA::AssocConst(_) | GA::Const(_) => {}
+                                // Following the `syn` idiom for exhaustive matching on `Type`:
+                                // https://docs.rs/syn/2.0.38/src/syn/ty.rs.html#64-79
+                                // TODO: #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
+                                //       https://github.com/rust-lang/rust/issues/89554
+                                _ => unimplemented!(),
                             }
                         }
                     }
@@ -188,6 +193,12 @@ impl TypeExt for syn::Type {
                             }
                             iter_path(&mut bound.path, func)
                         }
+                        syn::TypeParamBound::Verbatim(_) => {}
+                        // Following the `syn` idiom for exhaustive matching on `Type`:
+                        // https://docs.rs/syn/2.0.38/src/syn/ty.rs.html#64-79
+                        // TODO: #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
+                        //       https://github.com/rust-lang/rust/issues/89554
+                        _ => unimplemented!(),
                     }
                 }
             }
@@ -204,8 +215,8 @@ impl TypeExt for syn::Type {
             // These types unlikely will be used as GraphQL types.
             T::BareFn(_) | T::Infer(_) | T::Macro(_) | T::Never(_) | T::Verbatim(_) => {}
 
-            // Following the syn idiom for exhaustive matching on Type:
-            // https://github.com/dtolnay/syn/blob/1.0.90/src/ty.rs#L67-L87
+            // Following the `syn` idiom for exhaustive matching on `Type`:
+            // https://docs.rs/syn/2.0.38/src/syn/ty.rs.html#64-79
             // TODO: #[cfg_attr(test, deny(non_exhaustive_omitted_patterns))]
             //       https://github.com/rust-lang/rust/issues/89554
             _ => unimplemented!(),
@@ -241,10 +252,6 @@ impl TypeExt for syn::Type {
 
 /// Extension of [`syn::Generics`] providing common function widely used by this crate for parsing.
 pub(crate) trait GenericsExt {
-    /// Removes all default types out of type parameters and const parameters in these
-    /// [`syn::Generics`].
-    fn remove_defaults(&mut self);
-
     /// Moves all trait and lifetime bounds of these [`syn::Generics`] to its [`syn::WhereClause`].
     fn move_bounds_to_where_clause(&mut self);
 
@@ -258,24 +265,6 @@ pub(crate) trait GenericsExt {
 }
 
 impl GenericsExt for syn::Generics {
-    fn remove_defaults(&mut self) {
-        use syn::GenericParam as P;
-
-        for p in &mut self.params {
-            match p {
-                P::Type(p) => {
-                    p.eq_token = None;
-                    p.default = None;
-                }
-                P::Lifetime(_) => {}
-                P::Const(p) => {
-                    p.eq_token = None;
-                    p.default = None;
-                }
-            }
-        }
-    }
-
     fn move_bounds_to_where_clause(&mut self) {
         use syn::GenericParam as P;
 

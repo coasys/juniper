@@ -1,7 +1,7 @@
 use std::{borrow::Cow, fmt};
 
 use fnv::FnvHashMap;
-#[cfg(feature = "graphql-parser")]
+#[cfg(feature = "schema-language")]
 use graphql_parser::schema::Document;
 
 use crate::{
@@ -12,9 +12,6 @@ use crate::{
     value::{DefaultScalarValue, ScalarValue},
     GraphQLEnum,
 };
-
-#[cfg(feature = "graphql-parser")]
-use crate::schema::translate::{graphql_parser::GraphQLParserTranslator, SchemaTranslator};
 
 /// Root query node of a schema
 ///
@@ -44,6 +41,8 @@ pub struct RootNode<
     pub subscription_info: SubscriptionT::TypeInfo,
     #[doc(hidden)]
     pub schema: SchemaType<'a, S>,
+    #[doc(hidden)]
+    pub introspection_disabled: bool,
 }
 
 /// Metadata for a schema
@@ -147,7 +146,7 @@ where
         mutation_info: MutationT::TypeInfo,
         subscription_info: SubscriptionT::TypeInfo,
     ) -> Self {
-        RootNode {
+        Self {
             query_type: query_obj,
             mutation_type: mutation_obj,
             subscription_type: subscription_obj,
@@ -159,21 +158,100 @@ where
             query_info,
             mutation_info,
             subscription_info,
+            introspection_disabled: false,
         }
     }
 
-    #[cfg(feature = "schema-language")]
-    /// The schema definition as a `String` in the
-    /// [GraphQL Schema Language](https://graphql.org/learn/schema/#type-language)
-    /// format.
-    pub fn as_schema_language(&self) -> String {
-        self.as_parser_document().to_string()
+    /// Disables introspection for this [`RootNode`], making it to return a [`FieldError`] whenever
+    /// its `__schema` or `__type` field is resolved.
+    ///
+    /// By default, all introspection queries are allowed.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use juniper::{
+    /// #     graphql_object, graphql_vars, EmptyMutation, EmptySubscription, GraphQLError,
+    /// #     RootNode,
+    /// # };
+    /// #
+    /// pub struct Query;
+    ///
+    /// #[graphql_object]
+    /// impl Query {
+    ///     fn some() -> bool {
+    ///         true
+    ///     }
+    /// }
+    ///
+    /// type Schema = RootNode<'static, Query, EmptyMutation, EmptySubscription>;
+    ///
+    /// let schema = Schema::new(Query, EmptyMutation::new(), EmptySubscription::new())
+    ///     .disable_introspection();
+    ///
+    /// # // language=GraphQL
+    /// let query = "query { __schema { queryType { name } } }";
+    ///
+    /// match juniper::execute_sync(query, None, &schema, &graphql_vars! {}, &()) {
+    ///     Err(GraphQLError::ValidationError(errs)) => {
+    ///         assert_eq!(
+    ///             errs.first().unwrap().message(),
+    ///             "GraphQL introspection is not allowed, but the operation contained `__schema`",
+    ///         );
+    ///     }
+    ///     res => panic!("expected `ValidationError`, returned: {res:#?}"),
+    /// }
+    /// ```
+    pub fn disable_introspection(mut self) -> Self {
+        self.introspection_disabled = true;
+        self
     }
 
-    #[cfg(feature = "graphql-parser")]
-    /// The schema definition as a [`graphql_parser`](https://crates.io/crates/graphql-parser)
-    /// [`Document`](https://docs.rs/graphql-parser/latest/graphql_parser/schema/struct.Document.html).
-    pub fn as_parser_document(&'a self) -> Document<'a, &'a str> {
+    /// Enables introspection for this [`RootNode`], if it was previously [disabled][1].
+    ///
+    /// By default, all introspection queries are allowed.
+    ///
+    /// [1]: RootNode::disable_introspection
+    pub fn enable_introspection(mut self) -> Self {
+        self.introspection_disabled = false;
+        self
+    }
+
+    #[cfg(feature = "schema-language")]
+    /// Returns this [`RootNode`] as a [`String`] containing the schema in [SDL (schema definition language)].
+    ///
+    /// # Sorted
+    ///
+    /// The order of the generated definitions is stable and is sorted in the "type-then-name" manner.
+    ///
+    /// If another sorting order is required, then the [`as_document()`] method should be used, which allows to sort the
+    /// returned [`Document`] in the desired manner and then to convert it [`to_string()`].
+    ///
+    /// [`as_document()`]: RootNode::as_document
+    /// [`to_string()`]: ToString::to_string
+    /// [0]: https://graphql.org/learn/schema#type-language
+    #[must_use]
+    pub fn as_sdl(&self) -> String {
+        use crate::schema::translate::graphql_parser::sort_schema_document;
+
+        let mut doc = self.as_document();
+        sort_schema_document(&mut doc);
+        doc.to_string()
+    }
+
+    #[cfg(feature = "schema-language")]
+    /// Returns this [`RootNode`] as a [`graphql_parser`]'s [`Document`].
+    ///
+    /// # Unsorted
+    ///
+    /// The order of the generated definitions in the returned [`Document`] is NOT stable and may change without any
+    /// real schema changes.
+    #[must_use]
+    pub fn as_document(&'a self) -> Document<'a, &'a str> {
+        use crate::schema::translate::{
+            graphql_parser::GraphQLParserTranslator, SchemaTranslator as _,
+        };
+
         GraphQLParserTranslator::translate_schema(&self.schema)
     }
 }
@@ -339,7 +417,13 @@ impl<'a, S> SchemaType<'a, S> {
 
     /// Get a list of types.
     pub fn type_list(&self) -> Vec<TypeType<S>> {
-        self.types.values().map(|t| TypeType::Concrete(t)).collect()
+        let mut types = self
+            .types
+            .values()
+            .map(|t| TypeType::Concrete(t))
+            .collect::<Vec<_>>();
+        sort_concrete_types(&mut types);
+        types
     }
 
     /// Get a list of concrete types.
@@ -365,7 +449,9 @@ impl<'a, S> SchemaType<'a, S> {
 
     /// Get a list of directives.
     pub fn directive_list(&self) -> Vec<&DirectiveType<S>> {
-        self.directives.values().collect()
+        let mut directives = self.directives.values().collect::<Vec<_>>();
+        sort_directives(&mut directives);
+        directives
     }
 
     /// Get directive by name.
@@ -607,119 +693,201 @@ impl<'a, S> fmt::Display for TypeType<'a, S> {
     }
 }
 
-#[cfg(test)]
-mod test {
+/// Sorts the provided [`TypeType`]s in the "type-then-name" manner.
+fn sort_concrete_types<S>(types: &mut [TypeType<S>]) {
+    types.sort_by(|a, b| {
+        concrete_type_sort::by_type(a)
+            .cmp(&concrete_type_sort::by_type(b))
+            .then_with(|| concrete_type_sort::by_name(a).cmp(&concrete_type_sort::by_name(b)))
+    });
+}
 
-    #[cfg(feature = "graphql-parser")]
-    mod graphql_parser_integration {
+/// Sorts the provided [`DirectiveType`]s by name.
+fn sort_directives<S>(directives: &mut [&DirectiveType<S>]) {
+    directives.sort_by(|a, b| a.name.cmp(&b.name));
+}
+
+/// Evaluation of a [`TypeType`] weights for sorting (for concrete types only).
+///
+/// Used for deterministic introspection output.
+mod concrete_type_sort {
+    use crate::meta::MetaType;
+
+    use super::TypeType;
+
+    /// Returns a [`TypeType`] sorting weight by its type.
+    pub fn by_type<S>(t: &TypeType<S>) -> u8 {
+        match t {
+            TypeType::Concrete(MetaType::Enum(_)) => 0,
+            TypeType::Concrete(MetaType::InputObject(_)) => 1,
+            TypeType::Concrete(MetaType::Interface(_)) => 2,
+            TypeType::Concrete(MetaType::Scalar(_)) => 3,
+            TypeType::Concrete(MetaType::Object(_)) => 4,
+            TypeType::Concrete(MetaType::Union(_)) => 5,
+            // NOTE: The following types are not part of the introspected types.
+            TypeType::Concrete(
+                MetaType::List(_) | MetaType::Nullable(_) | MetaType::Placeholder(_),
+            ) => 6,
+            // NOTE: Other variants will not appear since we're only sorting concrete types.
+            TypeType::List(..) | TypeType::NonNull(_) => 7,
+        }
+    }
+
+    /// Returns a [`TypeType`] sorting weight by its name.
+    pub fn by_name<'a, S>(t: &'a TypeType<'a, S>) -> Option<&'a str> {
+        match t {
+            TypeType::Concrete(MetaType::Enum(meta)) => Some(&meta.name),
+            TypeType::Concrete(MetaType::InputObject(meta)) => Some(&meta.name),
+            TypeType::Concrete(MetaType::Interface(meta)) => Some(&meta.name),
+            TypeType::Concrete(MetaType::Scalar(meta)) => Some(&meta.name),
+            TypeType::Concrete(MetaType::Object(meta)) => Some(&meta.name),
+            TypeType::Concrete(MetaType::Union(meta)) => Some(&meta.name),
+            TypeType::Concrete(
+                // NOTE: The following types are not part of the introspected types.
+                MetaType::List(_) | MetaType::Nullable(_) | MetaType::Placeholder(_),
+            )
+            // NOTE: Other variants will not appear since we're only sorting concrete types.
+            | TypeType::List(..)
+            | TypeType::NonNull(_) => None,
+        }
+    }
+}
+
+#[cfg(test)]
+mod root_node_test {
+    #[cfg(feature = "schema-language")]
+    mod as_document {
         use crate::{graphql_object, EmptyMutation, EmptySubscription, RootNode};
 
-        #[test]
-        fn graphql_parser_doc() {
-            struct Query;
-            #[graphql_object]
-            impl Query {
-                fn blah() -> bool {
-                    true
-                }
+        struct Query;
+
+        #[graphql_object]
+        impl Query {
+            fn blah() -> bool {
+                true
             }
+        }
+
+        #[test]
+        fn generates_correct_document() {
             let schema = RootNode::new(
                 Query,
                 EmptyMutation::<()>::new(),
                 EmptySubscription::<()>::new(),
             );
             let ast = graphql_parser::parse_schema::<&str>(
+                //language=GraphQL
                 r#"
                 type Query {
-                  blah: Boolean!
+                    blah: Boolean!
                 }
 
                 schema {
                   query: Query
                 }
-            "#,
+                "#,
             )
             .unwrap();
-            assert_eq!(ast.to_string(), schema.as_parser_document().to_string());
+
+            assert_eq!(ast.to_string(), schema.as_document().to_string());
         }
     }
 
     #[cfg(feature = "schema-language")]
-    mod schema_language {
+    mod as_sdl {
         use crate::{
             graphql_object, EmptyMutation, EmptySubscription, GraphQLEnum, GraphQLInputObject,
             GraphQLObject, GraphQLUnion, RootNode,
         };
 
-        #[test]
-        fn schema_language() {
-            #[derive(GraphQLObject, Default)]
-            struct Cake {
-                fresh: bool,
+        #[derive(GraphQLObject, Default)]
+        struct Cake {
+            fresh: bool,
+        }
+
+        #[derive(GraphQLObject, Default)]
+        struct IceCream {
+            cold: bool,
+        }
+
+        #[derive(GraphQLUnion)]
+        enum GlutenFree {
+            Cake(Cake),
+            IceCream(IceCream),
+        }
+
+        #[derive(GraphQLEnum)]
+        enum Fruit {
+            Apple,
+            Orange,
+        }
+
+        #[derive(GraphQLInputObject)]
+        struct Coordinate {
+            latitude: f64,
+            longitude: f64,
+        }
+
+        struct Query;
+
+        #[graphql_object]
+        impl Query {
+            fn blah() -> bool {
+                true
             }
-            #[derive(GraphQLObject, Default)]
-            struct IceCream {
-                cold: bool,
+
+            /// This is whatever's description.
+            fn whatever() -> String {
+                "foo".into()
             }
-            #[derive(GraphQLUnion)]
-            enum GlutenFree {
-                Cake(Cake),
-                IceCream(IceCream),
+
+            fn arr(stuff: Vec<Coordinate>) -> Option<&'static str> {
+                (!stuff.is_empty()).then_some("stuff")
             }
-            #[derive(GraphQLEnum)]
-            enum Fruit {
-                Apple,
-                Orange,
+
+            fn fruit() -> Fruit {
+                Fruit::Apple
             }
-            #[derive(GraphQLInputObject)]
-            struct Coordinate {
-                latitude: f64,
-                longitude: f64,
-            }
-            struct Query;
-            #[graphql_object]
-            impl Query {
-                fn blah() -> bool {
-                    true
-                }
-                /// This is whatever's description.
-                fn whatever() -> String {
-                    "foo".into()
-                }
-                fn arr(stuff: Vec<Coordinate>) -> Option<&'static str> {
-                    (!stuff.is_empty()).then_some("stuff")
-                }
-                fn fruit() -> Fruit {
-                    Fruit::Apple
-                }
-                fn gluten_free(flavor: String) -> GlutenFree {
-                    if flavor == "savory" {
-                        GlutenFree::Cake(Cake::default())
-                    } else {
-                        GlutenFree::IceCream(IceCream::default())
-                    }
-                }
-                #[deprecated]
-                fn old() -> i32 {
-                    42
-                }
-                #[deprecated(note = "This field is deprecated, use another.")]
-                fn really_old() -> f64 {
-                    42.0
+
+            fn gluten_free(flavor: String) -> GlutenFree {
+                if flavor == "savory" {
+                    GlutenFree::Cake(Cake::default())
+                } else {
+                    GlutenFree::IceCream(IceCream::default())
                 }
             }
 
-            let schema = RootNode::new(
+            #[deprecated]
+            fn old() -> i32 {
+                42
+            }
+
+            #[deprecated(note = "This field is deprecated, use another.")]
+            fn really_old() -> f64 {
+                42.0
+            }
+        }
+
+        #[test]
+        fn generates_correct_sdl() {
+            let actual = RootNode::new(
                 Query,
                 EmptyMutation::<()>::new(),
                 EmptySubscription::<()>::new(),
             );
-            let ast = graphql_parser::parse_schema::<&str>(
+            let expected = graphql_parser::parse_schema::<&str>(
+                //language=GraphQL
                 r#"
-                union GlutenFree = Cake | IceCream
+                schema {
+                  query: Query
+                }
                 enum Fruit {
                     APPLE
                     ORANGE
+                }
+                input Coordinate {
+                    latitude: Float!
+                    longitude: Float!
                 }
                 type Cake {
                     fresh: Boolean!
@@ -737,17 +905,12 @@ mod test {
                   old: Int! @deprecated
                   reallyOld: Float! @deprecated(reason: "This field is deprecated, use another.")
                 }
-                input Coordinate {
-                    latitude: Float!
-                    longitude: Float!
-                }
-                schema {
-                  query: Query
-                }
-            "#,
+                union GlutenFree = Cake | IceCream
+                "#,
             )
             .unwrap();
-            assert_eq!(ast.to_string(), schema.as_schema_language());
+
+            assert_eq!(actual.as_sdl(), expected.to_string());
         }
     }
 }

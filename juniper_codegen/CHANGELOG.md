@@ -11,7 +11,19 @@ All user visible changes to `juniper_codegen` crate will be documented in this f
 
 ### BC Breaks
 
-- `#[graphql_object]` and `#[graphql_subscription]` expansions now preserve defined `impl` blocks "as is" and reuse defined methods in opaque way. ([#971])
+- Bumped up [MSRV] to 1.75. ([#1272])
+
+[#1272]: /../../pull/1272
+
+
+
+
+## [0.16.0] · 2024-03-20
+[0.16.0]: /../../tree/juniper_codegen-v0.16.0/juniper_codegen
+
+### BC Breaks
+
+- `#[graphql_object]` and `#[graphql_subscription]` expansions now preserve defined `impl` blocks "as is" and reuse defined methods in opaque way. ([#971], [#1245])
 - Renamed `rename = "<policy>"` attribute argument to `rename_all = "<policy>"` (following `serde` style). ([#971])
 - Redesigned `#[graphql_interface]` macro: ([#1009])
     - Removed support for `dyn` attribute argument (interface values as trait objects).
@@ -39,6 +51,10 @@ All user visible changes to `juniper_codegen` crate will be documented in this f
 
 - `#[derive(GraphQLInterface)]` macro allowing using structs as GraphQL interfaces. ([#1026])
 
+### Changed
+
+- Migrated to 2 version of `syn` crate. ([#1157])
+
 ### Fixed
 
 - All procedural macros expansion inside `macro_rules!`. ([#1054], [#1051])
@@ -57,9 +73,12 @@ All user visible changes to `juniper_codegen` crate will be documented in this f
 [#1028]: /../../pull/1028
 [#1051]: /../../issues/1051
 [#1054]: /../../pull/1054
+[#1157]: /../../pull/1157
+[#1245]: /../../pull/1245
 
 
 
 
+[MSRV]: https://doc.rust-lang.org/cargo/reference/manifest.html#the-rust-version-field
 [orphan rules]: https://doc.rust-lang.org/reference/items/implementations.html#orphan-rules
 [Semantic Versioning 2.0.0]: https://semver.org

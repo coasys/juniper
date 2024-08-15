@@ -20,7 +20,7 @@ use crate::common::{
         attr::{err, OptionExt as _},
         ParseBufferExt as _,
     },
-    scalar, Description, SpanContainer,
+    scalar, AttrNames, Description, SpanContainer,
 };
 
 pub mod attr;
@@ -160,8 +160,7 @@ impl Parse for Attr {
                 "parse_token" => {
                     let types;
                     let _ = syn::parenthesized!(types in input);
-                    let parsed_types =
-                        types.parse_terminated::<_, token::Comma>(syn::Type::parse)?;
+                    let parsed_types = types.parse_terminated(syn::Type::parse, token::Comma)?;
 
                     if parsed_types.is_empty() {
                         return Err(syn::Error::new(ident.span(), "expected at least 1 type."));
@@ -187,7 +186,7 @@ impl Parse for Attr {
                         let predicates;
                         let _ = syn::parenthesized!(predicates in input);
                         let parsed_predicates = predicates
-                            .parse_terminated::<_, token::Comma>(syn::WherePredicate::parse)?;
+                            .parse_terminated(syn::WherePredicate::parse, token::Comma)?;
 
                         if parsed_predicates.is_empty() {
                             return Err(syn::Error::new(
@@ -241,10 +240,10 @@ impl Attr {
         })
     }
 
-    /// Parses [`Attr`] from the given multiple `name`d [`syn::Attribute`]s
-    /// placed on a trait definition.
-    fn from_attrs(name: &str, attrs: &[syn::Attribute]) -> syn::Result<Self> {
-        let mut attr = filter_attrs(name, attrs)
+    /// Parses an [`Attr`] from the provided multiple [`syn::Attribute`]s with
+    /// the specified `names`, placed on a type definition.
+    fn from_attrs(names: impl AttrNames, attrs: &[syn::Attribute]) -> syn::Result<Self> {
+        let mut attr = filter_attrs(names, attrs)
             .map(|attr| attr.parse_args())
             .try_fold(Self::default(), |prev, curr| prev.try_merge(curr?))?;
 

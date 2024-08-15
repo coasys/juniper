@@ -1,5 +1,4 @@
 `juniper` changelog
-===================
 
 All user visible changes to `juniper` crate will be documented in this file. This project uses [Semantic Versioning 2.0.0].
 
@@ -9,7 +8,47 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 ## [0.16.0] · 2024-02-29
 [0.16.0]: /../../tree/coasys_juniper-v0.16.0/coasys_juniper
 
-[Diff](/../../compare/juniper-v0.15.9...coasys_juniper-v0.16.0)
+[Diff](/../../compare/juniper-v0.16.1...master) | [Milestone](/../../milestone/7)
+
+### BC Breaks
+
+- Upgraded [`chrono-tz` crate] integration to [0.9 version](https://github.com/chronotope/chrono-tz/releases/tag/v0.9.0). ([#1252])
+- Bumped up [MSRV] to 1.75. ([#1272])
+
+### Added
+
+- [`jiff` crate] integration behind `jiff` [Cargo feature]. ([#1271])
+
+### Changed
+
+- Updated [GraphiQL] to [3.5.0 version](https://github.com/graphql/graphiql/blob/graphiql%403.5.0/packages/graphiql/CHANGELOG.md#350). ([#1274])
+
+[#1252]: /../../pull/1252
+[#1271]: /../../pull/1271
+[#1272]: /../../pull/1272
+[#1274]: /../../pull/1274
+
+
+
+
+## [0.16.1] · 2024-04-04
+[0.16.1]: /../../tree/juniper-v0.16.1/juniper
+
+[Diff](/../../compare/juniper-v0.16.0...juniper-v0.16.1) | [Milestone](/../../milestone/6)
+
+### Changed
+
+- Updated [GraphiQL] to 3.1.2 version. ([#1251])
+
+[#1251]: /../../pull/1251
+
+
+
+
+## [0.16.0] · 2024-03-20
+[0.16.0]: /../../tree/juniper-v0.16.0/juniper
+
+[Diff](/../../compare/juniper-v0.15.12...juniper-v0.16.0) | [Milestone](/../../milestone/4)
 
 ### BC Breaks
 
@@ -52,7 +91,24 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
     - Disabled `chrono` [Cargo feature] by default.
     - Removed `scalar-naivetime` [Cargo feature].
 - Removed lifetime parameter from `ParseError`, `GraphlQLError`, `GraphQLBatchRequest` and `GraphQLRequest`. ([#1081], [#528])
-- Upgraded [GraphiQL] to 3.0.6 version (requires new [`graphql-transport-ws` GraphQL over WebSocket Protocol] integration on server, see `juniper_warp/examples/subscription.rs`). ([#1188], [#1193])
+- Upgraded [GraphiQL] to 3.1.1 version (requires new [`graphql-transport-ws` GraphQL over WebSocket Protocol] integration on server, see `juniper_warp/examples/subscription.rs`). ([#1188], [#1193], [#1246])
+- Abstracted `Spanning::start` and `Spanning::end` fields into separate struct `Span`. ([#1207], [#1208])
+- Removed `graphql-parser-integration` and `graphql-parser` [Cargo feature]s by merging them into `schema-language` [Cargo feature]. ([#1237])
+- Renamed `RootNode::as_schema_language()` method as `RootNode::as_sdl()`. ([#1237]) 
+- Renamed `RootNode::as_parser_document()` method as `RootNode::as_document()`. ([#1237])
+- Reworked look-ahead machinery: ([#1212])
+    - Turned from eagerly-evaluated into lazy-evaluated:
+        - Made `LookAheadValue::List` to contain new iterable `LookAheadList` type.
+        - Made `LookAheadValue::Object` to contain new iterable `LookAheadObject` type.
+    - Removed `LookAheadMethods` trait and redundant `ConcreteLookAheadSelection` type, making all APIs accessible as inherent methods on `LookAheadSelection` and `LookAheadChildren` decoupled types:
+        - Moved `LookAheadMethods::child_names()` to `LookAheadChildren::names()`.
+        - Moved `LookAheadMethods::has_children()` to `LookAheadChildren::is_empty()`.
+        - Moved `LookAheadMethods::select_child()` to `LookAheadChildren::select()`.
+        - Moved `LookAheadSelection::for_explicit_type()` to `LookAheadSelection::children_for_explicit_type()`.
+        - Made `LookAheadSelection::arguments()` returning iterator over `LookAheadArgument`.
+        - Made `LookAheadSelection::children()` returning `LookAheadChildren`.
+    - Added `Span` to `Arguments` and `LookAheadArguments`. ([#1206], [#1209])
+- Disabled `bson`, `url`, `uuid` and `schema-language` [Cargo feature]s by default. ([#1230])
 
 ### Added
 
@@ -66,12 +122,17 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 - [`rust_decimal` crate] integration behind `rust_decimal` [Cargo feature]. ([#1060])
 - `js` [Cargo feature] enabling `js-sys` and `wasm-bindgen` support for `wasm32-unknown-unknown` target. ([#1118], [#1147])
 - `LookAheadMethods::applies_for()` method. ([#1138], [#1145])
+- `LookAheadMethods::field_original_name()` and `LookAheadMethods::field_alias()` methods. ([#1199])
+- [`anyhow` crate] integration behind `anyhow` and `backtrace` [Cargo feature]s. ([#1215], [#988])
+- `RootNode::disable_introspection()` applying additional `validation::rules::disable_introspection`, and `RootNode::enable_introspection()` reverting it. ([#1227], [#456])
+- `Clone` and `PartialEq` implementations for `GraphQLResponse`. ([#1228], [#103])
 
 ### Changed
 
 - Made `GraphQLRequest` fields public. ([#750])
 - Relaxed [object safety] requirement for `GraphQLValue` and `GraphQLValueAsync` traits. ([ba1ed85b])
 - Updated [GraphQL Playground] to 1.7.28 version. ([#1190])
+- Improve validation errors for input values. ([#811], [#693])
 
 ## Fixed
 
@@ -82,12 +143,18 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 - Incorrect input value coercion with defaults. ([#1080], [#1073])
 - Incorrect error when explicit `null` provided for `null`able list input parameter. ([#1086], [#1085])
 - Stack overflow on nested GraphQL fragments. ([CVE-2022-31173])
+- Unstable definitions order in schema generated by `RootNode::as_sdl()`. ([#1237], [#1134])
+- Unstable definitions order in schema generated by `introspect()` or other introspection queries. ([#1239], [#1134])
 
+[#103]: /../../issues/103
 [#113]: /../../issues/113
+[#456]: /../../issues/456
 [#503]: /../../issues/503
 [#528]: /../../issues/528
+[#693]: /../../issues/693
 [#750]: /../../issues/750
 [#798]: /../../issues/798
+[#811]: /../../pull/811
 [#918]: /../../issues/918
 [#965]: /../../pull/965
 [#966]: /../../pull/966
@@ -95,6 +162,7 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 [#979]: /../../pull/979
 [#985]: /../../pull/985
 [#987]: /../../pull/987
+[#988]: /../../issues/988
 [#996]: /../../pull/996
 [#1000]: /../../issues/1000
 [#1001]: /../../pull/1001
@@ -120,6 +188,7 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 [#1086]: /../../pull/1086
 [#1118]: /../../issues/1118
 [#1119]: /../../pull/1119
+[#1134]: /../../issues/1134
 [#1138]: /../../issues/1138
 [#1145]: /../../pull/1145
 [#1147]: /../../pull/1147
@@ -127,6 +196,19 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 [#1188]: /../../pull/1188
 [#1190]: /../../pull/1190
 [#1193]: /../../pull/1193
+[#1199]: /../../pull/1199
+[#1206]: /../../pull/1206
+[#1207]: /../../pull/1207
+[#1208]: /../../pull/1208
+[#1209]: /../../pull/1209
+[#1212]: /../../pull/1212
+[#1215]: /../../pull/1215
+[#1227]: /../../pull/1227
+[#1228]: /../../pull/1228
+[#1230]: /../../pull/1230
+[#1237]: /../../pull/1237
+[#1239]: /../../pull/1239
+[#1246]: /../../pull/1246
 [ba1ed85b]: /../../commit/ba1ed85b3c3dd77fbae7baf6bc4e693321a94083
 [CVE-2022-31173]: /../../security/advisories/GHSA-4rx6-g5vg-5f3j
 
@@ -135,21 +217,24 @@ All user visible changes to `juniper` crate will be documented in this file. Thi
 
 ## Previous releases
 
-See [old CHANGELOG](/../../blob/juniper-v0.15.9/juniper/CHANGELOG.md).
+See [old CHANGELOG](/../../blob/juniper-v0.15.12/juniper/CHANGELOG.md).
 
 
 
 
+[`anyhow` crate]: https://docs.rs/anyhow
 [`bigdecimal` crate]: https://docs.rs/bigdecimal
 [`bson` crate]: https://docs.rs/bson
 [`chrono` crate]: https://docs.rs/chrono
 [`chrono-tz` crate]: https://docs.rs/chrono-tz
+[`jiff` crate]: https://docs.rs/jiff
 [`time` crate]: https://docs.rs/time
 [Cargo feature]: https://doc.rust-lang.org/cargo/reference/features.html
 [`graphql-transport-ws` GraphQL over WebSocket Protocol]: https://github.com/enisdenjo/graphql-ws/v5.14.0/PROTOCOL.md 
 [GraphiQL]: https://github.com/graphql/graphiql
 [GraphQL Playground]: https://github.com/prisma/graphql-playground
 [graphql-scalars.dev]: https://graphql-scalars.dev
+[MSRV]: https://doc.rust-lang.org/cargo/reference/manifest.html#the-rust-version-field
 [October 2021]: https://spec.graphql.org/October2021
 [object safety]: https://doc.rust-lang.org/reference/items/traits.html#object-safety
 [orphan rules]: https://doc.rust-lang.org/reference/items/implementations.html#orphan-rules

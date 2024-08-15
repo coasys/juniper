@@ -9,6 +9,7 @@ use crate::{
     parser::Spanning,
     validation::{ValidatorContext, Visitor},
     value::ScalarValue,
+    Span,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -28,7 +29,7 @@ pub fn factory<'a, S: fmt::Debug>() -> VariableInAllowedPosition<'a, S> {
 
 pub struct VariableInAllowedPosition<'a, S: fmt::Debug + 'a> {
     spreads: HashMap<Scope<'a>, HashSet<&'a str>>,
-    variable_usages: HashMap<Scope<'a>, Vec<(Spanning<&'a String>, Type<'a>)>>,
+    variable_usages: HashMap<Scope<'a>, Vec<(SpannedInput<'a, String>, Type<'a>)>>,
     #[allow(clippy::type_complexity)]
     variable_defs: HashMap<Scope<'a>, Vec<&'a (Spanning<&'a str>, VariableDefinition<'a, S>)>>,
     current_scope: Option<Scope<'a>>,
@@ -94,7 +95,7 @@ impl<'a, S: fmt::Debug> VariableInAllowedPosition<'a, S> {
                     if !ctx.schema.is_subtype(&expected_type, var_type) {
                         ctx.report_error(
                             &error_message(var_name.item, expected_type, var_type),
-                            &[var_def_name.start, var_name.start],
+                            &[var_def_name.span.start, var_name.span.start],
                         );
                     }
                 }
@@ -160,7 +161,7 @@ where
     fn enter_variable_value(
         &mut self,
         ctx: &mut ValidatorContext<'a, S>,
-        var_name: Spanning<&'a String>,
+        var_name: SpannedInput<'a, String>,
     ) {
         if let (Some(scope), Some(input_type)) =
             (&self.current_scope, ctx.current_input_type_literal())
@@ -168,10 +169,7 @@ where
             self.variable_usages
                 .entry(scope.clone())
                 .or_default()
-                .push((
-                    Spanning::start_end(&var_name.start, &var_name.end, var_name.item),
-                    input_type.clone(),
-                ));
+                .push((var_name, input_type.clone()));
         }
     }
 }
@@ -185,6 +183,8 @@ fn error_message(
         "Variable \"{var_name}\" of type \"{type_name}\" used in position expecting type \"{expected_type_name}\"",
     )
 }
+
+type SpannedInput<'a, T> = Spanning<&'a T, &'a Span>;
 
 #[cfg(test)]
 mod tests {

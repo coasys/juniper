@@ -37,6 +37,7 @@ where
     pub operation_name: Option<String>,
 
     /// Optional variables to execute the GraphQL operation with.
+    // TODO: Use `Variables` instead of `InputValue`?
     #[serde(bound(
         deserialize = "InputValue<S>: Deserialize<'de>",
         serialize = "InputValue<S>: Serialize",
@@ -162,7 +163,7 @@ where
 /// This struct implements Serialize, so you can simply serialize this
 /// to JSON and send it over the wire. Use the `is_ok` method to determine
 /// whether to send a 200 or 400 HTTP status code.
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct GraphQLResponse<S = DefaultScalarValue>(
     Result<(Value<S>, Vec<ExecutionError<S>>), GraphQLError>,
 );
@@ -238,11 +239,11 @@ where
     /// A batch operation request.
     ///
     /// Empty batch is considered as invalid value, so cannot be deserialized.
-    #[serde(deserialize_with = "deserialize_non_empty_vec")]
+    #[serde(deserialize_with = "deserialize_non_empty_batch")]
     Batch(Vec<GraphQLRequest<S>>),
 }
 
-fn deserialize_non_empty_vec<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
+fn deserialize_non_empty_batch<'de, D, T>(deserializer: D) -> Result<Vec<T>, D::Error>
 where
     D: de::Deserializer<'de>,
     T: Deserialize<'de>,
@@ -251,7 +252,10 @@ where
 
     let v = Vec::<T>::deserialize(deserializer)?;
     if v.is_empty() {
-        Err(D::Error::invalid_length(0, &"a positive integer"))
+        Err(D::Error::invalid_length(
+            0,
+            &"non-empty batch of GraphQL requests",
+        ))
     } else {
         Ok(v)
     }
@@ -360,8 +364,11 @@ impl<S: ScalarValue> GraphQLBatchResponse<S> {
 #[cfg(feature = "expose-test-schema")]
 #[allow(missing_docs)]
 pub mod tests {
+    use std::time::Duration;
+
+    use serde_json::Value as Json;
+
     use crate::LocalBoxFuture;
-    use serde_json::{self, Value as Json};
 
     /// Normalized response content we expect to get back from
     /// the http framework integration we are testing.
@@ -399,6 +406,9 @@ pub mod tests {
 
         println!("  - test_get_with_variables");
         test_get_with_variables(integration);
+
+        println!("  - test_post_with_variables");
+        test_post_with_variables(integration);
 
         println!("  - test_simple_post");
         test_simple_post(integration);
@@ -498,13 +508,48 @@ pub mod tests {
                                 "NEW_HOPE",
                                 "EMPIRE",
                                 "JEDI"
-                                ],
-                                "homePlanet": "Tatooine",
-                                "name": "Luke Skywalker",
-                                "id": "1000"
-                            }
+                            ],
+                            "homePlanet": "Tatooine",
+                            "name": "Luke Skywalker",
+                            "id": "1000"
                         }
-                    }"#
+                    }
+                }"#
+            )
+            .expect("Invalid JSON constant in test")
+        );
+    }
+
+    fn test_post_with_variables<T: HttpIntegration>(integration: &T) {
+        let response = integration.post_json(
+            "/",
+            r#"{
+                "query":
+                    "query($id: String!) { human(id: $id) { id, name, appearsIn, homePlanet } }",
+                "variables": {"id": "1000"}
+            }"#,
+        );
+
+        assert_eq!(response.status_code, 200);
+        assert_eq!(response.content_type, "application/json");
+
+        assert_eq!(
+            unwrap_json_response(&response),
+            serde_json::from_str::<Json>(
+                r#"{
+                    "data": {
+                        "human": {
+                            "appearsIn": [
+                                "NEW_HOPE",
+                                "EMPIRE",
+                                "JEDI"
+                            ],
+                            "homePlanet": "Tatooine",
+                            "name": "Luke Skywalker",
+                            "id": "1000"
+                        }
+                    }
+                }"#
             )
             .expect("Invalid JSON constant in test")
         );
@@ -598,162 +643,281 @@ pub mod tests {
         ) -> LocalBoxFuture<Result<(), anyhow::Error>>;
     }
 
-    /// WebSocket framework integration message
+    /// WebSocket framework integration message.
     pub enum WsIntegrationMessage {
-        /// Send message through the WebSocket
-        /// Takes a message as a String
-        Send(String),
-        /// Expect message to come through the WebSocket
-        /// Takes expected message as a String and a timeout in milliseconds
-        Expect(String, u64),
+        /// Send a message through a WebSocket.
+        Send(Json),
+
+        /// Expects a message to come through a WebSocket, with the specified timeout.
+        Expect(Json, Duration),
     }
 
-    /// Default value in milliseconds for how long to wait for an incoming message
-    pub const WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT: u64 = 100;
+    /// Default value in milliseconds for how long to wait for an incoming WebSocket message.
+    pub const WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT: Duration = Duration::from_millis(100);
 
-    #[allow(missing_docs)]
-    pub async fn run_ws_test_suite<T: WsIntegration>(integration: &T) {
-        println!("Running WebSocket Test suite for integration");
+    /// Integration tests for the [legacy `graphql-ws` GraphQL over WebSocket Protocol][old].
+    ///
+    /// [old]: https://github.com/apollographql/subscriptions-transport-ws/blob/v0.11.0/PROTOCOL.md
+    pub mod graphql_ws {
+        use serde_json::json;
 
-        println!("  - test_ws_simple_subscription");
-        test_ws_simple_subscription(integration).await;
+        use super::{WsIntegration, WsIntegrationMessage, WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT};
 
-        println!("  - test_ws_invalid_json");
-        test_ws_invalid_json(integration).await;
+        #[allow(missing_docs)]
+        pub async fn run_test_suite<T: WsIntegration>(integration: &T) {
+            println!("Running `graphql-ws` test suite for integration");
 
-        println!("  - test_ws_invalid_query");
-        test_ws_invalid_query(integration).await;
+            println!("  - graphql_ws::test_simple_subscription");
+            test_simple_subscription(integration).await;
+
+            println!("  - graphql_ws::test_invalid_json");
+            test_invalid_json(integration).await;
+
+            println!("  - graphql_ws::test_invalid_query");
+            test_invalid_query(integration).await;
+        }
+
+        async fn test_simple_subscription<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({
+                    "type": "connection_init",
+                    "payload": {},
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "connection_ack"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "ka"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({
+                    "id": "1",
+                    "type": "start",
+                    "payload": {
+                        "variables": {},
+                        "extensions": {},
+                        "operationName": null,
+                        "query": "subscription { asyncHuman { id, name, homePlanet } }",
+                    },
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "type": "data",
+                        "id": "1",
+                        "payload": {
+                            "data": {
+                                "asyncHuman": {
+                                    "id": "1000",
+                                    "name": "Luke Skywalker",
+                                    "homePlanet": "Tatooine",
+                                },
+                            },
+                        },
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
+
+        async fn test_invalid_json<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({"whatever": "invalid value"})),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "type": "connection_error",
+                        "payload": {
+                            "message": "`serde` error: missing field `type` at line 1 column 28",
+                        },
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
+
+        async fn test_invalid_query<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({
+                    "type": "connection_init",
+                    "payload": {},
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "connection_ack"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "ka"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({
+                    "id": "1",
+                    "type": "start",
+                    "payload": {
+                        "variables": {},
+                        "extensions": {},
+                        "operationName": null,
+                        "query": "subscription { asyncHuman }",
+                    },
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "type": "error",
+                        "id": "1",
+                        "payload": [{
+                            "message": "Field \"asyncHuman\" of type \"Human!\" must have a selection \
+                                        of subfields. Did you mean \"asyncHuman { ... }\"?",
+                            "locations": [{
+                                "line": 1,
+                                "column": 16,
+                            }],
+                        }],
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
     }
 
-    async fn test_ws_simple_subscription<T: WsIntegration>(integration: &T) {
-        let messages = vec![
-            WsIntegrationMessage::Send(
-                r#"{
-                    "type":"connection_init",
-                    "payload":{}
-                }"#
-                .into(),
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"connection_ack"
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"ka"
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
-            ),
-            WsIntegrationMessage::Send(
-                r#"{
-                    "id":"1",
-                    "type":"start",
-                    "payload":{
-                        "variables":{},
-                        "extensions":{},
-                        "operationName":null,
-                        "query":"subscription { asyncHuman { id, name, homePlanet } }"
-                    }
-                }"#
-                .into(),
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"data",
-                    "id":"1",
-                    "payload":{
-                        "data":{
-                            "asyncHuman":{
-                                "id":"1000",
-                                "name":"Luke Skywalker",
-                                "homePlanet":"Tatooine"
-                            }
-                        }
-                    }
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
-            ),
-        ];
+    /// Integration tests for the [new `graphql-transport-ws` GraphQL over WebSocket Protocol][new].
+    ///
+    /// [new]: https://github.com/enisdenjo/graphql-ws/blob/v5.14.0/PROTOCOL.md
+    pub mod graphql_transport_ws {
+        use serde_json::json;
 
-        integration.run(messages).await.unwrap();
-    }
+        use super::{WsIntegration, WsIntegrationMessage, WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT};
 
-    async fn test_ws_invalid_json<T: WsIntegration>(integration: &T) {
-        let messages = vec![
-            WsIntegrationMessage::Send("invalid json".into()),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"connection_error",
-                    "payload":{
-                        "message":"serde error: expected value at line 1 column 1"
-                    }
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
-            ),
-        ];
+        #[allow(missing_docs)]
+        pub async fn run_test_suite<T: WsIntegration>(integration: &T) {
+            println!("Running `graphql-transport-ws` test suite for integration");
 
-        integration.run(messages).await.unwrap();
-    }
+            println!("  - graphql_ws::test_simple_subscription");
+            test_simple_subscription(integration).await;
 
-    async fn test_ws_invalid_query<T: WsIntegration>(integration: &T) {
-        let messages = vec![
-            WsIntegrationMessage::Send(
-                r#"{
-                    "type":"connection_init",
-                    "payload":{}
-                }"#
-                .into(),
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"connection_ack"
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"ka"
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
-            ),
-            WsIntegrationMessage::Send(
-                r#"{
-                    "id":"1",
-                    "type":"start",
-                    "payload":{
-                        "variables":{},
-                        "extensions":{},
-                        "operationName":null,
-                        "query":"subscription { asyncHuman }"
-                    }
-                }"#
-                .into(),
-            ),
-            WsIntegrationMessage::Expect(
-                r#"{
-                    "type":"error",
-                    "id":"1",
-                    "payload":[{
-                        "message":"Field \"asyncHuman\" of type \"Human!\" must have a selection of subfields. Did you mean \"asyncHuman { ... }\"?",
-                        "locations":[{
-                            "line":1,
-                            "column":16
-                        }]
-                    }]
-                }"#
-                .into(),
-                WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT
-            )
-        ];
+            println!("  - graphql_ws::test_invalid_json");
+            test_invalid_json(integration).await;
 
-        integration.run(messages).await.unwrap();
+            println!("  - graphql_ws::test_invalid_query");
+            test_invalid_query(integration).await;
+        }
+
+        async fn test_simple_subscription<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({
+                    "type": "connection_init",
+                    "payload": {},
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "connection_ack"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "pong"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({"type": "ping"})),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "pong"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({
+                    "id": "1",
+                    "type": "subscribe",
+                    "payload": {
+                        "variables": {},
+                        "extensions": {},
+                        "operationName": null,
+                        "query": "subscription { asyncHuman { id, name, homePlanet } }",
+                    },
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "id": "1",
+                        "type": "next",
+                        "payload": {
+                            "data": {
+                                "asyncHuman": {
+                                    "id": "1000",
+                                    "name": "Luke Skywalker",
+                                    "homePlanet": "Tatooine",
+                                },
+                            },
+                        },
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
+
+        async fn test_invalid_json<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({"whatever": "invalid value"})),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "code": 4400,
+                        "description": "`serde` error: missing field `type` at line 1 column 28",
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
+
+        async fn test_invalid_query<T: WsIntegration>(integration: &T) {
+            let messages = vec![
+                WsIntegrationMessage::Send(json!({
+                    "type": "connection_init",
+                    "payload": {},
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "connection_ack"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "pong"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({"type": "ping"})),
+                WsIntegrationMessage::Expect(
+                    json!({"type": "pong"}),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+                WsIntegrationMessage::Send(json!({
+                    "id": "1",
+                    "type": "subscribe",
+                    "payload": {
+                        "variables": {},
+                        "extensions": {},
+                        "operationName": null,
+                        "query": "subscription { asyncHuman }",
+                    },
+                })),
+                WsIntegrationMessage::Expect(
+                    json!({
+                        "type": "error",
+                        "id": "1",
+                        "payload": [{
+                            "message": "Field \"asyncHuman\" of type \"Human!\" must have a selection \
+                                        of subfields. Did you mean \"asyncHuman { ... }\"?",
+                            "locations": [{
+                                "line": 1,
+                                "column": 16,
+                            }],
+                        }],
+                    }),
+                    WS_INTEGRATION_EXPECT_DEFAULT_TIMEOUT,
+                ),
+            ];
+
+            integration.run(messages).await.unwrap();
+        }
     }
 }

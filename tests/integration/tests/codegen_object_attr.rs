@@ -1,5 +1,9 @@
 //! Tests for `#[graphql_object]` macro.
 
+// Assert that `#[graphql_object]` macro placed on a `impl` stops Clippy from enforcing `# Errors`
+// and `# Panics` sections in GraphQL descriptions.
+#![deny(clippy::missing_errors_doc, clippy::missing_panics_doc)]
+
 pub mod common;
 
 use coasys_juniper::{
@@ -332,7 +336,7 @@ mod fallible_method {
 
     impl<S: ScalarValue> IntoFieldError<S> for CustomError {
         fn into_field_error(self) -> FieldError<S> {
-            coasys_juniper::FieldError::new("Whatever", graphql_value!({"code": "some"}))
+            FieldError::new("Whatever", graphql_value!({"code": "some"}))
         }
     }
 
@@ -1925,8 +1929,6 @@ mod inferred_custom_context_from_field {
 }
 
 mod executor {
-    use coasys_juniper::LookAheadMethods as _;
-
     use super::*;
 
     struct Human;

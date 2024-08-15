@@ -5,6 +5,7 @@ use crate::{
     parser::Spanning,
     validation::{RuleError, ValidatorContext, Visitor},
     value::ScalarValue,
+    Span,
 };
 
 pub fn factory<'a>() -> NoFragmentCycles<'a> {
@@ -15,9 +16,11 @@ pub fn factory<'a>() -> NoFragmentCycles<'a> {
     }
 }
 
+type BorrowedSpanning<'a, T> = Spanning<&'a T, &'a Span>;
+
 pub struct NoFragmentCycles<'a> {
     current_fragment: Option<&'a str>,
-    spreads: HashMap<&'a str, Vec<Spanning<&'a str>>>,
+    spreads: HashMap<&'a str, Vec<BorrowedSpanning<'a, str>>>,
     fragment_order: Vec<&'a str>,
 }
 
@@ -73,20 +76,23 @@ where
             self.spreads
                 .entry(current_fragment)
                 .or_default()
-                .push(Spanning::start_end(
-                    &spread.start,
-                    &spread.end,
-                    spread.item.name.item,
-                ));
+                .push(BorrowedSpanning {
+                    item: spread.item.name.item,
+                    span: &spread.span,
+                });
         }
     }
 }
 
-type CycleDetectorState<'a> = (&'a str, Vec<&'a Spanning<&'a str>>, HashMap<&'a str, usize>);
+type CycleDetectorState<'a> = (
+    &'a str,
+    Vec<&'a BorrowedSpanning<'a, str>>,
+    HashMap<&'a str, usize>,
+);
 
 struct CycleDetector<'a> {
     visited: HashSet<&'a str>,
-    spreads: &'a HashMap<&'a str, Vec<Spanning<&'a str>>>,
+    spreads: &'a HashMap<&'a str, Vec<BorrowedSpanning<'a, str>>>,
     errors: Vec<RuleError>,
 }
 
@@ -107,7 +113,7 @@ impl<'a> CycleDetector<'a> {
     fn detect_from_inner(
         &mut self,
         from: &'a str,
-        path: Vec<&'a Spanning<&'a str>>,
+        path: Vec<&'a BorrowedSpanning<'a, str>>,
         mut path_indices: HashMap<&'a str, usize>,
     ) -> Vec<CycleDetectorState<'a>> {
         self.visited.insert(from);
@@ -131,7 +137,7 @@ impl<'a> CycleDetector<'a> {
                 };
 
                 self.errors
-                    .push(RuleError::new(&error_message(name), &[err_pos.start]));
+                    .push(RuleError::new(&error_message(name), &[err_pos.span.start]));
             } else {
                 let mut path = path.clone();
                 path.push(node);
